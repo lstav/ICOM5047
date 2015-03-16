@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">No Middle Man</string>
+
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="change_language">Change Language</string>
+    <string name="change_currency">USD ($)</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="action_search">Search</string>
+    <string name="action_cart">Cart</string>
+    <string name="app_label">No Middle Man</string>
+    <string name="search_hint">Search</string>
+
+    <string name="home">Home</string>
+    <string name="account">My Account</string>
+    <string name="signout">Sign Out</string>
+
+
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_tour_page">Tour Page Activity</string>
+    <string name="title_activity_account">Account</string>
+    <string name="title_activity_search">SearchActivity</string>
+
+</resources>
