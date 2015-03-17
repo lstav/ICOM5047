@@ -5,14 +5,25 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 
 
 public class RegisterActivity extends ActionBarActivity {
+
+    private String userEmail;
+    private String password;
+    private String userName;
+    private String userLName;
+
+    DatabaseConnection conn;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+        conn = (DatabaseConnection)getApplicationContext();
+
     }
 
 
@@ -39,6 +50,17 @@ public class RegisterActivity extends ActionBarActivity {
     }
 
     public void register(View view) {
+        EditText uEmail = (EditText) findViewById(R.id.email);
+        userEmail = uEmail.getText().toString();
+        EditText pass = (EditText) findViewById(R.id.password);
+        password = pass.getText().toString();
+        EditText uName = (EditText) findViewById(R.id.firstText);
+        userName = uName.getText().toString();
+        EditText uLName = (EditText) findViewById(R.id.lastText);
+        userLName = uLName.getText().toString();
+
+        conn.register(userEmail, password, userName, userLName);
+
         finish();
     }
 

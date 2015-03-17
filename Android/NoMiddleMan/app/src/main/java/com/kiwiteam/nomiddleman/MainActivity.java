@@ -53,11 +53,15 @@ public class MainActivity extends ActionBarActivity {
 
             //Categories
             findViewById(R.id.categories_button).setVisibility(View.VISIBLE);
+            findViewById(R.id.categories_row).setVisibility(View.GONE);
+        } else {
+            // Account
+            findViewById(R.id.account_button).setVisibility(View.GONE);
 
             //Categories
-            findViewById(R.id.categories_button).setVisibility(View.VISIBLE);
-            findViewById(R.id.categories_row).setVisibility(View.GONE);
+            findViewById(R.id.categories_button).setVisibility(View.GONE);
         }
+
 
 
     }
@@ -77,9 +81,6 @@ public class MainActivity extends ActionBarActivity {
 
             // Account
             findViewById(R.id.account_button).setVisibility(View.VISIBLE);
-
-            //Categories
-            findViewById(R.id.categories_button).setVisibility(View.VISIBLE);
 
             //Categories
             findViewById(R.id.categories_button).setVisibility(View.VISIBLE);
@@ -153,6 +154,12 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void account() {
+        intent = new Intent(this, AccountActivity.class);
+        intent.putExtra("Index", conn.getIndex());
+        startActivity(intent);
+    }
+
+    public void account(View view) {
         intent = new Intent(this, AccountActivity.class);
         intent.putExtra("Index", conn.getIndex());
         startActivity(intent);

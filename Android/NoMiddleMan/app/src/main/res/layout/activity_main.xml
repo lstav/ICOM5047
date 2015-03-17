@@ -101,7 +101,7 @@
                         android:textColor="#fff"
                         android:layout_margin="5dp"
                         android:drawableTop="@android:drawable/ic_menu_info_details"
-                        android:visibility="gone"/>
+                        android:onClick="account" />
 
                     <Button
                         android:layout_width="wrap_content"
@@ -112,8 +112,7 @@
                         android:background="#8cc538"
                         android:textColor="#fff"
                         android:layout_margin="5dp"
-                        android:drawableTop="@android:drawable/ic_menu_sort_by_size"
-                        android:visibility="gone"/>
+                        android:drawableTop="@android:drawable/ic_menu_sort_by_size" />
 
                 </TableRow>
 

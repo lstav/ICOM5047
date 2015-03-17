@@ -112,4 +112,11 @@ public class DatabaseConnection extends Application {
         return index;
     }
 
+    public void register(String userEmail, String password, String userName, String userLName) {
+        this.userEmail.add(userEmail);
+        this.password.add(password);
+        this.userName.add(userName);
+        this.userLName.add(userLName);
+    }
+
 }
