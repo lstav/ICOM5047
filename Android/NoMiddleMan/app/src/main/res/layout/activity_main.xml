@@ -20,7 +20,13 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent">
 
-                <EditText
+                <SearchView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/searchView"
+                    android:iconifiedByDefault="false" />
+
+                <!--<EditText
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:id="@+id/search_bar"
@@ -30,7 +36,7 @@
                     android:hint="Search Tours"
                     android:background="@drawable/border"
                     android:singleLine="true"
-                    android:layout_margin="10dp" />
+                    android:layout_margin="10dp" />-->
 
                 <TableRow
                     android:layout_width="match_parent"

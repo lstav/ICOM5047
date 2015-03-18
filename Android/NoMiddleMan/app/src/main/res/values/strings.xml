@@ -20,6 +20,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_tour_page">Tour Page Activity</string>
     <string name="title_activity_account">Account</string>
-    <string name="title_activity_search">SearchActivity</string>
+    <string name="title_activity_search">Search</string>
 
 </resources>

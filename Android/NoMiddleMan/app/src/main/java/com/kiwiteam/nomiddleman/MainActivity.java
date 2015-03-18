@@ -1,11 +1,13 @@
 package com.kiwiteam.nomiddleman;
 
 import android.app.SearchManager;
+import android.app.SearchableInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.provider.ContactsContract;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -62,8 +64,15 @@ public class MainActivity extends ActionBarActivity {
             findViewById(R.id.categories_button).setVisibility(View.GONE);
         }
 
+        initSearchView();
 
+    }
 
+    private void initSearchView() {
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        final SearchView searchView = (SearchView) findViewById(R.id.searchView);
+        SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
+        searchView.setSearchableInfo(searchableInfo);
     }
 
     protected void onResume() {

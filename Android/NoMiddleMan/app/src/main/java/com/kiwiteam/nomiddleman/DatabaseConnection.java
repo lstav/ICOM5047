@@ -16,6 +16,7 @@ public class DatabaseConnection extends Application {
     public ArrayList<String> userName = new ArrayList<String>();
     public ArrayList<String> userLName = new ArrayList<String>();
     public ArrayList<String> tourNames = new ArrayList<String>();
+    public ArrayList<String> tourCategories = new ArrayList<String>();
     public ArrayList<String> tourLocations = new ArrayList<String>();
     public ArrayList<String> tourPrices = new ArrayList<String>();
     public ArrayList<String> tourPictures = new ArrayList<String>();
@@ -35,25 +36,49 @@ public class DatabaseConnection extends Application {
         password.add("1234");
         userName.add("Luis");
         userLName.add("Tavarez");
+
         tourNames.add("Arecibo Skydiving");
         tourNames.add("Ola Surf");
+        tourNames.add("Surfing Slide");
+
+        tourCategories.add("Skydiving");
+        tourCategories.add("Surfing");
+        tourCategories.add("Surfing");
+
         tourLocations.add("Arecibo");
         tourLocations.add("Isabela");
+        tourLocations.add("Aguadilla");
+
         tourPrices.add("$200");
         tourPrices.add("$50");
+        tourPrices.add("$40");
+
         tourPictures.add("img1");
         tourPictures.add("img2");
+        tourPictures.add("img2");
+
         tourGuides.add("Pepe Perez");
         tourGuides.add("Pancho Rodriguez");
+        tourGuides.add("Jorge Garcia");
+
         tourDescriptions.add("Best Skydiving experience");
         tourDescriptions.add("Prepare to surf the waves");
+        tourDescriptions.add("Surfing for life");
+
         tourRating.add("4");
         tourRating.add("3");
+        tourRating.add("4");
+
         tourReview.add("Excellent experience");
         tourReview.add("Satisfying surf");
+        tourReview.add("Beautiful beaches");
+
         tourSessions.add("Saturday");
         tourSessions.add("Sunday");
+        tourSessions.add("Friday");
+
         tourVideos.add("vid1");
+        tourVideos.add("vid2");
         tourVideos.add("vid2");
     }
 
@@ -72,8 +97,20 @@ public class DatabaseConnection extends Application {
     }
 
     public String[] getTourInformation(int i) {
-        return new String[]{tourNames.get(i), tourLocations.get(i), tourPrices.get(i), tourPictures.get(i), tourGuides.get(i), tourDescriptions.get(i),
+        return new String[]{tourNames.get(i), tourCategories.get(i), tourLocations.get(i), tourPrices.get(i), tourPictures.get(i), tourGuides.get(i), tourDescriptions.get(i),
         tourRating.get(i), tourReview.get(i), tourSessions.get(i), tourVideos.get(i)};
+    }
+
+    public int[] searchToursByCategories(String category) {
+        int[] indexes = new int[]{-1, -1, -1};
+        int j = 0;
+        for(int i = 0; i<tourCategories.size(); i++) {
+            if(tourCategories.get(i).toLowerCase().equals(category.toLowerCase())) {
+                indexes[j] = i;
+                j++;
+            }
+        }
+        return indexes;
     }
 
     public String[] getTourNames() {
