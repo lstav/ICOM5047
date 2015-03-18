@@ -1,6 +1,8 @@
 package com.kiwiteam.nomiddleman;
 
 import android.app.SearchManager;
+import android.app.SearchableInfo;
+import android.content.Context;
 import android.content.Intent;
 import android.provider.ContactsContract;
 import android.support.v4.app.NavUtils;
@@ -10,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 
@@ -22,6 +25,7 @@ public class SearchActivity extends ActionBarActivity {
         setContentView(R.layout.activity_search);
         conn = (DatabaseConnection)getApplicationContext();
 
+        initSearchView();
         handleIntent(getIntent());
     }
 
@@ -29,6 +33,7 @@ public class SearchActivity extends ActionBarActivity {
     protected void onNewIntent(Intent intent) {
        setIntent(intent);
        handleIntent(intent);
+       initSearchView();
     }
 
     private void handleIntent(Intent intent) {
@@ -43,7 +48,7 @@ public class SearchActivity extends ActionBarActivity {
             indexes = conn.searchToursByCategories(query);
 
             if(indexes[0] != -1) {
-                ListView lv = (ListView) findViewById(R.id.listView);
+                //ListView lv = (ListView) findViewById(R.id.listView);
 
                 tourNames = new String[indexes.length];
 
@@ -70,6 +75,13 @@ public class SearchActivity extends ActionBarActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.global, menu);
         return true;
+    }
+
+    private void initSearchView() {
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        final SearchView searchView = (SearchView) findViewById(R.id.searchView);
+        SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
+        searchView.setSearchableInfo(searchableInfo);
     }
 
     @Override

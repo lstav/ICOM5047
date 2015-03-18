@@ -39,6 +39,13 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        initMainView();
+        initSearchView();
+
+    }
+
+    private void initMainView() {
         conn = (DatabaseConnection)getApplicationContext();
 
         if(conn.isLogged()) {
@@ -63,9 +70,6 @@ public class MainActivity extends ActionBarActivity {
             //Categories
             findViewById(R.id.categories_button).setVisibility(View.GONE);
         }
-
-        initSearchView();
-
     }
 
     private void initSearchView() {
