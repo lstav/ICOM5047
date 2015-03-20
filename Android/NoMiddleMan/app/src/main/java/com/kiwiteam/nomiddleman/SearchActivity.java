@@ -4,6 +4,7 @@ import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.provider.ContactsContract;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
@@ -16,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SimpleCursorAdapter;
@@ -37,6 +39,8 @@ public class SearchActivity extends ActionBarActivity {
         setContentView(R.layout.activity_search);
         conn = (DatabaseConnection)getApplicationContext();
 
+        //tourInfo.clear();
+
         initSearchView();
         handleIntent(getIntent());
         registerClickCallback();
@@ -46,15 +50,22 @@ public class SearchActivity extends ActionBarActivity {
     @Override
     protected void onNewIntent(Intent intent) {
        setIntent(intent);
+
+       tourInfo.clear();
+
        handleIntent(intent);
        initSearchView();
+       registerClickCallback();
+       registerClickCallback();
+
+
     }
 
     private void handleIntent(Intent intent) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ArrayList<Integer> indexes;
         String[] tour;
-        ArrayList<String[]> tourInfo = new ArrayList<>();
+        //ArrayList<String[]> tourInfo = new ArrayList<>();
 
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
@@ -64,7 +75,7 @@ public class SearchActivity extends ActionBarActivity {
             if(!indexes.isEmpty()) {
                 for(int i=0;i<indexes.size();i++) {
                     tour = conn.getTourInformation(indexes.get(i));
-                    tourInfo.add(new String[]{tour[0],tour[3],tour[4]});
+                    //tourInfo.add(new String[]{tour[0],tour[3],tour[4]});
                     this.tourInfo.add(new Tour(tour[0], tour[3], tour[4]));
                 }
 
@@ -149,6 +160,13 @@ public class SearchActivity extends ActionBarActivity {
             Tour currentTour = tourInfo.get(position);
 
             // fill the view
+            int draw = getResources().getIdentifier(currentTour.getPicture(),"drawable",getPackageName());
+
+            ImageView picture = (ImageView) itemView.findViewById(R.id.tourPic);
+            Drawable img = getResources().getDrawable(draw);
+
+            picture.setImageDrawable(img);
+
 
             TextView tName = (TextView) itemView.findViewById(R.id.tourName);
             tName.setText(currentTour.getName());

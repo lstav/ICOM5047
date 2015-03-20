@@ -4,31 +4,47 @@
     android:layout_height="fill_parent"
     android:layout_width="fill_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="#fff">
+    android:background="#fff"
+    android:padding="2dp">
 
     <TableRow
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/border">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/tourName"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textColor="#000"
-            android:textSize="28dp"
-            android:layout_weight="3"
-            android:background="@drawable/border">
-        </TextView>
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:id="@+id/tourPic"
+            android:layout_margin="5dp" />
 
-        <TextView
-            android:id="@+id/tourPrice"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textColor="#000"
-            android:textSize="24dp"
-            android:layout_weight="1">
-        </TextView>
+        <TableLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_margin="5dp">
+
+            <TextView
+                android:id="@+id/tourName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textColor="#000"
+                android:textSize="16dp"
+                android:layout_weight="3">
+            </TextView>
+
+            <TextView
+                android:id="@+id/tourPrice"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textColor="#000"
+                android:textSize="14dp"
+                android:layout_weight="1"
+                android:textStyle="bold"
+                android:textAlignment="viewEnd"
+                android:gravity="end"
+                android:layout_gravity="right">
+            </TextView>
+        </TableLayout>
+
     </TableRow>
 
 
