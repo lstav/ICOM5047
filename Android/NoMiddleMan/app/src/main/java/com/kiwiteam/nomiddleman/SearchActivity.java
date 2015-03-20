@@ -10,10 +10,15 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 
 public class SearchActivity extends ActionBarActivity {
@@ -38,30 +43,37 @@ public class SearchActivity extends ActionBarActivity {
 
     private void handleIntent(Intent intent) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        int[] indexes;
+        ArrayList<Integer> indexes;
         String[] tour;
-        String[] tourNames;
+        ArrayList<String> tourNames = new ArrayList<String>();
+        ArrayList<String> tourPrices = new ArrayList<String>();
 
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
 
             indexes = conn.searchToursByCategories(query);
 
-            if(indexes[0] != -1) {
+            if(!indexes.isEmpty()) {
                 //ListView lv = (ListView) findViewById(R.id.listView);
-
-                tourNames = new String[indexes.length];
-
-                for(int i=0;i<indexes.length;i++) {
-                    if(indexes[i] == -1) {
-                        break;
-                    }
-                    tour = conn.getTourInformation(indexes[i]);
-                    tourNames[i] = tour[0];
+                for(int i=0;i<indexes.size();i++) {
+                    tour = conn.getTourInformation(indexes.get(i));
+                    tourNames.add(tour[0]);
+                    tourPrices.add(tour[3]);
                 }
 
-                TextView fName = (TextView) findViewById(R.id.result);
-                fName.setText(tourNames[0]);
+
+                int[] toViews = {R.id.tourName, R.id.tourPrice};
+
+                findViewById(R.id.result).setVisibility(View.GONE);
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.result_list, R.id.tourName, tourNames);
+
+                /*TextView fName = (TextView) findViewById(R.id.result);
+                fName.setText(tourNames.get(0));*/
+
+                ListView listView = (ListView) findViewById(R.id.listView);
+                listView.setAdapter(adapter);
+
             } else {
                 TextView fName = (TextView) findViewById(R.id.result);
                 fName.setText("No Results");

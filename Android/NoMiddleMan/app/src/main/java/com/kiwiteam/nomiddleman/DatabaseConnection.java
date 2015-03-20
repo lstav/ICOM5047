@@ -101,13 +101,12 @@ public class DatabaseConnection extends Application {
         tourRating.get(i), tourReview.get(i), tourSessions.get(i), tourVideos.get(i)};
     }
 
-    public int[] searchToursByCategories(String category) {
-        int[] indexes = new int[]{-1, -1, -1};
+    public ArrayList<Integer> searchToursByCategories(String category) {
+        ArrayList<Integer> indexes = new ArrayList<Integer>();
         int j = 0;
         for(int i = 0; i<tourCategories.size(); i++) {
             if(tourCategories.get(i).toLowerCase().equals(category.toLowerCase())) {
-                indexes[j] = i;
-                j++;
+                indexes.add(i);
             }
         }
         return indexes;

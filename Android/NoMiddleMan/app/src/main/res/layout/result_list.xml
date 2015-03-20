@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/relativeLayout1"
+    android:layout_height="fill_parent"
+    android:layout_width="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#fff">
+
+    <TextView
+        android:id="@+id/tourName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="#000"
+        android:textSize="28dp"
+        android:layout_weight="1">
+    </TextView>
+    <TextView
+        android:id="@+id/tourPrice"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="#000"
+        android:textSize="24dp"
+        android:layout_weight="1">
+    </TextView>
+
+
+
+</LinearLayout>
