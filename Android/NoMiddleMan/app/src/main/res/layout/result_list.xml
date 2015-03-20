@@ -6,23 +6,30 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:background="#fff">
 
-    <TextView
-        android:id="@+id/tourName"
-        android:layout_width="0dp"
+    <TableRow
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="#000"
-        android:textSize="28dp"
-        android:layout_weight="1">
-    </TextView>
-    <TextView
-        android:id="@+id/tourPrice"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textColor="#000"
-        android:textSize="24dp"
-        android:layout_weight="1">
-    </TextView>
+        android:background="@drawable/border">
 
+        <TextView
+            android:id="@+id/tourName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="#000"
+            android:textSize="28dp"
+            android:layout_weight="3"
+            android:background="@drawable/border">
+        </TextView>
+
+        <TextView
+            android:id="@+id/tourPrice"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="#000"
+            android:textSize="24dp"
+            android:layout_weight="1">
+        </TextView>
+    </TableRow>
 
 
 </LinearLayout>
