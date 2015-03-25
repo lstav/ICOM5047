@@ -11,27 +11,39 @@ public class DatabaseConnection extends Application {
 
 
     public boolean isLogged;
-    public ArrayList<String> userEmail = new ArrayList<String>();
-    public ArrayList<String> password = new ArrayList<String>();
-    public ArrayList<String> userName = new ArrayList<String>();
-    public ArrayList<String> userLName = new ArrayList<String>();
-    public ArrayList<String> tourNames = new ArrayList<String>();
-    public ArrayList<String> tourCategories = new ArrayList<String>();
-    public ArrayList<String> tourLocations = new ArrayList<String>();
-    public ArrayList<String> tourPrices = new ArrayList<String>();
-    public ArrayList<String> tourPictures = new ArrayList<String>();
-    public ArrayList<String> tourGuides = new ArrayList<String>();
-    public ArrayList<String> tourDescriptions = new ArrayList<String>();
-    public ArrayList<String> tourRating = new ArrayList<String>();
-    public ArrayList<String> tourReview = new ArrayList<String>();
-    public ArrayList<String> tourSessions = new ArrayList<String>();
-    public ArrayList<String> tourVideos = new ArrayList<String>();
+    public ArrayList<String> categories = new ArrayList<>();
+    public ArrayList<String> userEmail = new ArrayList<>();
+    public ArrayList<String> password = new ArrayList<>();
+    public ArrayList<String> userName = new ArrayList<>();
+    public ArrayList<String> userLName = new ArrayList<>();
+    public ArrayList<String> tourNames = new ArrayList<>();
+    public ArrayList<String> tourCategories = new ArrayList<>();
+    public ArrayList<String> tourLocations = new ArrayList<>();
+    public ArrayList<String> tourPrices = new ArrayList<>();
+    public ArrayList<String> tourPictures = new ArrayList<>();
+    public ArrayList<String> tourGuides = new ArrayList<>();
+    public ArrayList<String> tourDescriptions = new ArrayList<>();
+    public ArrayList<String> tourRating = new ArrayList<>();
+    public ArrayList<String> tourReview = new ArrayList<>();
+    public ArrayList<String> tourSessions = new ArrayList<>();
+    public ArrayList<String> tourVideos = new ArrayList<>();
     public int index = -1;
 
 
     public void onCreate() {
         super.onCreate();
+        populateLists();
+    }
+
+    private void populateLists() {
         isLogged = false;
+
+        categories.add("Bungee Jumping");
+        categories.add("Kayaking");
+        categories.add("Rappelling");
+        categories.add("Skydiving");
+        categories.add("Surfing");
+
         userEmail.add("luis.tavarez@upr.edu");
         password.add("1234");
         userName.add("Luis");
@@ -144,6 +156,10 @@ public class DatabaseConnection extends Application {
         isLogged = false;
     }
 
+    public ArrayList<String> getCategories() {
+        return categories;
+    }
+
     public int getIndex() {
         return index;
     }
@@ -155,4 +171,14 @@ public class DatabaseConnection extends Application {
         this.userLName.add(userLName);
     }
 
+    public ArrayList<Integer> searchToursByString(String query) {
+        ArrayList<Integer> indexes = new ArrayList<Integer>();
+        int j = 0;
+        for(int i = 0; i<tourNames.size(); i++) {
+            if(tourNames.get(i).toLowerCase().contains(query.toLowerCase())) {
+                indexes.add(i);
+            }
+        }
+        return indexes;
+    }
 }

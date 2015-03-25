@@ -21,5 +21,7 @@
     <string name="title_activity_tour_page">Tour Page Activity</string>
     <string name="title_activity_account">Account</string>
     <string name="title_activity_search">Search</string>
+    <string name="title_activity_categories">CategoriesActivity</string>
+    <string name="title_activity_category_search">CategorySearchActivity</string>
 
 </resources>

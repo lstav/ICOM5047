@@ -188,6 +188,11 @@ public class MainActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
+    public void searchCat(View view) {
+        intent = new Intent(this, CategoriesActivity.class);
+        startActivity(intent);
+    }
+
 
     public void itemSelected(View view) {
         intent = new Intent(this, TourPageActivity.class);

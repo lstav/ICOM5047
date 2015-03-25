@@ -27,18 +27,6 @@
                     android:iconifiedByDefault="false"
                     android:layout_margin="10dp" />
 
-                <!--<EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:id="@+id/search_bar"
-                    android:inputType="text"
-                    android:imeOptions="actionSearch"
-                    android:drawableLeft="@drawable/ic_action_search"
-                    android:hint="Search Tours"
-                    android:background="@drawable/border"
-                    android:singleLine="true"
-                    android:layout_margin="10dp" />-->
-
                 <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -119,7 +107,8 @@
                         android:background="#8cc538"
                         android:textColor="#fff"
                         android:layout_margin="5dp"
-                        android:drawableTop="@android:drawable/ic_menu_sort_by_size" />
+                        android:drawableTop="@android:drawable/ic_menu_sort_by_size"
+                        android:onClick="searchCat" />
 
                 </TableRow>
 
@@ -129,7 +118,9 @@
                     android:layout_margin="5dp"
                     android:background="@drawable/border"
                     android:elevation="0dp"
-                    android:id="@+id/categories_row">
+                    android:id="@+id/categories_row"
+                    android:clickable="true"
+                    android:onClick="searchCat">
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -200,75 +191,6 @@
 
                     </TableLayout>
                 </TableRow>
-
-                <!--<TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="Top Tours"
-                    android:id="@+id/textView"
-                    android:background="@drawable/border" />
-
-
-                <HorizontalScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/horizontalScrollView"
-                    android:background="@drawable/border">
-
-                    <TableRow
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
-                        android:background="@drawable/border">
-
-                        <TableLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_gravity="center"
-                            android:background="@drawable/border"
-                            android:clickable="true"
-                            android:onClick="itemSelected">
-
-                            <ImageView
-                                android:layout_width="100dp"
-                                android:layout_height="250dp"
-                                android:id="@+id/imageView"
-                                android:src="@drawable/img1"/>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Ola Surf"
-                                android:id="@+id/textView2"
-                                android:textSize="24dp"
-                                android:textColor="#000"
-                                android:background="#fff" />
-                        </TableLayout>
-
-                        <TableLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/border"
-                            android:clickable="true">
-
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="250dp"
-                                android:id="@+id/imageView2"
-                                android:src="@drawable/img2"/>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Sky Fall"
-                                android:id="@+id/textView3"
-                                android:textColor="#000"
-                                android:textSize="24dp"
-                                android:background="#fff" />
-                        </TableLayout>
-
-                    </TableRow>
-                </HorizontalScrollView>-->
 
             </LinearLayout>
         </ScrollView>

@@ -19,16 +19,18 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme" >
         <meta-data
             android:name="android.app.default_searchable"
             android:value=".SearchActivity" />
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="stateHidden" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -61,21 +63,40 @@
             android:name=".AccountActivity"
             android:label="@string/title_activity_account" >
         </activity>
-        <activity android:name=".SearchActivity"
+        <activity
+            android:name=".SearchActivity"
             android:label="@string/title_activity_search"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop" >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
                 <action android:name="android.intent.action.view" />
             </intent-filter>
+
             <meta-data
                 android:name="android.app.searchable"
-                android:resource="@xml/searchable"/>
+                android:resource="@xml/searchable" />
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.kiwiteam.nomiddleman.MainActivity" />
         </activity>
-
+        <activity
+            android:name=".CategoriesActivity"
+            android:label="@string/title_activity_categories"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.kiwiteam.nomiddleman.MainActivity" />
+        </activity>
+        <activity
+            android:name=".CategorySearchActivity"
+            android:label="@string/title_activity_category_search" >
+            <intent-filter>
+                <action android:name="android.intent.action.view" />
+            </intent-filter>
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".CategoriesActivity" />
+        </activity>
     </application>
 
 </manifest>
