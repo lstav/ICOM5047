@@ -3,6 +3,7 @@ package com.kiwiteam.nomiddleman;
 import android.app.Application;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by Luis on 3/13/2015.
@@ -10,24 +11,15 @@ import java.util.ArrayList;
 public class DatabaseConnection extends Application {
 
 
-    public boolean isLogged;
-    public ArrayList<String> categories = new ArrayList<>();
-    public ArrayList<String> userEmail = new ArrayList<>();
-    public ArrayList<String> password = new ArrayList<>();
-    public ArrayList<String> userName = new ArrayList<>();
-    public ArrayList<String> userLName = new ArrayList<>();
-    public ArrayList<String> tourNames = new ArrayList<>();
-    public ArrayList<String> tourCategories = new ArrayList<>();
-    public ArrayList<String> tourLocations = new ArrayList<>();
-    public ArrayList<String> tourPrices = new ArrayList<>();
-    public ArrayList<String> tourPictures = new ArrayList<>();
-    public ArrayList<String> tourGuides = new ArrayList<>();
-    public ArrayList<String> tourDescriptions = new ArrayList<>();
-    public ArrayList<String> tourRating = new ArrayList<>();
-    public ArrayList<String> tourReview = new ArrayList<>();
-    public ArrayList<String> tourSessions = new ArrayList<>();
-    public ArrayList<String> tourVideos = new ArrayList<>();
-    public int index = -1;
+    private boolean isLogged;
+    private ArrayList<TourClass> tourInformation = new ArrayList<>();
+    private ArrayList<String> categories = new ArrayList<>();
+    private ArrayList<String> userEmail = new ArrayList<>();
+    private ArrayList<String> password = new ArrayList<>();
+    private ArrayList<String> userName = new ArrayList<>();
+    private ArrayList<String> userLName = new ArrayList<>();
+    private ArrayList<String> tourNames = new ArrayList<>();
+    private int index = -1;
 
 
     public void onCreate() {
@@ -49,49 +41,18 @@ public class DatabaseConnection extends Application {
         userName.add("Luis");
         userLName.add("Tavarez");
 
-        tourNames.add("Arecibo Skydiving");
-        tourNames.add("Ola Surf");
-        tourNames.add("Surfing Slide");
+        tourInformation.add(new TourClass("Arecibo Skydiving", new ArrayList<>(Arrays.asList("Skydiving")), new String[]{"Arecibo","PR","USA"},
+                "$200", new ArrayList<>(Arrays.asList("img1")), "Pepe Perez", "Best Skydiving experience", "4", new ArrayList<>(Arrays.asList("Excellent experience")),
+                new ArrayList<>(Arrays.asList("Sarturday","Sunday","Friday")), new ArrayList<>(Arrays.asList("10:30 am","11:30 am","12:30 pm")), "vid1"));
 
-        tourCategories.add("Skydiving");
-        tourCategories.add("Surfing");
-        tourCategories.add("Surfing");
+        tourInformation.add(new TourClass("Ola Surf", new ArrayList<>(Arrays.asList("Surfing")), new String[]{"Isabela","PR","USA"},
+                "$50", new ArrayList<>(Arrays.asList("img2")), "Pancho Rodriguez", "Prepare to surf the waves", "3", new ArrayList<>(Arrays.asList("Satisfying surf")),
+                new ArrayList<>(Arrays.asList("Sunday","Monday")), new ArrayList<>(Arrays.asList("7:00 am","8:00 am")), "vid2"));
 
-        tourLocations.add("Arecibo");
-        tourLocations.add("Isabela");
-        tourLocations.add("Aguadilla");
+        tourInformation.add(new TourClass("Surfing Slide", new ArrayList<>(Arrays.asList("Surfing")), new String[]{"Aguadilla","PR","USA"},
+                "$40", new ArrayList<>(Arrays.asList("img2")), "Jorge Garcia", "Surfing for life", "4", new ArrayList<>(Arrays.asList("Beautiful beaches")),
+                new ArrayList<>(Arrays.asList("Friday","Saturday")), new ArrayList<>(Arrays.asList("8:00 am","9:00 am")), "vid3"));
 
-        tourPrices.add("$200");
-        tourPrices.add("$50");
-        tourPrices.add("$40");
-
-        tourPictures.add("img1");
-        tourPictures.add("img2");
-        tourPictures.add("img2");
-
-        tourGuides.add("Pepe Perez");
-        tourGuides.add("Pancho Rodriguez");
-        tourGuides.add("Jorge Garcia");
-
-        tourDescriptions.add("Best Skydiving experience");
-        tourDescriptions.add("Prepare to surf the waves");
-        tourDescriptions.add("Surfing for life");
-
-        tourRating.add("4");
-        tourRating.add("3");
-        tourRating.add("4");
-
-        tourReview.add("Excellent experience");
-        tourReview.add("Satisfying surf");
-        tourReview.add("Beautiful beaches");
-
-        tourSessions.add("Saturday");
-        tourSessions.add("Sunday");
-        tourSessions.add("Friday");
-
-        tourVideos.add("vid1");
-        tourVideos.add("vid2");
-        tourVideos.add("vid2");
     }
 
     public boolean isLogged() {
@@ -99,41 +60,24 @@ public class DatabaseConnection extends Application {
         return isLogged;
     }
 
-    public String getEmail(int i) {
-
-        return userEmail.get(i);
-    }
-
     public String[] getTouristInfo(int i) {
         return new String[] {userEmail.get(i), userName.get(i), userLName.get(i)};
     }
 
-    public String[] getTourInformation(int i) {
-        return new String[]{tourNames.get(i), tourCategories.get(i), tourLocations.get(i), tourPrices.get(i), tourPictures.get(i), tourGuides.get(i), tourDescriptions.get(i),
-        tourRating.get(i), tourReview.get(i), tourSessions.get(i), tourVideos.get(i)};
+    public TourClass getTourInformation(int i) {
+        return tourInformation.get(i);
     }
 
     public ArrayList<Integer> searchToursByCategories(String category) {
-        ArrayList<Integer> indexes = new ArrayList<Integer>();
-        int j = 0;
-        for(int i = 0; i<tourCategories.size(); i++) {
-            if(tourCategories.get(i).toLowerCase().equals(category.toLowerCase())) {
-                indexes.add(i);
+        ArrayList<Integer> indexes = new ArrayList<>();
+        for(int i = 0; i<tourInformation.size(); i++) {
+            for (String s : tourInformation.get(i).getTourCategories()) {
+                if(s.toLowerCase().equals(category.toLowerCase())) {
+                    indexes.add(i);
+                }
             }
         }
         return indexes;
-    }
-
-    public String[] getTourNames() {
-        return (String[]) tourNames.toArray();
-    }
-
-    public String[] getTourPrices() {
-        return (String[]) tourPrices.toArray();
-    }
-
-    public String[] getTourRating() {
-        return (String[]) tourRating.toArray();
     }
 
     public boolean login(String email, String password) {
@@ -172,10 +116,10 @@ public class DatabaseConnection extends Application {
     }
 
     public ArrayList<Integer> searchToursByString(String query) {
-        ArrayList<Integer> indexes = new ArrayList<Integer>();
-        int j = 0;
-        for(int i = 0; i<tourNames.size(); i++) {
-            if(tourNames.get(i).toLowerCase().contains(query.toLowerCase())) {
+        ArrayList<Integer> indexes = new ArrayList<>();
+
+        for(int i = 0; i<tourInformation.size(); i++) {
+            if (tourInformation.get(i).getTourName().toLowerCase().contains(query.toLowerCase())) {
                 indexes.add(i);
             }
         }

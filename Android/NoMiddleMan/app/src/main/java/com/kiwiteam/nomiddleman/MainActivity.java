@@ -104,17 +104,6 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    private void getDrawablesList() {
-        String[] tourName = conn.getTourNames();
-
-        /*drawables = new ArrayList<Drawable>();
-        for (int i=0;i<2;i++) {
-            drawables.add(getResources().getDrawable(getResources().getIdentifier(tourName[i],"drawable",getPackageName())));
-            //drawables.add(getResources().getDrawable(R.drawable.img1));
-        }*/
-
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -85,8 +85,11 @@ public class CategoriesActivity extends ActionBarActivity {
 
                 String clickedCategory = categories.get(position);
 
-                Intent i = new Intent(getApplicationContext(), CategorySearchActivity.class);
+                Intent i = new Intent(getApplicationContext(), SearchActivity.class);
+
+                i.putExtra("searchCategory","true");
                 i.putExtra("category", clickedCategory);
+
                 startActivity(i);
 
                 /*String message = "You clicked position " + position

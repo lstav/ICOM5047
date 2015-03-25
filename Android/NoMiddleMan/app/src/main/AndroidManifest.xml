@@ -87,16 +87,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.kiwiteam.nomiddleman.MainActivity" />
         </activity>
-        <activity
-            android:name=".CategorySearchActivity"
-            android:label="@string/title_activity_category_search" >
-            <intent-filter>
-                <action android:name="android.intent.action.view" />
-            </intent-filter>
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".CategoriesActivity" />
-        </activity>
     </application>
 
 </manifest>

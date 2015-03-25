@@ -31,6 +31,7 @@ import java.util.List;
 public class SearchActivity extends ActionBarActivity {
 
     DatabaseConnection conn;
+    private boolean selectedCategory = false;
     private List<Tour> tourInfo = new ArrayList<>();
 
     @Override
@@ -39,26 +40,84 @@ public class SearchActivity extends ActionBarActivity {
         setContentView(R.layout.activity_search);
         conn = (DatabaseConnection)getApplicationContext();
 
+        Intent intent = getIntent();
+
+        String category = intent.getStringExtra("searchCategory");
+
+        if(category == null) {
+            selectedCategory = false;
+        } else {
+            selectedCategory = category.equals("true");
+        }
+
+        if(selectedCategory) {
+            System.out.println("Category Selected");
+            handleCategoryIntent(intent);
+        } else {
+            System.out.println("Category Not Selected");
+            handleIntent(intent);
+        }
+        System.out.println("Passed If");
+
         initSearchView();
-        handleIntent(getIntent());
         registerClickCallback();
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
-       setIntent(intent);
+        setIntent(intent);
 
-       tourInfo.clear();
+        tourInfo.clear();
 
-       handleIntent(intent);
-       initSearchView();
-       registerClickCallback();
+        String category = intent.getStringExtra("searchCategory");
+
+        if(category == null) {
+            selectedCategory = false;
+        } else {
+            selectedCategory = category.equals("true");
+        }
+
+        if(selectedCategory) {
+            handleCategoryIntent(intent);
+        } else {
+            handleIntent(intent);
+        }
+        initSearchView();
+        registerClickCallback();
+    }
+
+    private void handleCategoryIntent(Intent intent) {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ArrayList<Integer> indexes;
+        TourClass tour;
+
+
+        String query = intent.getStringExtra("category");
+        indexes = conn.searchToursByCategories(query);
+
+        if(!indexes.isEmpty()) {
+            for(int i=0;i<indexes.size();i++) {
+                tour = conn.getTourInformation(indexes.get(i));
+                this.tourInfo.add(new Tour(tour.getTourName(), tour.getTourPrice(), tour.getTourPictures(), indexes.get(i)));
+            }
+
+            findViewById(R.id.result).setVisibility(View.GONE);
+
+            ArrayAdapter<Tour> adapter = new MyListAdapter();
+
+            ListView listView = (ListView) findViewById(R.id.listView);
+            listView.setAdapter(adapter);
+
+        } else {
+            TextView fName = (TextView) findViewById(R.id.result);
+            fName.setText("No Results");
+        }
     }
 
     private void handleIntent(Intent intent) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ArrayList<Integer> indexes;
-        String[] tour;
+        TourClass tour;
 
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
@@ -68,7 +127,7 @@ public class SearchActivity extends ActionBarActivity {
             if(!indexes.isEmpty()) {
                 for(int i=0;i<indexes.size();i++) {
                     tour = conn.getTourInformation(indexes.get(i));
-                    this.tourInfo.add(new Tour(tour[0], tour[3], tour[4]));
+                    this.tourInfo.add(new Tour(tour.getTourName(), tour.getTourPrice(), tour.getTourPictures(), indexes.get(i)));
                 }
 
                 findViewById(R.id.result).setVisibility(View.GONE);
@@ -150,7 +209,7 @@ public class SearchActivity extends ActionBarActivity {
             Tour currentTour = tourInfo.get(position);
 
             // fill the view
-            int draw = getResources().getIdentifier(currentTour.getPicture(),"drawable",getPackageName());
+            int draw = getResources().getIdentifier(currentTour.getPictures().get(0),"drawable",getPackageName());
 
             ImageView picture = (ImageView) itemView.findViewById(R.id.tourPic);
             Drawable img = getResources().getDrawable(draw);
