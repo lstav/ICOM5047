@@ -51,13 +51,10 @@ public class SearchActivity extends ActionBarActivity {
         }
 
         if(selectedCategory) {
-            System.out.println("Category Selected");
             handleCategoryIntent(intent);
         } else {
-            System.out.println("Category Not Selected");
             handleIntent(intent);
         }
-        System.out.println("Passed If");
 
         initSearchView();
         registerClickCallback();
@@ -184,9 +181,16 @@ public class SearchActivity extends ActionBarActivity {
                                     int position, long id) {
 
                 Tour clickedTour = tourInfo.get(position);
-                String message = "You clicked position " + position
+
+                Intent i = new Intent(getApplicationContext(), TourPageActivity.class);
+
+                i.putExtra("tourId",clickedTour.getId());
+
+                startActivity(i);
+
+                /*String message = "You clicked position " + position
                         + " Which is tour name " + clickedTour.getName();
-                Toast.makeText(SearchActivity.this, message, Toast.LENGTH_LONG).show();
+                Toast.makeText(SearchActivity.this, message, Toast.LENGTH_LONG).show();*/
             }
         });
     }

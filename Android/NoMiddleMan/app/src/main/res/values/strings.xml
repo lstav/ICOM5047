@@ -11,6 +11,7 @@
     <string name="action_cart">Cart</string>
     <string name="app_label">No Middle Man</string>
     <string name="search_hint">Search</string>
+    <string name="add_to_cart">Add to Cart</string>
 
     <string name="home">Home</string>
     <string name="account">My Account</string>
@@ -21,7 +22,6 @@
     <string name="title_activity_tour_page">Tour Page Activity</string>
     <string name="title_activity_account">Account</string>
     <string name="title_activity_search">Search</string>
-    <string name="title_activity_categories">CategoriesActivity</string>
-    <string name="title_activity_category_search">CategorySearchActivity</string>
+    <string name="title_activity_categories">Categories</string>
 
 </resources>

@@ -57,7 +57,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.kiwiteam.nomiddleman.MainActivity" />
         </activity>
-        <activity android:name=".TourPageActivity" >
+        <activity android:name=".TourPageActivity"
+            android:label="@string/app_name"
+            android:parentActivityName=".MainActivity"
+            android:windowSoftInputMode="stateHidden" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.kiwiteam.nomiddleman.MainActivity" />
         </activity>
         <activity
             android:name=".AccountActivity"

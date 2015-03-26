@@ -14,13 +14,13 @@ public class TourClass {
     private ArrayList<String> tourPictures = new ArrayList<>();
     private String tourGuide = new String();
     private String tourDescription = new String();
-    private String tourRating = new String();
+    private int tourRating = 0;
     private ArrayList<String> tourReview = new ArrayList<>();
     private ArrayList<String> tourSessionsDate = new ArrayList<>();
     private ArrayList<String> tourSessionsTime = new ArrayList<>();
     private String tourVideos = new String();
 
-    public TourClass(String tourName, ArrayList<String> tourCategories, String[] tourLocation, String tourPrices, ArrayList<String> tourPictures, String tourGuide, String tourDescription, String tourRating, ArrayList<String> tourReview, ArrayList<String> tourSessionsDate, ArrayList<String> tourSessionsTime, String tourVideos) {
+    public TourClass(String tourName, ArrayList<String> tourCategories, String[] tourLocation, String tourPrices, ArrayList<String> tourPictures, String tourGuide, String tourDescription, int tourRating, ArrayList<String> tourReview, ArrayList<String> tourSessionsDate, ArrayList<String> tourSessionsTime, String tourVideos) {
         this.tourName = tourName;
         this.tourCategories = tourCategories;
         this.tourLocation = tourLocation;
@@ -63,7 +63,7 @@ public class TourClass {
         return tourDescription;
     }
 
-    public String getTourRating() {
+    public int getTourRating() {
         return tourRating;
     }
 
