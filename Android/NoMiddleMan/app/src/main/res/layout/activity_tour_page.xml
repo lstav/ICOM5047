@@ -123,7 +123,8 @@
                     android:background="#8cc538"
                     android:textColor="#fff"
                     android:layout_margin="10dp"
-                    android:layout_gravity="left" />
+                    android:layout_gravity="left"
+                    android:onClick="addToCart" />
 
                 <TextView
                     android:layout_width="wrap_content"

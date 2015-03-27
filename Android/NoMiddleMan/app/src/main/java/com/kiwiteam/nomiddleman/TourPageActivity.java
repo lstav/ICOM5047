@@ -7,17 +7,20 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class TourPageActivity extends ActionBarActivity {
 
     DatabaseConnection conn;
     TourClass tour;
+    int index;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +36,7 @@ public class TourPageActivity extends ActionBarActivity {
     public void initTourPage(Intent intent) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        int index = intent.getIntExtra("tourId", -1);
+        index = intent.getIntExtra("tourId", -1);
 
         if(index == -1) {
             finish();
@@ -87,8 +90,17 @@ public class TourPageActivity extends ActionBarActivity {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
+            case R.id.action_cart:
+                Intent intent = new Intent(this, ShoppingCartActivity.class);
+                startActivity(intent);
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void addToCart(View view) {
+        Toast.makeText(this, "Added to Cart", Toast.LENGTH_SHORT).show();
+        conn.putToursToShoppingCart(index);
     }
 }

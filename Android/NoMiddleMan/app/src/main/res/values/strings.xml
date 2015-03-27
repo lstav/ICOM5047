@@ -23,5 +23,6 @@
     <string name="title_activity_account">Account</string>
     <string name="title_activity_search">Search</string>
     <string name="title_activity_categories">Categories</string>
+    <string name="title_activity_shopping_cart">ShoppingCartActivity</string>
 
 </resources>

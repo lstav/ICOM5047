@@ -2,6 +2,7 @@ package com.kiwiteam.nomiddleman;
 
 import android.app.Application;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -19,6 +20,7 @@ public class DatabaseConnection extends Application {
     private ArrayList<String> userName = new ArrayList<>();
     private ArrayList<String> userLName = new ArrayList<>();
     private ArrayList<String> tourNames = new ArrayList<>();
+    private ShoppingCart shoppingCart;
     private int index = -1;
 
 
@@ -41,6 +43,8 @@ public class DatabaseConnection extends Application {
         userName.add("Luis");
         userLName.add("Tavarez");
 
+        shoppingCart = new ShoppingCart(0);
+
         tourInformation.add(new TourClass("Arecibo Skydiving", new ArrayList<>(Arrays.asList("Skydiving")), new String[]{"Arecibo","PR","USA"},
                 "$200", new ArrayList<>(Arrays.asList("img1")), "Pepe Perez", "Best Skydiving experience", 4, new ArrayList<>(Arrays.asList("Excellent experience")),
                 new ArrayList<>(Arrays.asList("Sarturday","Sunday","Friday")), new ArrayList<>(Arrays.asList("10:30 am","11:30 am","12:30 pm")), "vid1"));
@@ -58,6 +62,14 @@ public class DatabaseConnection extends Application {
     public boolean isLogged() {
 
         return isLogged;
+    }
+
+    public ArrayList<Integer> getShoppingCart(int i) {
+        return shoppingCart.getTours();
+    }
+
+    public void putToursToShoppingCart(int i) {
+        shoppingCart.putTour(i);
     }
 
     public String[] getTouristInfo(int i) {

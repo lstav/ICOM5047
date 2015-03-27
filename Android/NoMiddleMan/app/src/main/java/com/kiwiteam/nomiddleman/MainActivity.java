@@ -139,7 +139,9 @@ public class MainActivity extends ActionBarActivity {
         }*/
 
         if (item.getItemId() == R.id.action_cart) {
-            Toast.makeText(this, "Shopping Cart", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Shopping Cart", Toast.LENGTH_SHORT).show();
+            intent = new Intent(this, ShoppingCartActivity.class);
+            startActivity(intent);
             return true;
         }
 

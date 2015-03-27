@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".SearchActivity">
 
     <FrameLayout android:id="@+id/container"
         android:layout_width="match_parent"
@@ -48,7 +48,8 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="Categories"
                     android:id="@+id/textView12"
-                    android:background="@drawable/border" />
+                    android:background="@drawable/border"
+                    android:layout_weight="1" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -56,7 +57,8 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="Locations"
                     android:id="@+id/textView13"
-                    android:background="@drawable/border" />
+                    android:background="@drawable/border"
+                    android:layout_weight="1" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -64,7 +66,8 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="Extremeness"
                     android:id="@+id/textView14"
-                    android:background="@drawable/border" />
+                    android:background="@drawable/border"
+                    android:layout_weight="1" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -72,7 +75,8 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="Price"
                     android:id="@+id/textView15"
-                    android:background="@drawable/border" />
+                    android:background="@drawable/border"
+                    android:layout_weight="1" />
             </TableRow>
 
             <TextView
