@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.Spinner;
@@ -18,9 +19,15 @@ import android.widget.Toast;
 
 public class TourPageActivity extends ActionBarActivity {
 
-    DatabaseConnection conn;
-    TourClass tour;
-    int index;
+    private DatabaseConnection conn;
+    private TourClass tour;
+    private int index;
+    private int quantity = 1;
+    private String date = new String();
+    private String time = new String();
+    private Spinner tDay;
+    private Spinner tTime;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,18 +62,21 @@ public class TourPageActivity extends ActionBarActivity {
         tPicture.setImageDrawable(img);
 
         TextView tPrice = (TextView) findViewById(R.id.tourPrice);
-        tPrice.setText(tour.getTourPrice());
+        tPrice.setText("$" + String.format("%.2f", tour.getTourPrice()));
 
-        Spinner day = (Spinner) findViewById(R.id.day);
+        tDay = (Spinner) findViewById(R.id.day);
         ArrayAdapter<String> dAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,tour.getTourSessionsDate());
-        day.setAdapter(dAdapter);
+        dAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        tDay.setAdapter(dAdapter);
 
-        Spinner time = (Spinner) findViewById(R.id.time);
+        tTime = (Spinner) findViewById(R.id.time);
         ArrayAdapter<String> tAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,tour.getTourSessionsTime());
-        time.setAdapter(tAdapter);
+        tAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        tTime.setAdapter(tAdapter);
 
         TextView tDescription = (TextView) findViewById(R.id.description);
         tDescription.setText(tour.getTourDescription());
+
 
 
     }
@@ -100,7 +110,17 @@ public class TourPageActivity extends ActionBarActivity {
     }
 
     public void addToCart(View view) {
-        Toast.makeText(this, "Added to Cart", Toast.LENGTH_SHORT).show();
-        conn.putToursToShoppingCart(index);
+        EditText qty = (EditText) findViewById(R.id.quantity);
+        this.quantity = Integer.parseInt(qty.getText().toString());
+        this.date = tDay.getSelectedItem().toString();
+        this.time = tTime.getSelectedItem().toString();
+
+        if(quantity > 0) {
+            Toast.makeText(this, "Added to Cart", Toast.LENGTH_SHORT).show();
+            conn.putToursToShoppingCart(index, quantity, date, time);
+        } else {
+            Toast.makeText(this, "Missing Quantity", Toast.LENGTH_SHORT).show();
+        }
+
     }
 }

@@ -8,11 +8,11 @@ import java.util.ArrayList;
  */
 public class Tour {
     private String name;
-    private String price;
+    private double price;
     private ArrayList<String> picture;
     private int id;
 
-    public Tour(String name, String price, ArrayList<String> picture, int id) {
+    public Tour(String name, double price, ArrayList<String> picture, int id) {
         super();
 
         this.name = name;
@@ -25,7 +25,7 @@ public class Tour {
         return name;
     }
 
-    public String getPrice() {
+    public double getPrice() {
         return price;
     }
 

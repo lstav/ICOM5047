@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -20,8 +21,10 @@ import java.util.List;
 
 public class ShoppingCartActivity extends ActionBarActivity {
 
-    DatabaseConnection conn;
-    private List<Tour> tourInfo = new ArrayList<>();
+    private DatabaseConnection conn;
+    private ArrayAdapter<ShoppingItem> adapter;
+    private ListView listView;
+    private List<ShoppingItem> shoppingCart = new ArrayList<>();
 
 
 
@@ -37,34 +40,60 @@ public class ShoppingCartActivity extends ActionBarActivity {
 
     }
 
-    private void handleIntent(Intent intent) {
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ArrayList<Integer> indexes = conn.getShoppingCart(0);
-        TourClass tour;
+    protected void onNewIntent(Intent intent) {
+        setIntent(intent);
 
-        if(!indexes.isEmpty()) {
-            for(int i=0;i<indexes.size();i++) {
-                tour = conn.getTourInformation(indexes.get(i));
-                this.tourInfo.add(new Tour(tour.getTourName(), tour.getTourPrice(), tour.getTourPictures(), indexes.get(i)));
-            }
+        shoppingCart.clear();
 
-            findViewById(R.id.result).setVisibility(View.GONE);
-
-            ArrayAdapter<Tour> adapter = new MyListAdapter();
+        handleIntent(intent);
 
 
-            ListView listView = (ListView) findViewById(R.id.listView);
-            listView.setAdapter(adapter);
+    }
 
-            TextView tPrice = (TextView) findViewById(R.id.price);
-            tPrice.setText(tourInfo.get(0).getPrice());
+    public void removeItem(int position) {
+        conn.removeFromShoppingCart(position);
+        adapter.notifyDataSetChanged();
+        TextView tPrice = (TextView) findViewById(R.id.price);
+        if(!adapter.isEmpty()) {
+            double price = conn.getTotalPrice();
+            tPrice.setText("$" + String.format("%.2f", price));
 
         } else {
             TextView fName = (TextView) findViewById(R.id.result);
-            fName.setText("No Results");
+            findViewById(R.id.result).setVisibility(View.VISIBLE);
+            fName.setText("Your Shopping Cart is empty.");
+
+            tPrice.setText("$0.00");
         }
+    }
 
+    private void handleIntent(Intent intent) {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        shoppingCart = conn.getShoppingCart(0);
 
+        if(!shoppingCart.isEmpty()) {
+
+            findViewById(R.id.result).setVisibility(View.GONE);
+
+            adapter = new MyListAdapter();
+
+            listView = (ListView) findViewById(R.id.listView);
+            listView.setAdapter(adapter);
+
+            TextView tPrice = (TextView) findViewById(R.id.price);
+            double prices = 0;
+            for (int i=0;i<shoppingCart.size();i++) {
+                prices = prices + shoppingCart.get(i).getTourPrice();
+            }
+            tPrice.setText("$" + String.format("%.2f", prices));
+
+        } else {
+            TextView fName = (TextView) findViewById(R.id.result);
+            fName.setText("Your Shopping Cart is empty.");
+
+            TextView tPrice = (TextView) findViewById(R.id.price);
+            tPrice.setText("$0.00");
+        }
 
     }
 
@@ -86,30 +115,42 @@ public class ShoppingCartActivity extends ActionBarActivity {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
+            case R.id.action_cart:
+                Intent intent = new Intent(this, ShoppingCartActivity.class);
+                startActivity(intent);
+                return true;
+
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private class MyListAdapter extends ArrayAdapter<Tour> {
+    private class MyListAdapter extends ArrayAdapter<ShoppingItem> {
 
         public MyListAdapter() {
-            super(ShoppingCartActivity.this, R.layout.shopping_cart_item, tourInfo);
+            super(ShoppingCartActivity.this, R.layout.shopping_cart_item, shoppingCart);
 
         }
 
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
             View itemView = convertView;
             if (itemView == null) {
                 itemView = getLayoutInflater().inflate(R.layout.shopping_cart_item, parent, false);
 
             }
 
+            itemView.findViewById(R.id.remove).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    removeItem(position);
+                }
+            });
+
             // find the list
-            Tour currentTour = tourInfo.get(position);
+            ShoppingItem currentTour = shoppingCart.get(position);
 
             // fill the view
-            int draw = getResources().getIdentifier(currentTour.getPictures().get(0),"drawable",getPackageName());
+            int draw = getResources().getIdentifier(currentTour.getTourPicture().get(0),"drawable",getPackageName());
 
             ImageView picture = (ImageView) itemView.findViewById(R.id.tourPic);
             Drawable img = getResources().getDrawable(draw);
@@ -118,13 +159,21 @@ public class ShoppingCartActivity extends ActionBarActivity {
 
 
             TextView tName = (TextView) itemView.findViewById(R.id.tourName);
-            tName.setText(currentTour.getName());
+            tName.setText(currentTour.getTourName());
             //System.out.println(currentTour.getName());
 
             TextView tPrice = (TextView) itemView.findViewById(R.id.tourPrice);
-            tPrice.setText(currentTour.getPrice());
+            double price = currentTour.getTourPrice();
+            tPrice.setText("$"+ String.format("%.2f", price));
 
+            TextView tQuantity = (TextView) itemView.findViewById(R.id.quantity);
+            tQuantity.setText(Integer.toString(currentTour.getQuantity()));
 
+            TextView tDate = (TextView) itemView.findViewById(R.id.date);
+            tDate.setText(currentTour.getDate());
+
+            TextView tTime = (TextView) itemView.findViewById(R.id.time);
+            tTime.setText(currentTour.getTime());
 
             return itemView;
 

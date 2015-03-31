@@ -168,6 +168,10 @@ public class SearchActivity extends ActionBarActivity {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
+            case R.id.action_cart:
+                Intent intent = new Intent(this, ShoppingCartActivity.class);
+                startActivity(intent);
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -226,7 +230,7 @@ public class SearchActivity extends ActionBarActivity {
             //System.out.println(currentTour.getName());
 
             TextView tPrice = (TextView) itemView.findViewById(R.id.tourPrice);
-            tPrice.setText(currentTour.getPrice());
+            tPrice.setText("$" + String.format("%.2f", currentTour.getPrice()));
 
 
 

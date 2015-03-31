@@ -1,6 +1,7 @@
 package com.kiwiteam.nomiddleman;
 
 import android.app.Application;
+import android.widget.EditText;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -46,15 +47,15 @@ public class DatabaseConnection extends Application {
         shoppingCart = new ShoppingCart(0);
 
         tourInformation.add(new TourClass("Arecibo Skydiving", new ArrayList<>(Arrays.asList("Skydiving")), new String[]{"Arecibo","PR","USA"},
-                "$200", new ArrayList<>(Arrays.asList("img1")), "Pepe Perez", "Best Skydiving experience", 4, new ArrayList<>(Arrays.asList("Excellent experience")),
+                200.00, new ArrayList<>(Arrays.asList("img1")), "Pepe Perez", "Best Skydiving experience", 4, new ArrayList<>(Arrays.asList("Excellent experience")),
                 new ArrayList<>(Arrays.asList("Sarturday","Sunday","Friday")), new ArrayList<>(Arrays.asList("10:30 am","11:30 am","12:30 pm")), "vid1"));
 
         tourInformation.add(new TourClass("Ola Surf", new ArrayList<>(Arrays.asList("Surfing")), new String[]{"Isabela","PR","USA"},
-                "$50", new ArrayList<>(Arrays.asList("img2")), "Pancho Rodriguez", "Prepare to surf the waves", 3, new ArrayList<>(Arrays.asList("Satisfying surf")),
+                50.00, new ArrayList<>(Arrays.asList("img2")), "Pancho Rodriguez", "Prepare to surf the waves", 3, new ArrayList<>(Arrays.asList("Satisfying surf")),
                 new ArrayList<>(Arrays.asList("Sunday","Monday")), new ArrayList<>(Arrays.asList("7:00 am","8:00 am")), "vid2"));
 
         tourInformation.add(new TourClass("Surfing Slide", new ArrayList<>(Arrays.asList("Surfing")), new String[]{"Aguadilla","PR","USA"},
-                "$40", new ArrayList<>(Arrays.asList("img2")), "Jorge Garcia", "Surfing for life", 4, new ArrayList<>(Arrays.asList("Beautiful beaches")),
+                40.00, new ArrayList<>(Arrays.asList("img2")), "Jorge Garcia", "Surfing for life", 4, new ArrayList<>(Arrays.asList("Beautiful beaches")),
                 new ArrayList<>(Arrays.asList("Friday","Saturday")), new ArrayList<>(Arrays.asList("8:00 am","9:00 am")), "vid3"));
 
     }
@@ -64,12 +65,21 @@ public class DatabaseConnection extends Application {
         return isLogged;
     }
 
-    public ArrayList<Integer> getShoppingCart(int i) {
+    public ArrayList<ShoppingItem> getShoppingCart(int i) {
         return shoppingCart.getTours();
     }
 
-    public void putToursToShoppingCart(int i) {
-        shoppingCart.putTour(i);
+    public double getTotalPrice() {
+        return shoppingCart.getTotalPrice();
+    }
+
+    public void removeFromShoppingCart(int i) {
+        shoppingCart.removeFromShoppingCart(i);
+    }
+
+    public void putToursToShoppingCart(int tourID, int quantity, String day, String time) {
+        TourClass tour = getTourInformation(tourID);
+        shoppingCart.putTour(tour, quantity, day, time);
     }
 
     public String[] getTouristInfo(int i) {

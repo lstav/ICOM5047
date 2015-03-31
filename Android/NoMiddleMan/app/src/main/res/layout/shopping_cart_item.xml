@@ -45,11 +45,32 @@
             </TextView>
 
             <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:id="@+id/date"
+                    android:textSize="14dp"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:id="@+id/time"
+                    android:textSize="14dp"
+                    android:layout_weight="1" />
+            </TableRow>
+
+            <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:id="@+id/textView20"
+                    android:id="@+id/remove"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:textColor="#000"
@@ -60,7 +81,8 @@
                     android:gravity="end"
                     android:text="Remove"
                     android:layout_gravity="center"
-                    android:clickable="true" />
+                    android:clickable="true"
+                    android:onClick="removeItem" />
 
                 <TextView
                     android:id="@+id/textView21"
@@ -86,6 +108,7 @@
                     android:textAlignment="viewEnd"
                     android:gravity="end"
                     android:layout_gravity="right" />
+
             </TableRow>
 
         </TableLayout>

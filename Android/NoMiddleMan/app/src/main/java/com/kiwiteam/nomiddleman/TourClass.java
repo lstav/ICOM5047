@@ -10,7 +10,7 @@ public class TourClass {
     private String tourName = new String();
     private ArrayList<String> tourCategories = new ArrayList<>();
     private String[] tourLocation = new String[3];
-    private String tourPrices = new String();
+    private double tourPrices;
     private ArrayList<String> tourPictures = new ArrayList<>();
     private String tourGuide = new String();
     private String tourDescription = new String();
@@ -20,7 +20,7 @@ public class TourClass {
     private ArrayList<String> tourSessionsTime = new ArrayList<>();
     private String tourVideos = new String();
 
-    public TourClass(String tourName, ArrayList<String> tourCategories, String[] tourLocation, String tourPrices, ArrayList<String> tourPictures, String tourGuide, String tourDescription, int tourRating, ArrayList<String> tourReview, ArrayList<String> tourSessionsDate, ArrayList<String> tourSessionsTime, String tourVideos) {
+    public TourClass(String tourName, ArrayList<String> tourCategories, String[] tourLocation, double tourPrices, ArrayList<String> tourPictures, String tourGuide, String tourDescription, int tourRating, ArrayList<String> tourReview, ArrayList<String> tourSessionsDate, ArrayList<String> tourSessionsTime, String tourVideos) {
         this.tourName = tourName;
         this.tourCategories = tourCategories;
         this.tourLocation = tourLocation;
@@ -47,7 +47,7 @@ public class TourClass {
         return tourLocation;
     }
 
-    public String getTourPrice() {
+    public double getTourPrice() {
         return tourPrices;
     }
 
