@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.kiwiteam.nomiddleman.AccountActivity"
+    tools:context="com.kiwiteam.nomiddleman.EditAccountActivity"
     android:background="#fff">
 
     <FrameLayout android:id="@+id/container" android:layout_width="match_parent"
@@ -41,8 +41,7 @@
                 <TableLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:padding="5dp">
+                    android:layout_weight="1">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -53,19 +52,20 @@
                         android:textSize="28sp"
                         android:textColor="#000" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <EditText
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/userName"
                         android:textSize="24sp"
-                        android:textColor="#000" />
+                        android:textColor="#000"
+                        android:inputType="none" />
+
                 </TableLayout>
 
                 <TableLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:padding="5dp">
+                    android:layout_weight="1">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -76,13 +76,15 @@
                         android:textSize="28sp"
                         android:textColor="#000" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <EditText
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceLarge"
                         android:id="@+id/userLName"
                         android:textSize="24sp"
-                        android:textColor="#000" />
+                        android:textColor="#000"
+                        android:inputType="none" />
+
                 </TableLayout>
             </TableRow>
 
@@ -99,12 +101,13 @@
                     android:id="@+id/textView4"
                     android:textSize="28sp" />
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <EditText
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:id="@+id/email"
-                    android:textSize="24sp" />
+                    android:textSize="24sp"
+                    android:inputType="none" />
             </TableLayout>
 
             <TableRow
@@ -114,38 +117,26 @@
                 <Button
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/purchase_history"
-                    android:id="@+id/PurchaseButton"
+                    android:layout_weight="1"
+                    android:text="@string/confirm"
+                    android:id="@+id/ConfirmButton"
                     android:background="#8cc538"
                     android:layout_margin="10dp"
                     android:textColor="#fff"
-                    android:onClick="purchaseHistory"
-                    android:layout_weight="1" />
+                    android:onClick="confirm" />
 
                 <Button
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/edit_account"
-                    android:id="@+id/EditButton"
+                    android:layout_weight="1"
+                    android:text="@string/cancel"
+                    android:id="@+id/CancelButton"
                     android:background="#8cc538"
                     android:layout_margin="10dp"
                     android:textColor="#fff"
                     android:padding="10dp"
-                    android:onClick="edit"
-                    android:layout_weight="1" />
+                    android:onClick="cancel" />
             </TableRow>
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/change_password"
-                android:id="@+id/changePassButton"
-                android:background="#8cc538"
-                android:layout_margin="10dp"
-                android:textColor="#fff"
-                android:padding="10dp"
-                android:onClick="changePassword"
-                android:layout_gravity="center_horizontal" />
 
         </LinearLayout>
 

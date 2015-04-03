@@ -5,21 +5,29 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 
 public class AccountActivity extends ActionBarActivity {
 
-    DatabaseConnection conn;
-    public String userEmail;
-    public int index;
+    private DatabaseConnection conn;
+    private String userEmail;
+    private int index;
+    private Intent intent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
 
         conn = (DatabaseConnection)getApplicationContext();
-        Intent intent = getIntent();
+        intent = getIntent();
+
+        fillText();
+
+    }
+
+    private void fillText() {
         index = intent.getIntExtra("Index",-1);
         String[] touristInfo = conn.getTouristInfo(index);
 
@@ -31,7 +39,11 @@ public class AccountActivity extends ActionBarActivity {
 
         TextView email = (TextView) findViewById(R.id.email);
         email.setText(touristInfo[0]);
+    }
 
+    public void onResume() {
+        super.onResume();
+        fillText();
     }
 
 
@@ -57,5 +69,21 @@ public class AccountActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void purchaseHistory(View view) {
+        Intent intent = new Intent(this, PurchaseHistoryActivity.class);
+        startActivity(intent);
+    }
+
+    public void edit(View view) {
+        Intent intent = new Intent(this, EditAccountActivity.class);
+        startActivity(intent);
+    }
+
+
+    public void changePassword(View view) {
+        Intent intent = new Intent(this, ChangePasswordActivity.class);
+        startActivity(intent);
     }
 }

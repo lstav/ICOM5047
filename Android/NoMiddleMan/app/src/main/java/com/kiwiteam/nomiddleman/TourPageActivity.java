@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -16,17 +17,21 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 
-public class TourPageActivity extends ActionBarActivity {
+
+public class TourPageActivity extends ActionBarActivity implements AdapterView.OnItemSelectedListener {
 
     private DatabaseConnection conn;
     private TourClass tour;
-    private int index;
+    private int tourID;
     private int quantity = 1;
     private String date = new String();
     private String time = new String();
     private Spinner tDay;
     private Spinner tTime;
+    private ArrayAdapter<String> tAdapter;
+    private ArrayAdapter<String> dAdapter;
 
 
     @Override
@@ -34,7 +39,7 @@ public class TourPageActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tour_page);
 
-        conn = (DatabaseConnection)getApplicationContext();
+        conn = (DatabaseConnection) getApplicationContext();
 
         Intent intent = getIntent();
         initTourPage(intent);
@@ -43,12 +48,12 @@ public class TourPageActivity extends ActionBarActivity {
     public void initTourPage(Intent intent) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        index = intent.getIntExtra("tourId", -1);
+         tourID = intent.getIntExtra("tourId", -1);
 
-        if(index == -1) {
+        if( tourID == -1) {
             finish();
         } else {
-            tour = conn.getTourInformation(index);
+            tour = conn.getTourInformation( tourID);
         }
 
         TextView tName = (TextView) findViewById(R.id.tourName);
@@ -65,14 +70,17 @@ public class TourPageActivity extends ActionBarActivity {
         tPrice.setText("$" + String.format("%.2f", tour.getTourPrice()));
 
         tDay = (Spinner) findViewById(R.id.day);
-        ArrayAdapter<String> dAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,tour.getTourSessionsDate());
+        dAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,tour.getTourSessionsDate());
         dAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        tDay.setOnItemSelectedListener(this);
+
         tDay.setAdapter(dAdapter);
 
-        tTime = (Spinner) findViewById(R.id.time);
-        ArrayAdapter<String> tAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,tour.getTourSessionsTime());
+        /*tTime = (Spinner) findViewById(R.id.time);
+        tAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,tour.getTourSessionsTime(tDay.getSelectedItem().toString()));
         tAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        tTime.setAdapter(tAdapter);
+        tTime.setAdapter(tAdapter);*/
 
         TextView tDescription = (TextView) findViewById(R.id.description);
         tDescription.setText(tour.getTourDescription());
@@ -116,11 +124,28 @@ public class TourPageActivity extends ActionBarActivity {
         this.time = tTime.getSelectedItem().toString();
 
         if(quantity > 0) {
-            Toast.makeText(this, "Added to Cart", Toast.LENGTH_SHORT).show();
-            conn.putToursToShoppingCart(index, quantity, date, time);
+            Toast.makeText(this, R.string.added_to_cart, Toast.LENGTH_SHORT).show();
+            conn.putToursToShoppingCart( tourID, quantity, date, time);
         } else {
-            Toast.makeText(this, "Missing Quantity", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.no_quantity, Toast.LENGTH_SHORT).show();
         }
+
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        String day = parent.getItemAtPosition(position).toString();
+        ArrayList<String> times = tour.getTourSessionsTime(day);
+
+        tTime = (Spinner) findViewById(R.id.time);
+        tAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,times);
+        tAdapter.notifyDataSetChanged();
+        tAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        tTime.setAdapter(tAdapter);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
 
     }
 }

@@ -1,6 +1,5 @@
 package com.kiwiteam.nomiddleman;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.support.v4.app.NavUtils;
@@ -10,7 +9,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -20,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ShoppingCartActivity extends ActionBarActivity {
+public class CheckoutActivity extends ActionBarActivity {
 
     private DatabaseConnection conn;
     private ArrayAdapter<ShoppingItem> adapter;
@@ -30,7 +28,7 @@ public class ShoppingCartActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_shopping_cart);
+        setContentView(R.layout.activity_checkout);
 
         conn = (DatabaseConnection)getApplicationContext();
         Intent intent = getIntent();
@@ -56,11 +54,7 @@ public class ShoppingCartActivity extends ActionBarActivity {
             findViewById(R.id.result).setVisibility(View.VISIBLE);
             fName.setText(R.string.empty_cart);
 
-            findViewById(R.id.items).setVisibility(View.GONE);
-            findViewById(R.id.price).setVisibility(View.GONE);
-            findViewById(R.id.checkout).setVisibility(View.GONE);
-
-            //tPrice.setText("$0.00");
+            tPrice.setText("$0.00");
         }
     }
 
@@ -69,8 +63,6 @@ public class ShoppingCartActivity extends ActionBarActivity {
         shoppingCart = conn.getShoppingCart(0);
 
         if(!shoppingCart.isEmpty()) {
-
-            findViewById(R.id.result).setVisibility(View.GONE);
 
             adapter = new MyListAdapter();
 
@@ -88,11 +80,11 @@ public class ShoppingCartActivity extends ActionBarActivity {
             TextView fName = (TextView) findViewById(R.id.result);
             fName.setText(R.string.empty_cart);
 
-            findViewById(R.id.items).setVisibility(View.GONE);
-            findViewById(R.id.price).setVisibility(View.GONE);
-            findViewById(R.id.checkout).setVisibility(View.GONE);
+            TextView tPrice = (TextView) findViewById(R.id.price);
+            tPrice.setText("$0.00");
         }
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -123,26 +115,25 @@ public class ShoppingCartActivity extends ActionBarActivity {
     }
 
     public void checkout(View view) {
-        if(conn.isLogged()) {
-            Intent intent = new Intent(this, CheckoutActivity.class);
-            startActivity(intent);
-        } else {
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-        }
+        Intent intent = new Intent(this, PaypalActivity.class);
+        startActivity(intent);
+    }
+
+    public void cancel(View view) {
+        finish();
     }
 
     private class MyListAdapter extends ArrayAdapter<ShoppingItem> {
 
         public MyListAdapter() {
-            super(ShoppingCartActivity.this, R.layout.shopping_cart_item, shoppingCart);
+            super(CheckoutActivity.this, R.layout.checkout_item, shoppingCart);
 
         }
 
         public View getView(final int position, View convertView, ViewGroup parent) {
             View itemView = convertView;
             if (itemView == null) {
-                itemView = getLayoutInflater().inflate(R.layout.shopping_cart_item, parent, false);
+                itemView = getLayoutInflater().inflate(R.layout.checkout_item, parent, false);
 
             }
 
@@ -155,10 +146,6 @@ public class ShoppingCartActivity extends ActionBarActivity {
 
             // find the list
             ShoppingItem currentTour = shoppingCart.get(position);
-
-            /*if(!currentTour.isActive()) {
-                itemView.findViewById(R.id.active).setVisibility(View.VISIBLE);
-            }*/
 
             // fill the view
             int draw = getResources().getIdentifier(currentTour.getTourPicture().get(0),"drawable",getPackageName());

@@ -23,15 +23,6 @@
             android:layout_margin="5dp">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="@string/not_active"
-                android:id="@+id/active"
-                android:textStyle="bold"
-                android:visibility="gone" />
-
-            <TextView
                 android:id="@+id/tourName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

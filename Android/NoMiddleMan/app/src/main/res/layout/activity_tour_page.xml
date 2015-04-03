@@ -17,12 +17,12 @@
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="34dp"
+                    android:textSize="34sp"
                     android:textColor="#000"
                     android:id="@+id/tourName" />
 
@@ -40,7 +40,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="32dp"
+                    android:textSize="32sp"
                     android:id="@+id/tourPrice"
                     android:textColor="#000"
                     android:textStyle="bold" />
@@ -61,9 +61,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:text="Day"
+                            android:text="@string/day"
                             android:id="@+id/textView16"
-                            android:textSize="18dp"
+                            android:textSize="18sp"
                             android:textColor="#000" />
 
                         <Spinner
@@ -81,9 +81,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:text="Time"
+                            android:text="@string/time"
                             android:id="@+id/textView17"
-                            android:textSize="18dp"
+                            android:textSize="18sp"
                             android:textColor="#000" />
 
                         <Spinner
@@ -101,9 +101,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:text="Quantity"
+                            android:text="@string/quantity"
                             android:id="@+id/textView18"
-                            android:textSize="18dp"
+                            android:textSize="18sp"
                             android:textColor="#000" />
 
                         <EditText
@@ -134,18 +134,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="About this Tour"
+                    android:text="@string/about"
                     android:id="@+id/about"
                     android:textColor="#000"
-                    android:textSize="26dp" />
+                    android:textSize="26sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Description"
+                    android:text="@string/description"
                     android:id="@+id/textView19"
-                    android:textSize="24dp"
+                    android:textSize="24sp"
                     android:textColor="#000"
                     android:textStyle="bold" />
 

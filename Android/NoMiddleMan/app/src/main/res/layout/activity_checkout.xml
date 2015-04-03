@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ShoppingCartActivity">
+    tools:context=".CheckoutActivity" >
 
     <FrameLayout android:id="@+id/container"
         android:layout_width="match_parent"
@@ -17,37 +17,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <SearchView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/searchView"
-                    android:iconifiedByDefault="false"
-                    android:layout_margin="10dp"
-                    android:layout_weight="6" />
-
-                <ImageButton
-                    android:layout_width="0dp"
-                    android:layout_height="52dp"
-                    android:id="@+id/imageButton"
-                    android:layout_gravity="right"
-                    android:layout_weight="1"
-                    android:src="@android:drawable/arrow_down_float" />
-            </TableRow>
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:id="@+id/result"
-                android:clickable="true" />
+                android:id="@+id/review"
+                android:clickable="true"
+                android:text="@string/order_review"
+                android:textStyle="bold"
+                android:textSize="24sp" />
 
             <TableLayout
                 android:layout_width="fill_parent"
-                android:layout_height="400dp">
+                android:layout_height="450dp">
 
                 <ListView
                     android:id="@+id/listView"
@@ -66,8 +48,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:text="@string/items"
-                        android:id="@+id/items"
+                        android:text="@string/total_price"
+                        android:id="@+id/textView22"
                         android:textSize="16sp"
                         android:layout_margin="5dp" />
 
@@ -84,15 +66,32 @@
 
             </TableLayout>
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/proceed_checkout"
-                android:id="@+id/checkout"
-                android:layout_margin="5dp"
-                android:background="#8cc538"
-                android:textColor="#fff"
-                android:onClick="checkout" />
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pay"
+                    android:id="@+id/payment"
+                    android:layout_margin="5dp"
+                    android:background="#8cc538"
+                    android:textColor="#fff"
+                    android:onClick="checkout"
+                    android:layout_weight="1" />
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cancel"
+                    android:id="@+id/cancel"
+                    android:layout_margin="5dp"
+                    android:background="#8cc538"
+                    android:textColor="#fff"
+                    android:onClick="cancel"
+                    android:layout_weight="1" />
+            </TableRow>
 
 
         </LinearLayout>

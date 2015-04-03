@@ -14,6 +14,7 @@ public class DatabaseConnection extends Application {
 
 
     private boolean isLogged;
+    private ArrayList<TourSession> tourSessions = new ArrayList<>();
     private ArrayList<TourClass> tourInformation = new ArrayList<>();
     private ArrayList<String> categories = new ArrayList<>();
     private ArrayList<String> userEmail = new ArrayList<>();
@@ -22,6 +23,7 @@ public class DatabaseConnection extends Application {
     private ArrayList<String> userLName = new ArrayList<>();
     private ArrayList<String> tourNames = new ArrayList<>();
     private ShoppingCart shoppingCart;
+    private PurchaseHistory purchaseHistory = new PurchaseHistory();;
     private int index = -1;
 
 
@@ -46,17 +48,32 @@ public class DatabaseConnection extends Application {
 
         shoppingCart = new ShoppingCart(0);
 
+        tourSessions.add(new TourSession("Apr-10-15", "10:30 am", 0,true));
+        tourSessions.add(new TourSession("Apr-10-15", "11:30 am", 1, true));
+        tourSessions.add(new TourSession("Apr-11-15", "12:30 pm" , 2, true));
+        tourSessions.add(new TourSession("Apr-3-15", "7:00 am", 3, true));
+        tourSessions.add(new TourSession("Apr-4-15", "8:00 am", 4, true));
+        tourSessions.add(new TourSession("Apr-4-15", "9:00 am", 5, true));
+        tourSessions.add(new TourSession("Apr-4-15", "8:00 am", 6, true));
+        tourSessions.add(new TourSession("Apr-18-15","8:00 am", 7, true));
+        tourSessions.add(new TourSession("Apr-19-15","8:00 am", 8, true));
+
+
+
         tourInformation.add(new TourClass("Arecibo Skydiving", new ArrayList<>(Arrays.asList("Skydiving")), new String[]{"Arecibo","PR","USA"},
-                200.00, new ArrayList<>(Arrays.asList("img1")), "Pepe Perez", "Best Skydiving experience", 4, new ArrayList<>(Arrays.asList("Excellent experience")),
-                new ArrayList<>(Arrays.asList("Sarturday","Sunday","Friday")), new ArrayList<>(Arrays.asList("10:30 am","11:30 am","12:30 pm")), "vid1"));
+                200.00, new ArrayList<>(Arrays.asList("img1")), "Pepe Perez", "Best Skydiving experience", new ArrayList<>(Arrays.asList(4.00)),
+                new ArrayList<>(Arrays.asList("Excellent experience")),
+                    new ArrayList<>(Arrays.asList(tourSessions.get(0),tourSessions.get(1),tourSessions.get(2))), "vid1"));
 
         tourInformation.add(new TourClass("Ola Surf", new ArrayList<>(Arrays.asList("Surfing")), new String[]{"Isabela","PR","USA"},
-                50.00, new ArrayList<>(Arrays.asList("img2")), "Pancho Rodriguez", "Prepare to surf the waves", 3, new ArrayList<>(Arrays.asList("Satisfying surf")),
-                new ArrayList<>(Arrays.asList("Sunday","Monday")), new ArrayList<>(Arrays.asList("7:00 am","8:00 am")), "vid2"));
+                50.00, new ArrayList<>(Arrays.asList("img2")), "Pancho Rodriguez", "Prepare to surf the waves", new ArrayList<>(Arrays.asList(3.00)),
+                new ArrayList<>(Arrays.asList("Satisfying surf")),
+                new ArrayList<>(Arrays.asList(tourSessions.get(3),tourSessions.get(4),tourSessions.get(5))), "vid2"));
 
         tourInformation.add(new TourClass("Surfing Slide", new ArrayList<>(Arrays.asList("Surfing")), new String[]{"Aguadilla","PR","USA"},
-                40.00, new ArrayList<>(Arrays.asList("img2")), "Jorge Garcia", "Surfing for life", 4, new ArrayList<>(Arrays.asList("Beautiful beaches")),
-                new ArrayList<>(Arrays.asList("Friday","Saturday")), new ArrayList<>(Arrays.asList("8:00 am","9:00 am")), "vid3"));
+                40.00, new ArrayList<>(Arrays.asList("img2")), "Jorge Garcia", "Surfing for life", new ArrayList<>(Arrays.asList(4.00)),
+                new ArrayList<>(Arrays.asList("Beautiful beaches")),
+                new ArrayList<>(Arrays.asList(tourSessions.get(6),tourSessions.get(7))), "vid3"));
 
     }
 
@@ -67,6 +84,10 @@ public class DatabaseConnection extends Application {
 
     public ArrayList<ShoppingItem> getShoppingCart(int i) {
         return shoppingCart.getTours();
+    }
+
+    public void clearShoppingCart() {
+        shoppingCart.clearShoppingCart();
     }
 
     public double getTotalPrice() {
@@ -86,6 +107,26 @@ public class DatabaseConnection extends Application {
         return new String[] {userEmail.get(i), userName.get(i), userLName.get(i)};
     }
 
+    public void setTouristFName(int i, String fName) {
+        userName.set(i, fName);
+    }
+
+    public void setTouristLName(int i, String lName) {
+        userLName.set(i, lName);
+    }
+
+    public void setTouristEmail(int i, String email) {
+        userEmail.set(i, email);
+    }
+
+    public String getPassword(int i) {
+        return password.get(i);
+    }
+
+    public void setPassword(int i, String password) {
+        this.password.set(i, password);
+    }
+
     public TourClass getTourInformation(int i) {
         return tourInformation.get(i);
     }
@@ -100,6 +141,14 @@ public class DatabaseConnection extends Application {
             }
         }
         return indexes;
+    }
+
+    public void addToHistory(String date, String time, int sessionID, int quantity, TourClass tour) {
+        purchaseHistory.addToHistory(date, time, sessionID, quantity, tour);
+    }
+
+    public ArrayList<PurchaseHistory.HistoryItem> getHistory() {
+        return purchaseHistory.getHistory();
     }
 
     public boolean login(String email, String password) {
@@ -146,5 +195,19 @@ public class DatabaseConnection extends Application {
             }
         }
         return indexes;
+    }
+
+    public int getSessionID(String date, String time, int tourID) {
+        int ID = -1;
+
+        ArrayList<TourSession> sessions = tourInformation.get(tourID).getTourSessions();
+
+        for (int i=0; i < sessions.size(); i++) {
+            if(sessions.get(i).getSessionDay().equals(date) && sessions.get(i).getSessionTime().equals(time)) {
+                return sessions.get(i).getSessionID();
+            }
+        }
+
+        return ID;
     }
 }

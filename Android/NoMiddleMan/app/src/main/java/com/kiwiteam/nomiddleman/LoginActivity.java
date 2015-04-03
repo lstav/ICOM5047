@@ -30,16 +30,18 @@ public class LoginActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_search) {
-            return true;
+        Intent intent;
+        switch (item.getItemId()) {
+            case R.id.action_cart:
+                intent = new Intent(this, ShoppingCartActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.home:
+                intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+                return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -53,7 +55,7 @@ public class LoginActivity extends ActionBarActivity {
         if(conn.login(email, password)) {
             finish();
         } else {
-            Toast.makeText(this, "Wrong Login", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.wrong_login, Toast.LENGTH_SHORT).show();
         }
     }
 }

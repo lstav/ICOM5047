@@ -33,6 +33,7 @@ public class SearchActivity extends ActionBarActivity {
     DatabaseConnection conn;
     private boolean selectedCategory = false;
     private List<Tour> tourInfo = new ArrayList<>();
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +56,6 @@ public class SearchActivity extends ActionBarActivity {
         } else {
             handleIntent(intent);
         }
-
         initSearchView();
         registerClickCallback();
     }
@@ -95,7 +95,9 @@ public class SearchActivity extends ActionBarActivity {
         if(!indexes.isEmpty()) {
             for(int i=0;i<indexes.size();i++) {
                 tour = conn.getTourInformation(indexes.get(i));
-                this.tourInfo.add(new Tour(tour.getTourName(), tour.getTourPrice(), tour.getTourPictures(), indexes.get(i)));
+                if(tour.isActive()) {
+                    this.tourInfo.add(new Tour(tour.getTourName(), tour.getTourPrice(), tour.getTourPictures(), indexes.get(i)));
+                }
             }
 
             findViewById(R.id.result).setVisibility(View.GONE);
@@ -124,7 +126,9 @@ public class SearchActivity extends ActionBarActivity {
             if(!indexes.isEmpty()) {
                 for(int i=0;i<indexes.size();i++) {
                     tour = conn.getTourInformation(indexes.get(i));
-                    this.tourInfo.add(new Tour(tour.getTourName(), tour.getTourPrice(), tour.getTourPictures(), indexes.get(i)));
+                    if(tour.isActive()) {
+                        this.tourInfo.add(new Tour(tour.getTourName(), tour.getTourPrice(), tour.getTourPictures(), indexes.get(i)));
+                    }
                 }
 
                 findViewById(R.id.result).setVisibility(View.GONE);
@@ -137,7 +141,7 @@ public class SearchActivity extends ActionBarActivity {
 
             } else {
                 TextView fName = (TextView) findViewById(R.id.result);
-                fName.setText("No Results");
+                fName.setText(R.string.no_results);
             }
 
         }
@@ -146,7 +150,16 @@ public class SearchActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.global, menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        this.menu = menu;
+        if (conn.isLogged())
+        {
+            menu.findItem(R.id.account).setVisible(true);
+            menu.findItem(R.id.signout).setVisible(true);
+        } else {
+            menu.findItem(R.id.account).setVisible(false);
+            menu.findItem(R.id.signout).setVisible(false);
+        }
         return true;
     }
 
@@ -163,8 +176,6 @@ public class SearchActivity extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
-            case R.id.action_search:
-                return true;
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
@@ -172,9 +183,23 @@ public class SearchActivity extends ActionBarActivity {
                 Intent intent = new Intent(this, ShoppingCartActivity.class);
                 startActivity(intent);
                 return true;
+            case R.id.account:
+                account();
+                return true;
+            case R.id.signout:
+                conn.signout();
+                finish();
+                return true;
+
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void account() {
+        Intent intent = new Intent(this, AccountActivity.class);
+        intent.putExtra("Index", conn.getIndex());
+        startActivity(intent);
     }
 
     private void registerClickCallback() {

@@ -118,40 +118,24 @@ public class MainActivity extends ActionBarActivity {
             menu.findItem(R.id.account).setVisible(false);
             menu.findItem(R.id.signout).setVisible(false);
         }
-
-        /*SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-*/
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        /*if (id == R.id.action_search) {
-            return true;
-        }*/
-
-        if (item.getItemId() == R.id.action_cart) {
-            //Toast.makeText(this, "Shopping Cart", Toast.LENGTH_SHORT).show();
-            intent = new Intent(this, ShoppingCartActivity.class);
-            startActivity(intent);
-            return true;
-        }
-
-        if(item.getItemId() == R.id.account) {
-            account();
-        }
-
-        if (item.getItemId() == R.id.signout) {
-            conn.signout();
-            recreate();
+        switch (item.getItemId()) {
+            case R.id.action_cart:
+                intent = new Intent(this, ShoppingCartActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.account:
+                account();
+                return true;
+            case R.id.signout:
+                conn.signout();
+                recreate();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -190,5 +174,10 @@ public class MainActivity extends ActionBarActivity {
         startActivity(intent);
 
         //Toast.makeText(this, "Ola Surf", Toast.LENGTH_SHORT).show();
+    }
+
+    public void settings(View view) {
+        intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 }

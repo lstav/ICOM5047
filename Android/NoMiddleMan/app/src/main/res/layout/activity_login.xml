@@ -18,7 +18,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="Email:"
+                android:text="@string/email"
                 android:id="@+id/textView6"
                 android:layout_gravity="left|top" />
 
@@ -33,7 +33,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="Password:"
+                android:text="@string/password"
                 android:id="@+id/textView7" />
 
             <EditText
@@ -46,14 +46,14 @@
             <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Remember Me"
+                android:text="@string/remember_me"
                 android:id="@+id/checkBox"
                 android:checked="false" />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Login"
+                android:text="@string/login"
                 android:id="@+id/login"
                 android:layout_gravity="center_horizontal"
                 android:onClick="login"

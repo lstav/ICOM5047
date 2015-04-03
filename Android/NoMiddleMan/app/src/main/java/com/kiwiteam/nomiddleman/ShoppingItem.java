@@ -9,6 +9,13 @@ public class ShoppingItem {
     private String date;
     private String time;
 
+    public ShoppingItem() {
+        this.tour = new TourClass();
+        this.quantity = 0;
+        this.date = "";
+        this.time = "";
+    }
+
     public ShoppingItem(TourClass tour, int quantity, String date, String time) {
         this.tourID = tourID;
         this.tour = tour;
@@ -43,5 +50,16 @@ public class ShoppingItem {
 
     public String getTime() {
         return time;
+    }
+
+    public boolean isActive() {
+        for (int i=0; i<tour.getTourSessions().size(); i++) {
+            if (tour.getTourSessions().get(i).isActive() &&
+                    tour.getTourSessions().get(i).getSessionDay().matches(date) &&
+                    tour.getTourSessions().get(i).getSessionTime().matches(time)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
