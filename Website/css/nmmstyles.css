@@ -63,9 +63,7 @@ hgroup h2.lead { font: normal normal 1.125em "Roboto",Arial,Verdana,sans-serif; 
     			Call Bootstrap
 *********************************************/
 
-@import url("bootstrap/bootstrap.min.css");
-@import url("bootstrap-override.css");
-@import url("//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css");
+
 
 /*********************************************
         		Theme Elements
