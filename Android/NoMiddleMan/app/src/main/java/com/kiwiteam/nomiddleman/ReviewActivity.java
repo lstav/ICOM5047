@@ -71,9 +71,6 @@ public class ReviewActivity extends ActionBarActivity {
         switch (item.getItemId()) {
             case R.id.action_search:
                 return true;
-            case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
             case R.id.home:
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
