@@ -147,6 +147,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.kiwiteam.nomiddleman.MainActivity" />
         </activity>
+        <activity
+            android:name=".ReviewActivity"
+            android:label="@string/title_activity_review" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.kiwiteam.nomiddleman.TourPageActivity" />
+        </activity>
     </application>
 
 </manifest>

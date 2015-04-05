@@ -98,6 +98,9 @@
     <string name="rate_tour">Rate this tour</string>
     <string name="review_tour">Review this tour</string>
     <string name="submit">Submit</string>
+    <string name="title_activity_review">Review</string>
+
+    <string name="hello_world">Hello world!</string>
 
 
 </resources>

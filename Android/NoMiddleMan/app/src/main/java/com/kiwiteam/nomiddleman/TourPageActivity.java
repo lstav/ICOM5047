@@ -65,7 +65,7 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
         if( tourID == -1) {
             finish();
         } else {
-            tour = conn.getTourInformation( tourID);
+            tour = conn.getTourInformation(tourID);
         }
 
         ratings = tour.getAllRatings();
@@ -248,7 +248,7 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
             }
 
             // find the list
-            RatingClass currentRating = ratings.get(position);
+            final RatingClass currentRating = ratings.get(position);
 
             // fill the view
             RatingBar tRating = (RatingBar) itemView.findViewById(R.id.tourRating);
@@ -256,6 +256,16 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
 
             TextView tReview = (TextView) itemView.findViewById(R.id.review);
             tReview.setText(currentRating.getReview());
+
+            itemView.findViewById(R.id.review).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getApplicationContext(), ReviewActivity.class);
+                    intent.putExtra("Rating", currentRating.getRating());
+                    intent.putExtra("Review", currentRating.getReview());
+                    startActivity(intent);
+                }
+            });
 
             return itemView;
 
