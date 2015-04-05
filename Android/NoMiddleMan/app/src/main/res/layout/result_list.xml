@@ -31,18 +31,33 @@
                 android:layout_weight="3">
             </TextView>
 
-            <TextView
-                android:id="@+id/tourPrice"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:textColor="#000"
-                android:textSize="14sp"
-                android:layout_weight="1"
-                android:textStyle="bold"
-                android:textAlignment="viewEnd"
-                android:gravity="end"
-                android:layout_gravity="right">
-            </TextView>
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <RatingBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tourRating"
+                    style="?android:attr/ratingBarStyleSmall"
+                    android:stepSize=".25"
+                    android:numStars="5" />
+
+                <TextView
+                    android:id="@+id/tourPrice"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="#000"
+                    android:textSize="14sp"
+                    android:layout_weight="1"
+                    android:textStyle="bold"
+                    android:textAlignment="viewEnd"
+                    android:gravity="end"
+                    android:layout_gravity="right">
+                </TextView>
+
+            </TableRow>
+
         </TableLayout>
 
     </TableRow>

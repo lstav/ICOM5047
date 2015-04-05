@@ -12,12 +12,13 @@
         <ScrollView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:id="@+id/scrollView" >
+            android:id="@+id/scrollView"
+            android:fillViewport="true">
 
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="fill_parent">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -26,24 +27,53 @@
                     android:textColor="#000"
                     android:id="@+id/tourName" />
 
-                <RatingBar
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/tourRating"
-                    style="?android:attr/ratingBarStyleIndicator" />
+                <TableRow
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent">
+
+                    <RatingBar
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/tourRating"
+                        style="?android:attr/ratingBarStyleIndicator"
+                        android:numStars="5"
+                        android:stepSize=".5" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:id="@+id/review_number" />
+                </TableRow>
 
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
                     android:id="@+id/tourPicture" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="32sp"
-                    android:id="@+id/tourPrice"
-                    android:textColor="#000"
-                    android:textStyle="bold" />
+                <TableRow
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="32sp"
+                        android:id="@+id/tourPrice"
+                        android:textColor="#000"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Video"
+                        android:id="@+id/button3"
+                        android:background="#8cc538"
+                        android:textColor="#fff"
+                        android:layout_margin="10dp"
+                        android:onClick="openLink"
+                        android:layout_weight="1" />
+                </TableRow>
 
                 <TableRow
                     android:layout_width="fill_parent"
@@ -155,6 +185,60 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:id="@+id/description"
                     android:textColor="#000" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="@string/extremeness"
+                    android:id="@+id/textView12"
+                    android:textSize="24sp"
+                    android:textColor="#000"
+                    android:textStyle="bold" />
+
+                <RatingBar
+                    style="?android:attr/ratingBarStyleIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/extremeness"
+                    android:numStars="5"
+                    android:stepSize=".5" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="@string/reviews"
+                    android:id="@+id/textView27"
+                    android:textSize="24sp"
+                    android:textColor="#000"
+                    android:textStyle="bold" />
+
+                <TableRow
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:paddingBottom="10dp">
+
+                    <RatingBar
+                        style="?android:attr/ratingBarStyleIndicator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/ratingBar"
+                        android:numStars="5"
+                        android:stepSize=".5" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:id="@+id/totalReviews" />
+                </TableRow>
+
+                <ListView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/reviewList"
+                    android:layout_gravity="fill" />
 
             </LinearLayout>
         </ScrollView>

@@ -108,22 +108,44 @@
         <activity
             android:name=".PaypalActivity"
             android:label="@string/title_activity_paypal" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.kiwiteam.nomiddleman.MainActivity" />
         </activity>
         <activity
             android:name=".PurchaseHistoryActivity"
             android:label="@string/title_activity_purchase_history" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.kiwiteam.nomiddleman.MainActivity" />
         </activity>
         <activity
             android:name=".EditAccountActivity"
             android:label="@string/title_activity_edit_account" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.kiwiteam.nomiddleman.AccountActivity" />
         </activity>
         <activity
             android:name=".ChangePasswordActivity"
             android:label="@string/title_activity_change_password" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.kiwiteam.nomiddleman.AccountActivity" />
         </activity>
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.kiwiteam.nomiddleman.MainActivity" />
+        </activity>
+        <activity
+            android:name=".RateActivity"
+            android:label="@string/title_activity_rate" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.kiwiteam.nomiddleman.MainActivity" />
         </activity>
     </application>
 

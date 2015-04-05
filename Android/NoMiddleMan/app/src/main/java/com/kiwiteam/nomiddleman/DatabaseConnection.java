@@ -1,6 +1,7 @@
 package com.kiwiteam.nomiddleman;
 
 import android.app.Application;
+import android.content.Intent;
 import android.widget.EditText;
 
 import java.lang.reflect.Array;
@@ -14,6 +15,8 @@ public class DatabaseConnection extends Application {
 
 
     private boolean isLogged;
+    private String payPalEmail = new String();
+    private String payPalPass = new String();
     private ArrayList<TourSession> tourSessions = new ArrayList<>();
     private ArrayList<TourClass> tourInformation = new ArrayList<>();
     private ArrayList<String> categories = new ArrayList<>();
@@ -22,6 +25,7 @@ public class DatabaseConnection extends Application {
     private ArrayList<String> userName = new ArrayList<>();
     private ArrayList<String> userLName = new ArrayList<>();
     private ArrayList<String> tourNames = new ArrayList<>();
+    private ArrayList<RatingClass> ratings = new ArrayList<>();
     private ShoppingCart shoppingCart;
     private PurchaseHistory purchaseHistory = new PurchaseHistory();;
     private int index = -1;
@@ -46,40 +50,61 @@ public class DatabaseConnection extends Application {
         userName.add("Luis");
         userLName.add("Tavarez");
 
+        payPalEmail = "lstavarez@yahoo.com";
+        payPalPass = "1234";
+
         shoppingCart = new ShoppingCart(0);
 
         tourSessions.add(new TourSession("Apr-10-15", "10:30 am", 0,true));
         tourSessions.add(new TourSession("Apr-10-15", "11:30 am", 1, true));
         tourSessions.add(new TourSession("Apr-11-15", "12:30 pm" , 2, true));
-        tourSessions.add(new TourSession("Apr-3-15", "7:00 am", 3, true));
-        tourSessions.add(new TourSession("Apr-4-15", "8:00 am", 4, true));
-        tourSessions.add(new TourSession("Apr-4-15", "9:00 am", 5, true));
-        tourSessions.add(new TourSession("Apr-4-15", "8:00 am", 6, true));
+        tourSessions.add(new TourSession("Apr-9-15", "7:00 am", 3, true));
+        tourSessions.add(new TourSession("Apr-9-15", "8:00 am", 4, true));
+        tourSessions.add(new TourSession("Apr-10-15", "9:00 am", 5, true));
+        tourSessions.add(new TourSession("Apr-11-15", "8:00 am", 6, true));
         tourSessions.add(new TourSession("Apr-18-15","8:00 am", 7, true));
         tourSessions.add(new TourSession("Apr-19-15","8:00 am", 8, true));
 
+        ratings.add(new RatingClass(5.00,"Excellent experience"));
+        ratings.add(new RatingClass(5.00,"Will come back"));
+        ratings.add(new RatingClass(1.50,"Could be better"));
+        ratings.add(new RatingClass(4.50,"Satisfying surf"));
+        ratings.add(new RatingClass(4.00,"Beautiful beaches"));
+        ratings.add(new RatingClass(4.00,"Great experience"));
+        ratings.add(new RatingClass(4.00,"Great for everyone"));
 
 
-        tourInformation.add(new TourClass("Arecibo Skydiving", new ArrayList<>(Arrays.asList("Skydiving")), new String[]{"Arecibo","PR","USA"},
-                200.00, new ArrayList<>(Arrays.asList("img1")), "Pepe Perez", "Best Skydiving experience", new ArrayList<>(Arrays.asList(4.00)),
-                new ArrayList<>(Arrays.asList("Excellent experience")),
-                    new ArrayList<>(Arrays.asList(tourSessions.get(0),tourSessions.get(1),tourSessions.get(2))), "vid1"));
 
-        tourInformation.add(new TourClass("Ola Surf", new ArrayList<>(Arrays.asList("Surfing")), new String[]{"Isabela","PR","USA"},
-                50.00, new ArrayList<>(Arrays.asList("img2")), "Pancho Rodriguez", "Prepare to surf the waves", new ArrayList<>(Arrays.asList(3.00)),
-                new ArrayList<>(Arrays.asList("Satisfying surf")),
-                new ArrayList<>(Arrays.asList(tourSessions.get(3),tourSessions.get(4),tourSessions.get(5))), "vid2"));
+        tourInformation.add(new TourClass(0, "Arecibo Skydiving", new ArrayList<>(Arrays.asList("Skydiving")), new String[]{"Arecibo","PR","USA"},
+                200.00, new ArrayList<>(Arrays.asList("img1")), "Pepe Perez", "Best Skydiving experience",
+                new ArrayList<>(Arrays.asList(ratings.get(0),ratings.get(1))),
+                new ArrayList<>(Arrays.asList(tourSessions.get(0),tourSessions.get(1),tourSessions.get(2))), "vid1", 4.00));
 
-        tourInformation.add(new TourClass("Surfing Slide", new ArrayList<>(Arrays.asList("Surfing")), new String[]{"Aguadilla","PR","USA"},
-                40.00, new ArrayList<>(Arrays.asList("img2")), "Jorge Garcia", "Surfing for life", new ArrayList<>(Arrays.asList(4.00)),
-                new ArrayList<>(Arrays.asList("Beautiful beaches")),
-                new ArrayList<>(Arrays.asList(tourSessions.get(6),tourSessions.get(7))), "vid3"));
+        tourInformation.add(new TourClass(1, "Ola Surf", new ArrayList<>(Arrays.asList("Surfing")), new String[]{"Isabela","PR","USA"},
+                50.00, new ArrayList<>(Arrays.asList("img2")), "Pancho Rodriguez", "Prepare to surf the waves",
+                new ArrayList<>(Arrays.asList(ratings.get(2), ratings.get(3))),
+                new ArrayList<>(Arrays.asList(tourSessions.get(3),tourSessions.get(4),tourSessions.get(5))), "vid2", 4.00));
+
+        tourInformation.add(new TourClass(2, "Surfing Slide", new ArrayList<>(Arrays.asList("Surfing")), new String[]{"Aguadilla","PR","USA"},
+                40.00, new ArrayList<>(Arrays.asList("img2")), "Jorge Garcia", "Surfing for life",
+                new ArrayList<>(Arrays.asList(ratings.get(4),ratings.get(5),ratings.get(6))),
+                new ArrayList<>(Arrays.asList(tourSessions.get(6),tourSessions.get(7))), "vid3", 3.50));
 
     }
 
     public boolean isLogged() {
 
         return isLogged;
+    }
+
+    public void rate(int tourID, double rating, String review) {
+        int index = -1;
+        for (int i=0; i<tourInformation.size(); i++) {
+            if(tourInformation.get(i).getTourID() == tourID) {
+                index = tourID;
+            }
+        }
+        tourInformation.get(index).rate(rating, review);
     }
 
     public ArrayList<ShoppingItem> getShoppingCart(int i) {
@@ -153,6 +178,11 @@ public class DatabaseConnection extends Application {
 
     public boolean login(String email, String password) {
         int index = -1;
+        if(email.equals("dev")) {
+            isLogged = true;
+            this.index = 0;
+            return true;
+        }
         if (userEmail.contains(email)) {
             index = userEmail.indexOf(email);
         } else {
@@ -166,9 +196,25 @@ public class DatabaseConnection extends Application {
         return false;
     }
 
+    public boolean payPalLogin(String email, String password) {
+        int index = -1;
+        if(email.equals("dev")) {
+            return true;
+        }
+        if(payPalEmail.equals(email) && payPalPass.equals(password)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public void signout() {
         this.index = -1;
         isLogged = false;
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
     public ArrayList<String> getCategories() {

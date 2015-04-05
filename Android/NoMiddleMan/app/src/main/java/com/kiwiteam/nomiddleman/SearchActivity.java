@@ -5,6 +5,7 @@ import android.app.SearchableInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.media.Rating;
 import android.provider.ContactsContract;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
@@ -13,27 +14,35 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RatingBar;
 import android.widget.SearchView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 
-public class SearchActivity extends ActionBarActivity {
+public class SearchActivity extends ActionBarActivity implements AdapterView.OnItemSelectedListener {
 
-    DatabaseConnection conn;
+    private DatabaseConnection conn;
     private boolean selectedCategory = false;
     private List<Tour> tourInfo = new ArrayList<>();
     private Menu menu;
+    private Spinner sortBy;
+    private ArrayAdapter<CharSequence> sAdapter;
+    private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,15 +105,23 @@ public class SearchActivity extends ActionBarActivity {
             for(int i=0;i<indexes.size();i++) {
                 tour = conn.getTourInformation(indexes.get(i));
                 if(tour.isActive()) {
-                    this.tourInfo.add(new Tour(tour.getTourName(), tour.getTourPrice(), tour.getTourPictures(), indexes.get(i)));
+                    this.tourInfo.add(new Tour(tour.getTourName(), tour.getTourPrice(), tour.getTourPictures(), indexes.get(i), tour.getExtremeness()));
                 }
             }
 
             findViewById(R.id.result).setVisibility(View.GONE);
 
+            sortBy = (Spinner) findViewById(R.id.sortBy);
+            sAdapter = ArrayAdapter.createFromResource(this, R.array.sort_by_array, android.R.layout.simple_spinner_item);
+            sAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            sortBy.setOnItemSelectedListener(this);
+
+            sortBy.setAdapter(sAdapter);
+
+
             ArrayAdapter<Tour> adapter = new MyListAdapter();
 
-            ListView listView = (ListView) findViewById(R.id.listView);
+            listView = (ListView) findViewById(R.id.listView);
             listView.setAdapter(adapter);
 
         } else {
@@ -127,16 +144,24 @@ public class SearchActivity extends ActionBarActivity {
                 for(int i=0;i<indexes.size();i++) {
                     tour = conn.getTourInformation(indexes.get(i));
                     if(tour.isActive()) {
-                        this.tourInfo.add(new Tour(tour.getTourName(), tour.getTourPrice(), tour.getTourPictures(), indexes.get(i)));
+                        this.tourInfo.add(new Tour(tour.getTourName(), tour.getTourPrice(), tour.getTourPictures(), indexes.get(i), tour.getExtremeness()));
                     }
                 }
 
                 findViewById(R.id.result).setVisibility(View.GONE);
 
+                sortBy = (Spinner) findViewById(R.id.sortBy);
+                sAdapter = ArrayAdapter.createFromResource(this, R.array.sort_by_array, android.R.layout.simple_spinner_item);
+                sAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                sortBy.setOnItemSelectedListener(this);
+
+                sortBy.setAdapter(sAdapter);
+
+
                 ArrayAdapter<Tour> adapter = new MyListAdapter();
 
 
-                ListView listView = (ListView) findViewById(R.id.listView);
+                listView = (ListView) findViewById(R.id.listView);
                 listView.setAdapter(adapter);
 
             } else {
@@ -179,8 +204,13 @@ public class SearchActivity extends ActionBarActivity {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
+            case R.id.home:
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                return true;
             case R.id.action_cart:
-                Intent intent = new Intent(this, ShoppingCartActivity.class);
+                intent = new Intent(this, ShoppingCartActivity.class);
                 startActivity(intent);
                 return true;
             case R.id.account:
@@ -208,20 +238,35 @@ public class SearchActivity extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View viewClicked,
                                     int position, long id) {
-
                 Tour clickedTour = tourInfo.get(position);
-
                 Intent i = new Intent(getApplicationContext(), TourPageActivity.class);
-
                 i.putExtra("tourId",clickedTour.getId());
-
                 startActivity(i);
-
-                /*String message = "You clicked position " + position
-                        + " Which is tour name " + clickedTour.getName();
-                Toast.makeText(SearchActivity.this, message, Toast.LENGTH_LONG).show();*/
             }
         });
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        switch (position) {
+            case 0:
+
+                break;
+            case 1:
+
+                break;
+            case 2:
+
+                break;
+            case 3:
+
+                break;
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 
     private class MyListAdapter extends ArrayAdapter<Tour> {
@@ -249,6 +294,8 @@ public class SearchActivity extends ActionBarActivity {
 
             picture.setImageDrawable(img);
 
+            RatingBar eRating = (RatingBar) itemView.findViewById(R.id.tourRating);
+            eRating.setRating((float) currentTour.getExtremeness());
 
             TextView tName = (TextView) itemView.findViewById(R.id.tourName);
             tName.setText(currentTour.getName());

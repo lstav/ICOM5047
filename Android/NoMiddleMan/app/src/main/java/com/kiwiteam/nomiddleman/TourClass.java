@@ -15,14 +15,17 @@ public class TourClass {
     private ArrayList<String> tourPictures;
     private String tourGuide;
     private String tourDescription;
-    private ArrayList<Double> tourRatings;
-    private ArrayList<String> tourReviews;
+    private ArrayList<RatingClass> tourRatings;
+    private ArrayList<Double> ratings;
+    private ArrayList<String> reviews;
     private ArrayList<TourSession> tourSessions;
     private ArrayList<String> tourSessionsDate;
     private ArrayList<String> tourSessionsTime;
     private String tourVideos;
+    private double extremeness;
 
     public TourClass() {
+        this.tourID = -1;
         this.tourName = new String();
         this.tourCategories = new ArrayList<>();
         this.tourLocation = new String[3];
@@ -31,14 +34,17 @@ public class TourClass {
         this.tourGuide = new String();
         this.tourDescription = new String();
         this.tourRatings = new ArrayList<>();
-        this.tourReviews = new ArrayList<>();
+        this.ratings = new ArrayList<>();
+        this.reviews = new ArrayList<>();
         this.tourSessions = new ArrayList<>();
         this.tourSessionsDate = new ArrayList<>();
         this.tourSessionsTime = new ArrayList<>();
         this.tourVideos = new String();
+        this.extremeness = 0.00;
     }
 
-    public TourClass(String tourName, ArrayList<String> tourCategories, String[] tourLocation, double tourPrices, ArrayList<String> tourPictures, String tourGuide, String tourDescription, ArrayList<Double> tourRating, ArrayList<String> tourReview, ArrayList<TourSession> tourSessions, String tourVideos) {
+    public TourClass(int tourID, String tourName, ArrayList<String> tourCategories, String[] tourLocation, double tourPrices, ArrayList<String> tourPictures, String tourGuide, String tourDescription, ArrayList<RatingClass> tourRatings, ArrayList<TourSession> tourSessions, String tourVideos, double extremeness) {
+        this.tourID = tourID;
         this.tourName = tourName;
         this.tourCategories = tourCategories;
         this.tourLocation = tourLocation;
@@ -46,12 +52,18 @@ public class TourClass {
         this.tourPictures = tourPictures;
         this.tourGuide = tourGuide;
         this.tourDescription = tourDescription;
-        this.tourRatings = tourRating;
-        this.tourReviews = tourReview;
+        this.tourRatings = tourRatings;
+        this.ratings = new ArrayList<>();
+        this.reviews = new ArrayList<>();
         this.tourSessions = tourSessions;
         this.tourSessionsDate = new ArrayList<>();
         this.tourSessionsTime = new ArrayList<>();
         this.tourVideos = tourVideos;
+        this.extremeness = extremeness;
+    }
+
+    public int getTourID() {
+        return tourID;
     }
 
     public String getTourName() {
@@ -85,18 +97,34 @@ public class TourClass {
     public double getTourRating() {
         double tourRating = 0.00;
         for(int i = 0; i < tourRatings.size(); i++) {
-            tourRating = tourRating + tourRatings.get(i);
+            tourRating = tourRating + tourRatings.get(i).getRating();
         }
 
-        return tourRating;
+        return tourRating/tourRatings.size();
     }
 
-    public ArrayList<Double> getTourRatings() {
+    public void rate(double rating, String review) {
+        tourRatings.add(new RatingClass(rating, review));
+    }
+
+    public ArrayList<RatingClass> getAllRatings() {
         return tourRatings;
     }
 
+    public ArrayList<Double> getTourRatings() {
+        ratings.clear();
+        for(int i = 0; i<tourRatings.size(); i++) {
+            ratings.add(tourRatings.get(i).getRating());
+        }
+        return ratings;
+    }
+
     public ArrayList<String> getTourReview() {
-        return tourReviews;
+        reviews.clear();
+        for(int i = 0; i<tourRatings.size(); i++) {
+            reviews.add(tourRatings.get(i).getReview());
+        }
+        return reviews;
     }
 
     public ArrayList<String> getTourSessionsDate() {
@@ -152,5 +180,13 @@ public class TourClass {
             }
         }
         return false;
+    }
+
+    public double getExtremeness() {
+        return extremeness;
+    }
+
+    public void setExtremeness(double extremeness) {
+        this.extremeness = extremeness;
     }
 }

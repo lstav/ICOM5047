@@ -1,11 +1,16 @@
 package com.kiwiteam.nomiddleman;
 
+import android.content.Intent;
+import android.provider.ContactsContract;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import java.util.regex.Pattern;
 
 
 public class RegisterActivity extends ActionBarActivity {
@@ -39,11 +44,17 @@ public class RegisterActivity extends ActionBarActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_search) {
-            return true;
+        Intent intent;
+        switch (item.getItemId()) {
+            case R.id.action_cart:
+                intent = new Intent(this, ShoppingCartActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.home:
+                intent = new Intent(this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -52,16 +63,27 @@ public class RegisterActivity extends ActionBarActivity {
     public void register(View view) {
         EditText uEmail = (EditText) findViewById(R.id.email);
         userEmail = uEmail.getText().toString();
-        EditText pass = (EditText) findViewById(R.id.password);
-        password = pass.getText().toString();
-        EditText uName = (EditText) findViewById(R.id.firstText);
-        userName = uName.getText().toString();
-        EditText uLName = (EditText) findViewById(R.id.lastText);
-        userLName = uLName.getText().toString();
 
-        conn.register(userEmail, password, userName, userLName);
+        if(validateEmail(userEmail)) {
+            EditText pass = (EditText) findViewById(R.id.password);
+            password = pass.getText().toString();
+            EditText uName = (EditText) findViewById(R.id.firstText);
+            userName = uName.getText().toString();
+            EditText uLName = (EditText) findViewById(R.id.lastText);
+            userLName = uLName.getText().toString();
+            conn.register(userEmail, password, userName, userLName);
+            finish();
+        } else {
+            Toast.makeText(this, "No valid email", Toast.LENGTH_SHORT).show();
+        }
+    }
 
-        finish();
+    private boolean validateEmail(String email) {
+        String EMAIL_REGEX = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" +
+                "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+
+        Pattern pattern = Pattern.compile(EMAIL_REGEX);
+        return pattern.matcher(email).matches();
     }
 
 

@@ -56,16 +56,20 @@ public class CategoriesActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.global, menu);
+        if (conn.isLogged())
+        {
+            menu.findItem(R.id.account).setVisible(true);
+            menu.findItem(R.id.signout).setVisible(true);
+        } else {
+            menu.findItem(R.id.account).setVisible(false);
+            menu.findItem(R.id.signout).setVisible(false);
+        }
         //initSearchView(menu);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
         searchView.setSearchableInfo(searchableInfo);
         return true;
-    }
-
-    private void initSearchView(Menu menu) {
-
     }
 
     @Override
@@ -79,13 +83,31 @@ public class CategoriesActivity extends ActionBarActivity {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
-            case R.id.action_cart:
-                Intent intent = new Intent(this, ShoppingCartActivity.class);
+            case R.id.home:
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
+                return true;
+            case R.id.action_cart:
+                intent = new Intent(this, ShoppingCartActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.account:
+                account();
+                return true;
+            case R.id.signout:
+                conn.signout();
+                recreate();
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void account() {
+        Intent intent = new Intent(this, AccountActivity.class);
+        intent.putExtra("Index", conn.getIndex());
+        startActivity(intent);
     }
 
     private void registerClickCallback() {

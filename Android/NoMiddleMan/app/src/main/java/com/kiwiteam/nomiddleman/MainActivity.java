@@ -81,7 +81,6 @@ public class MainActivity extends ActionBarActivity {
 
     protected void onResume() {
         super.onResume();
-
         if(conn.isLogged()) {
             this.index = conn.getIndex();
             // Login
@@ -99,8 +98,8 @@ public class MainActivity extends ActionBarActivity {
             findViewById(R.id.categories_button).setVisibility(View.VISIBLE);
             findViewById(R.id.categories_row).setVisibility(View.GONE);
 
-            menu.findItem(R.id.account).setVisible(true);
-            menu.findItem(R.id.signout).setVisible(true);
+            /*menu.findItem(R.id.account).setVisible(true);
+            menu.findItem(R.id.signout).setVisible(true);*/
         }
     }
 

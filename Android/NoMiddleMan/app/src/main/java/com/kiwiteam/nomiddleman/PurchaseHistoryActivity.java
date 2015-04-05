@@ -1,16 +1,21 @@
 package com.kiwiteam.nomiddleman;
 
+import android.app.SearchManager;
+import android.app.SearchableInfo;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -38,6 +43,35 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
         handleIntent(intent);
     }
 
+    public void onResume() {
+        super.onResume();
+        Intent intent = getIntent();
+        handleIntent(intent);
+    }
+
+    public static void setListViewHeightBasedOnChildren(ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null)
+            return;
+
+        int desiredWidth = View.MeasureSpec.makeMeasureSpec(listView.getWidth(), View.MeasureSpec.UNSPECIFIED);
+        int totalHeight = 0;
+        View view = null;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            view = listAdapter.getView(i, view, listView);
+            if (i == 0)
+                view.setLayoutParams(new ViewGroup.LayoutParams(desiredWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+            view.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
+            totalHeight += view.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
+        listView.requestLayout();
+    }
+
     private void handleIntent(Intent intent) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         purchaseHistory = conn.getHistory();
@@ -48,6 +82,7 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
             if(purchaseHistory.get(i).getTour().sessionIsActive(purchaseHistory.get(i).getSessionID())) {
                 activeHistory.add(purchaseHistory.get(i));
                 findViewById(R.id.noUpcomingTours).setVisibility(View.GONE);
+                System.out.println("Active Index " + i);
             } else {
                 findViewById(R.id.pastTours).setVisibility(View.GONE);
                 pastHistory.add(purchaseHistory.get(i));
@@ -59,11 +94,13 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
         pastAdapter = new MyListAdapter(pastHistory);
 
         upcomingListView = (ListView) findViewById(R.id.upcommingListView);
-        upcomingListView.setAdapter(activeAdapter);
-
         pastListView = (ListView) findViewById(R.id.pastListView);
+
+        upcomingListView.setAdapter(activeAdapter);
         pastListView.setAdapter(pastAdapter);
 
+        setListViewHeightBasedOnChildren(upcomingListView);
+        setListViewHeightBasedOnChildren(pastListView);
     }
 
 
@@ -71,6 +108,20 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.global, menu);
+
+        if (conn.isLogged())
+        {
+            menu.findItem(R.id.account).setVisible(true);
+            menu.findItem(R.id.signout).setVisible(true);
+        } else {
+            menu.findItem(R.id.account).setVisible(false);
+            menu.findItem(R.id.signout).setVisible(false);
+        }
+        //initSearchView(menu);
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
+        searchView.setSearchableInfo(searchableInfo);
         return true;
     }
 
@@ -85,14 +136,40 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
-            case R.id.action_cart:
-                Intent intent = new Intent(this, ShoppingCartActivity.class);
+            case R.id.home:
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 return true;
-
+            case R.id.action_cart:
+                intent = new Intent(this, ShoppingCartActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.account:
+                account();
+                return true;
+            case R.id.signout:
+                conn.signout();
+                recreate();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void account() {
+        Intent intent = new Intent(this, AccountActivity.class);
+        intent.putExtra("Index", conn.getIndex());
+        startActivity(intent);
+    }
+
+
+
+    public void rateItem(int tourID, int position) {
+        Intent intent = new Intent(this, RateActivity.class);
+        intent.putExtra("Tour ID", tourID);
+        intent.putExtra("History ID", position);
+        startActivity(intent);
     }
 
     private class MyListAdapter extends ArrayAdapter<PurchaseHistory.HistoryItem> {
@@ -123,7 +200,6 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
 
             picture.setImageDrawable(img);
 
-
             TextView tName = (TextView) itemView.findViewById(R.id.tourName);
             tName.setText(currentTour.getTour().getTourName());
 
@@ -139,6 +215,26 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
 
             TextView tTime = (TextView) itemView.findViewById(R.id.time);
             tTime.setText(currentTour.getTime());
+
+            if(!pHistory.get(position).isRated()) {
+                itemView.findViewById(R.id.rate).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        rateItem(pHistory.get(position).getTour().getTourID(), position);
+                    }
+                });
+            } else {
+                itemView.findViewById(R.id.rate).setVisibility(View.GONE);
+            }
+
+            itemView.findViewById(R.id.tourPic).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getApplicationContext(), TourPageActivity.class);
+                    intent.putExtra("tourId",pHistory.get(position).getTour().getTourID());
+                    startActivity(intent);
+                }
+            });
 
             return itemView;
         }

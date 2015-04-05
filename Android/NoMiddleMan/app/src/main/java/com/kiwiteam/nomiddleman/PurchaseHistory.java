@@ -27,6 +27,7 @@ public class PurchaseHistory {
         private int sessionID;
         private int quantity;
         private TourClass tour;
+        private boolean isRated;
 
         public HistoryItem() {
             date = new String();
@@ -34,6 +35,7 @@ public class PurchaseHistory {
             sessionID = -1;
             quantity = 0;
             tour = new TourClass();
+            isRated = false;
         }
 
         public HistoryItem(String date, String time, int sessionID, int quantity, TourClass tour) {
@@ -42,6 +44,7 @@ public class PurchaseHistory {
             this.sessionID = sessionID;
             this.quantity = quantity;
             this.tour = tour;
+            this.isRated = false;
         }
 
         public String getDate() {
@@ -66,6 +69,14 @@ public class PurchaseHistory {
 
         public double getPrice() {
             return tour.getTourPrice()*quantity;
+        }
+
+        public boolean isRated() {
+            return isRated;
+        }
+
+        public void rated() {
+            isRated = true;
         }
     }
 }

@@ -11,14 +11,16 @@ public class Tour {
     private double price;
     private ArrayList<String> picture;
     private int id;
+    private double extremeness;
 
-    public Tour(String name, double price, ArrayList<String> picture, int id) {
+    public Tour(String name, double price, ArrayList<String> picture, int id, double extremeness) {
         super();
 
         this.name = name;
         this.price = price;
         this.picture = picture;
         this.id = id;
+        this.extremeness = extremeness;
     }
 
     public String getName() {
@@ -35,6 +37,10 @@ public class Tour {
 
     public int getId() {
         return id;
+    }
+
+    public double getExtremeness() {
+        return extremeness;
     }
 
 }

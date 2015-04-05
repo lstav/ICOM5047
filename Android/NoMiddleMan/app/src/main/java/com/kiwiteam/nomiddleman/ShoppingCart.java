@@ -17,8 +17,21 @@ public class ShoppingCart {
 
     public void putTour(TourClass tour, int quantity, String date, String time) {
         ShoppingItem sItem = new ShoppingItem(tour, quantity, date, time);
-        this.item.add(sItem);
-        this.totalPrice = totalPrice + sItem.getTourPrice();
+        boolean same = false;
+        int index = -1;
+        for (int i = 0; i<item.size(); i++) {
+            if(item.get(i).equals(sItem)) {
+                same = true;
+                index = i;
+                break;
+            }
+        }
+        if(same) {
+            this.item.get(index).addQuantity(quantity);
+        } else {
+            index = item.size();
+            this.item.add(sItem);
+        }
     }
 
     public ArrayList<ShoppingItem> getTours() {
@@ -26,7 +39,6 @@ public class ShoppingCart {
     }
 
     public void removeFromShoppingCart(int position) {
-        this.totalPrice = this.totalPrice - item.get(position).getTourPrice();
         item.remove(position);
     }
 
@@ -35,6 +47,11 @@ public class ShoppingCart {
     }
 
     public double getTotalPrice() {
+        double totPrice = 0.00;
+        for (int i=0; i<item.size(); i++) {
+            totPrice = totPrice + item.get(i).getTourPrice();
+        }
+        totalPrice = totPrice;
         return totalPrice;
     }
 

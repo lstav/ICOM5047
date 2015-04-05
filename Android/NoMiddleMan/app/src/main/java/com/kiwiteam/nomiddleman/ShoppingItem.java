@@ -17,7 +17,7 @@ public class ShoppingItem {
     }
 
     public ShoppingItem(TourClass tour, int quantity, String date, String time) {
-        this.tourID = tourID;
+        this.tourID = tour.getTourID();
         this.tour = tour;
         this.quantity = quantity;
         this.date = date;
@@ -52,6 +52,10 @@ public class ShoppingItem {
         return time;
     }
 
+    public void addQuantity(int i) {
+        quantity = quantity + i;
+    }
+
     public boolean isActive() {
         for (int i=0; i<tour.getTourSessions().size(); i++) {
             if (tour.getTourSessions().get(i).isActive() &&
@@ -59,6 +63,13 @@ public class ShoppingItem {
                     tour.getTourSessions().get(i).getSessionTime().matches(time)) {
                 return true;
             }
+        }
+        return false;
+    }
+
+    public boolean equals(ShoppingItem sItem) {
+        if(this.getTime().equals(sItem.getTime()) && this.getDate().equals(sItem.getDate()) && this.getTourID() == sItem.getTourID()) {
+            return true;
         }
         return false;
     }

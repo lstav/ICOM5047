@@ -26,6 +26,7 @@
     <string name="empty_cart">Su cesta de compra está vacía. \nVe y encuentra turismo extremos.</string>
     <string name="added_to_cart">Añadido a la cesta</string>
     <string name="no_quantity">Falta Cantidad</string>
+    <string name="invalid_email">Correo electrónico invalido</string>
 
     <string name="title_activity_tour_page">Pagina de Tour</string>
     <string name="title_activity_account">Cuenta</string>
@@ -77,6 +78,12 @@
     <string name="locations">Ubicaciones</string>
     <string name="extremeness">Extremo</string>
     <string name="price">Precio</string>
+
+    <string name="reviews">Reseñas</string>
+    <string name="rate">Califica</string>
+    <string name="rate_tour">Califica este tour</string>
+    <string name="review_tour">Reseña este tour</string>
+    <string name="submit">Enviar</string>
 
     <string-array name="language_array">
         <item>English</item>

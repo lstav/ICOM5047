@@ -26,16 +26,17 @@
     <string name="empty_cart">Your Shopping Cart is empty.\nGo and find extreme tours.</string>
     <string name="added_to_cart">Added to Cart</string>
     <string name="no_quantity">Missing Quantity</string>
+    <string name="invalid_email">Invalid Email</string>
 
-    <string name="title_activity_tour_page">Tour Page Activity</string>
+    <string name="title_activity_tour_page">Tour Page</string>
     <string name="title_activity_account">Account</string>
     <string name="title_activity_search">Search</string>
     <string name="title_activity_categories">Categories</string>
-    <string name="title_activity_shopping_cart">ShoppingCartActivity</string>
-    <string name="title_activity_checkout">CheckoutActivity</string>
-    <string name="title_activity_paypal">PaypalActivity</string>
+    <string name="title_activity_shopping_cart">Shopping Cart</string>
+    <string name="title_activity_checkout">Checkout</string>
+    <string name="title_activity_paypal">Paypal</string>
 
-    <string name="title_activity_purchase_history">PurchaseHistoryActivity</string>
+    <string name="title_activity_purchase_history">Purchase History</string>
     <string name="title_activity_edit_account">Edit Account</string>
     <string name="title_activity_change_password">Change Password</string>
     <string name="title_activity_settings">Settings</string>
@@ -78,10 +79,25 @@
     <string name="extremeness">Extremeness</string>
     <string name="price">Price</string>
 
+    <string name="reviews">Reviews</string>
+    <string name="rate">Rate</string>
+
     <string-array name="language_array">
         <item>English</item>
         <item>Español</item>
     </string-array>
+    <string name="title_activity_rate">Rate</string>
+
+    <string-array name="sort_by_array">
+        <item>A-Z</item>
+        <item>Z-A</item>
+        <item>Lowest Price</item>
+        <item>Highest Price</item>
+    </string-array>
+
+    <string name="rate_tour">Rate this tour</string>
+    <string name="review_tour">Review this tour</string>
+    <string name="submit">Submit</string>
 
 
 </resources>

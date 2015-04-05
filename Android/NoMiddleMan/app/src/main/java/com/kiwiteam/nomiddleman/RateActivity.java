@@ -4,6 +4,7 @@ import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
 import android.content.Intent;
+import android.provider.ContactsContract;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -12,31 +13,26 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import java.util.ArrayList;
+import android.widget.RatingBar;
 
 
-public class PaypalActivity extends ActionBarActivity {
+public class RateActivity extends ActionBarActivity {
 
     private DatabaseConnection conn;
-    private String email;
-    private String password;
+    private int tourID;
+    private int historyID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_paypal);
-
+        setContentView(R.layout.activity_rate);
         conn = (DatabaseConnection) getApplicationContext();
         Intent intent = getIntent();
-        handleIntent(intent);
-    }
-
-    private void handleIntent(Intent intent) {
+        tourID = intent.getIntExtra("Tour ID",-1);
+        historyID = intent.getIntExtra("History ID",-1);
 
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -97,34 +93,19 @@ public class PaypalActivity extends ActionBarActivity {
     }
 
 
-    public void checkout(View view) {
-        EditText pEmail = (EditText) findViewById(R.id.payPalEmail);
-        email = pEmail.getText().toString();
+    public void submit(View view) {
+        double rating;
+        String review;
 
-        EditText pPass = (EditText) findViewById(R.id.payPalPass);
-        password = pPass.getText().toString();
+        RatingBar rBar = (RatingBar) findViewById(R.id.ratingBar);
+        rating = (double) rBar.getRating();
 
-        if(conn.payPalLogin(email, password)) {
-            ArrayList<ShoppingItem> shoppingCart = conn.getShoppingCart(0);
+        EditText rev = (EditText) findViewById(R.id.reviewTour);
+        review = rev.getText().toString();
 
-            System.out.println("Shopping Size " +shoppingCart.size());
-            for(int i =0; i<shoppingCart.size(); i++) {
-                conn.addToHistory(shoppingCart.get(i).getDate(),shoppingCart.get(i).getTime(),
-                        conn.getSessionID(shoppingCart.get(i).getDate(), shoppingCart.get(i).getTime(), shoppingCart.get(i).getTourID()),
-                        shoppingCart.get(i).getQuantity(), conn.getTourInformation(shoppingCart.get(i).getTourID()));
-            }
+        conn.rate(tourID, rating, review);
+        conn.getHistory().get(historyID).rated();
 
-            conn.clearShoppingCart();
-
-            Intent intent = new Intent(this, PurchaseHistoryActivity.class);
-            startActivity(intent);
-        } else {
-            Toast.makeText(this, R.string.wrong_login, Toast.LENGTH_SHORT).show();
-        }
-
-    }
-
-    public void cancel(View view) {
         finish();
     }
 }
