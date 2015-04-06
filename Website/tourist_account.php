@@ -100,7 +100,31 @@ if($_SESSION['uemail'])
 										<input id="inputEmail" name = "new-uemail" placeholder="'.$uemail.'" type="text">
 									</div>
 								</div>';
-		}
+			$tid = 1;
+			$tcity = 'Arecibo';
+			$tstate = 'PR';
+			$tname = 'Arecibo Skydiving';
+			$tdescription = 'Jump to the skies and marvel at the beautiful Puerto Rican view.';
+			$tprice = '$250.00';
+			$orders .= '<article class="search-result row">
+			<div class="col-xs-12 col-sm-12 col-md-3">
+				<a title="Lorem ipsum" class="thumbnail"><img src="images/'.$tid.'/1.jpg" alt="Lorem ipsum"></a>
+			</div>
+			<div class="col-xs-12 col-sm-12 col-md-2">
+				<ul class="meta-search">
+					<li><span><h7>'.$tcity.'</h7></span></li>
+					<li> <span>'.$tstate.'</span></li>
+				</ul>
+			</div>
+			<div class="col-xs-12 col-sm-12 col-md-7 excerpet">
+				<h3><a title="">'.$tname.'</a></h3>
+				<p>'.$tdescription.'</p>	
+				<h5>'.$tprice.'</h5>
+				<a style="" class="btn btn-default" href="write_review.php?tid='.$tid.'" type="button">Write Review <span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>			
+			</div>
+			<span class="clearfix borda"></span>
+		</article>';
+}
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -157,7 +181,11 @@ $(document).ready(function(){
           </form>
         </div>
       </div>
-      <div role="tabpanel" class="tab-pane" id="tour-orders"></div>
+      <div role="tabpanel" class="tab-pane" id="tour-orders">
+        <div style="margin-top: 10px;" class="area">
+          <?php echo $orders; ?>
+        </div>
+      </div>
     </div>
   </div>
 </div>

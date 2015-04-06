@@ -1,7 +1,10 @@
 <?php
 session_start();
 include_once("dbConnect.php");
-
+if(!isset($_SESSION['uid']))
+{
+	header("Location: login.php");
+}
 if(isset($_GET['tid']) && isset($_GET['tdatetime']))
 {
 	$tid = (int)$_GET['tid'];

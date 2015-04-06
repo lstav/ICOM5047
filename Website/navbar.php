@@ -8,6 +8,7 @@ if(isset($_SESSION['uid']))
 	$cartCount = '';
 	$uemail = $_SESSION['uemail'];
 	$ufname = $_SESSION['ufname'];
+	$isadmin = $_SESSION['isadmin'];
 	$navLink = "tourist_account.php";
 	$loginOuput = '<li class = "dropdown"><a class = "dropdown-toggle" data-toggle = "dropdown"> Hello  '.$ufname.'! <b class = "caret"></b></a>
           <ul class = "dropdown-menu">
@@ -19,6 +20,40 @@ if(isset($_SESSION['uid']))
 	{
 		$cartCount = pg_num_rows($cquery);
 	}
+	if($isadmin=="t")
+	{
+		$adminButtons = '<div class="container">
+    <div class="row-fluid">
+            <div class="col-md-6">
+               <form action="search_users.php" method="post"> 
+    <div class="input-group">
+      
+      <input type="text" name="tourist" class="form-control" placeholder="Search tourists by email">
+      <span class="input-group-btn">
+        <button name="submit" class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+      </span>
+      
+    </div><!-- /input-group -->
+    </form> 
+                    
+            </div>
+
+            <div class="col-md-6">
+                <form action="search_business.php" method="post"> 
+    <div class="input-group">
+      
+      <input type="text" name="business" class="form-control" placeholder="Search tour guides by email">
+      <span class="input-group-btn">
+        <button name="submit1" class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+      </span>
+      
+    </div><!-- /input-group -->
+    </form>
+            </div>
+    </div>
+</div>';
+	}
+		
 	
 	
 }
@@ -38,9 +73,7 @@ else
         </li>
         <li class  = "dropdown"> <a id = "language" style = "padding-top:20px" href = "#" class = "dropdown-toggle" data-toggle = "dropdown"><img src = images/us.png><b class = "caret"></b></a>
           <ul class = "dropdown-menu">
-            <li><a href = "#">EUR(€)</a></li>
-            <li><a href = "#">NZD($)</a></li>
-            <li><a href = "#">CAD($)</a></li>
+            <li><a href = "#">Español</a></li>
           </ul>
         </li>
         <li><a href="cart.php"> Cart <span class="glyphicon glyphicon-shopping-cart"></span> <?php echo $cartCount;?></a></li>
@@ -48,3 +81,4 @@ else
     </div>
   </div>
 </div>
+<?php echo $adminButtons;?>

@@ -1,13 +1,14 @@
 <?php
-function test_input($data)
+/*function test_input($data)
 {
    $data = trim($data);
    $data = stripslashes($data);
    $data = htmlspecialchars($data);
    return $data;
-}
+}*/
 session_start();
 include_once("dbConnect.php");
+$errorMsg = "";
 if($_POST['uemail'])
 {
 	$uemail = strip_tags($_POST["uemail"]);
@@ -23,6 +24,7 @@ if($_POST['uemail'])
 		$_SESSION['ufname'] = $row['t_FName'];
 		$_SESSION['ulname'] = $row['t_LName'];
 		$_SESSION['upass'] = $row['tPassword'];
+		$_SESSION['isadmin'] = $row['isAdmin'];
 		header("Location: index.php");
 	}
 	else
@@ -35,17 +37,17 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
 {
 	if(!empty($_POST['new-uemail'])&&!empty($_POST['new-ufname'])&&!empty($_POST['new-ulname'])&&!empty($_POST['new-upass']))
 	{
-				$newuemail =  test_input(strip_tags($_POST['new-uemail']));
-				$newufname = test_input(strip_tags($_POST["new-ufname"]));
-				$newulname = test_input(strip_tags($_POST["new-ulname"]));
-				$newupass = md5(strip_tags($_POST['new-upass']));
+				$newuemail =  $_POST['new-uemail'];
+				$newufname = $_POST["new-ufname"];
+				$newulname = $_POST["new-ulname"];
+				$newupass = md5($_POST['new-upass']);
 				if (!filter_var($newuemail, FILTER_VALIDATE_EMAIL)) 
 				{
-  					$errorMsg .= "Invalid email format<br>"; 
+  					$errorMsg .= "<a style=\"color:red\">Invalid email format</a><br>"; 
 				}
-				if (!preg_match("/^[a-zA-Z ]*$/",$newufname)&&!preg_match("/^[a-zA-Z ]*$/",$newulname)) 
+				else if (!preg_match("/^[a-zA-Z ]*$/",$newufname)&&!preg_match("/^[a-zA-Z ]*$/",$newulname)) 
 				{
-				  $errorMsg .= "Only letters and white space in name are allowed"; 
+				  $errorMsg .= "<a style=\"color:red\">Only letters and white space in name are allowed</a>"; 
 				}
 				else
 				{
@@ -62,7 +64,7 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
 	}
 	else
 	{
-		$errorMsg = "Missing fields";
+		$errorMsg = "<a style=\"color:red\">Missing fields</a>";
 	}
 }
 
@@ -117,6 +119,7 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
                     <form class="form-horizontal" method = "post" action = "login.php">
                         <div class="heading">
                             <h4 class="form-heading">Sign Up</h4>
+                            <?php echo $errorMsg;?>
                         </div>
 
                         <div class="control-group">
