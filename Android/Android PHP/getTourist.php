@@ -6,9 +6,8 @@
 	
 	if(isset($_REQUEST['t_key'])) {
 		$email = $_REQUEST['t_key'];
-		//$email = 2;
 		
-		$result = pg_query($conn, "SELECT * FROM \"Tourist\" WHERE \"t_key\"=$email");
+		$result = pg_query($conn, "SELECT * FROM \"Tourist\" as T WHERE \"t_key\"=$email");
 		
 		if(!empty($result)) {
 			
@@ -22,9 +21,6 @@
 				$tourist['t_FName'] = $row['t_FName'];
 				$tourist['t_LName'] = $row['t_LName'];
 				$tourist['t_BDate'] = $row['t_BDate'];
-				$tourist['isAdmin'] = $row['isAdmin'];
-				$tourist['t_isActive'] = $row['t_isActive'];
-				$tourist['t_isSuspended'] = $row['t_isSuspended'];
 				$tourist['t_telephone'] = $row['t_telephone'];
 				
 				$response['success'] = 1;
