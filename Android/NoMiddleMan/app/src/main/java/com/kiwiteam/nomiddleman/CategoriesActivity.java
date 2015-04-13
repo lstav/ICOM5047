@@ -1,9 +1,11 @@
 package com.kiwiteam.nomiddleman;
 
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -15,13 +17,39 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class CategoriesActivity extends ActionBarActivity {
 
-    DatabaseConnection conn;
-    ArrayList<String> categories = new ArrayList<>();
+    private ProgressDialog pDialog;
+
+    private DatabaseConnection conn;
+    private ListView listV;
+    private static String url_all_categories = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/getCategories.php";
+
+    // JSON Node names
+    private static final String TAG_SUCCESS = "success";
+    private static final String TAG_CATEGORIES = "categories";
+    private static final String TAG_KEY = "cat_key";
+    private static final String TAG_NAME = "Category_Name";
+
+    JSONArray category = null;
+    ArrayList<String> catArray = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +57,6 @@ public class CategoriesActivity extends ActionBarActivity {
         setContentView(R.layout.activity_categories);
 
         conn = (DatabaseConnection)getApplicationContext();
-        categories = conn.getCategories();
 
         handleIntent(getIntent());
         registerClickCallback();
@@ -41,14 +68,10 @@ public class CategoriesActivity extends ActionBarActivity {
         registerClickCallback();
     }
 
-
-
     private void handleIntent(Intent intent) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        ListView listView = (ListView) findViewById(R.id.listView);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.result_list_categories, R.id.category, categories);
-        listView.setAdapter(adapter);
+        listV = (ListView) findViewById(R.id.listView);
+        new LoadAllCategories().execute();
     }
 
 
@@ -117,7 +140,7 @@ public class CategoriesActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View viewClicked,
                                     int position, long id) {
 
-                String clickedCategory = categories.get(position);
+                String clickedCategory = catArray.get(position);
 
                 Intent i = new Intent(getApplicationContext(), SearchActivity.class);
 
@@ -131,6 +154,78 @@ public class CategoriesActivity extends ActionBarActivity {
                 Toast.makeText(CategoriesActivity.this, message, Toast.LENGTH_LONG).show();*/
             }
         });
+    }
+
+    class LoadAllCategories extends AsyncTask<String, String, String> {
+
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(CategoriesActivity.this);
+            pDialog.setMessage("Loading categories. Please wait...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String result = "";
+
+            try {
+                HttpClient httpClient = new DefaultHttpClient();
+                HttpGet httpGet = new HttpGet(url_all_categories);
+
+                HttpResponse response = httpClient.execute(httpGet);
+
+                HttpEntity entity = response.getEntity();
+                InputStream webs = entity.getContent();
+
+                try {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(webs,"iso-8859-1"),8);
+                    StringBuilder sb = new StringBuilder();
+                    String line = null;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    webs.close();
+                    result=sb.toString();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                JSONObject jObj = new JSONObject(result);
+                category = jObj.getJSONArray("categories");
+
+                for (int i=0; i<category.length(); i++) {
+                    JSONObject c = category.getJSONObject(i);
+
+                    //String key = c.getString(TAG_KEY);
+                    System.out.println("Category " + i + " " + c.getString(TAG_NAME));
+                    catArray.add(c.getString(TAG_NAME));
+                }
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String file_url) {
+            pDialog.dismiss();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    ArrayAdapter<String> adapter = new ArrayAdapter(CategoriesActivity.this,
+                            R.layout.result_list_categories, R.id.category, catArray);
+                    listV.setAdapter(adapter);
+                }
+            });
+        }
     }
 
 

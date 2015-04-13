@@ -1,5 +1,7 @@
 package com.kiwiteam.nomiddleman;
 
+import android.graphics.Bitmap;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
@@ -9,11 +11,11 @@ import java.util.ArrayList;
 public class Tour {
     private String name;
     private double price;
-    private ArrayList<String> picture;
+    private ArrayList<Bitmap> picture;
     private int id;
     private double extremeness;
 
-    public Tour(String name, double price, ArrayList<String> picture, int id, double extremeness) {
+    public Tour(String name, double price, ArrayList<Bitmap> picture, int id, double extremeness) {
         super();
 
         this.name = name;
@@ -31,7 +33,7 @@ public class Tour {
         return price;
     }
 
-    public ArrayList<String> getPictures() {
+    public ArrayList<Bitmap> getPictures() {
         return picture;
     }
 

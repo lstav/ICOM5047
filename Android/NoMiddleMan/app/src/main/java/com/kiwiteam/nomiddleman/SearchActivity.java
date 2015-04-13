@@ -1,11 +1,15 @@
 package com.kiwiteam.nomiddleman;
 
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.media.Rating;
+import android.os.AsyncTask;
 import android.provider.ContactsContract;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
@@ -28,10 +32,28 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.jar.Attributes;
 
 
 public class SearchActivity extends ActionBarActivity implements AdapterView.OnItemSelectedListener {
@@ -43,6 +65,21 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
     private Spinner sortBy;
     private ArrayAdapter<CharSequence> sAdapter;
     private ListView listView;
+    private ProgressDialog pDialog;
+    private String query;
+    private ImageView picture;
+    private Bitmap bitmap;
+
+    private JSONArray backup;
+
+    private static final String TAG_KEY = "key";
+    private static final String TAG_NAME = "name";
+    private static final String TAG_PRICE = "price";
+    private static final String TAG_EXTREMENESS = "extremeness";
+    private static final String TAG_PHOTO = "photo";
+
+
+    private static String url_search_categories = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/searchByCategory.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,10 +135,12 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
         TourClass tour;
 
 
-        String query = intent.getStringExtra("category");
+        query = intent.getStringExtra("category");
         indexes = conn.searchToursByCategories(query);
 
-        if(!indexes.isEmpty()) {
+        new LoadByCategory().execute();
+
+        /*if(!indexes.isEmpty()) {
             for(int i=0;i<indexes.size();i++) {
                 tour = conn.getTourInformation(indexes.get(i));
                 if(tour.isActive()) {
@@ -127,7 +166,7 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
         } else {
             TextView fName = (TextView) findViewById(R.id.result);
             fName.setText("No Results");
-        }
+        }*/
     }
 
     private void handleIntent(Intent intent) {
@@ -144,7 +183,7 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
                 for(int i=0;i<indexes.size();i++) {
                     tour = conn.getTourInformation(indexes.get(i));
                     if(tour.isActive()) {
-                        this.tourInfo.add(new Tour(tour.getTourName(), tour.getTourPrice(), tour.getTourPictures(), indexes.get(i), tour.getExtremeness()));
+                        //this.tourInfo.add(new Tour(tour.getTourName(), tour.getTourPrice(), tour.getTourPictures(), indexes.get(i), tour.getExtremeness()));
                     }
                 }
 
@@ -287,12 +326,18 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
             Tour currentTour = tourInfo.get(position);
 
             // fill the view
-            int draw = getResources().getIdentifier(currentTour.getPictures().get(0),"drawable",getPackageName());
+            //int draw = getResources().getIdentifier(currentTour.getPictures().get(0),"drawable",getPackageName());
 
-            ImageView picture = (ImageView) itemView.findViewById(R.id.tourPic);
-            Drawable img = getResources().getDrawable(draw);
+            picture = (ImageView) itemView.findViewById(R.id.tourPic);
+            picture.setImageBitmap(currentTour.getPictures().get(0));
+            //String url = currentTour.getPictures().get(0);
 
-            picture.setImageDrawable(img);
+            //new LoadImage().execute(url.trim()+"img1.jpg");
+
+            //System.out.println("Photo " + url.trim() + "img1.jpg" + " Name " + currentTour.getName());
+            //Drawable img = getResources().getDrawable(draw);
+
+            //picture.setImageDrawable(img);
 
             RatingBar eRating = (RatingBar) itemView.findViewById(R.id.tourRating);
             eRating.setRating((float) currentTour.getExtremeness());
@@ -309,6 +354,107 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
             return itemView;
 
             //return super.getView(position, convertView, parent);
+        }
+    }
+
+    class LoadByCategory extends AsyncTask<String, String, String> {
+
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(SearchActivity.this);
+            pDialog.setMessage("Loading results. Please wait...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String result = "";
+
+            try {
+                HttpClient httpClient = new DefaultHttpClient();
+                String url;
+
+                List<NameValuePair> categoryName = new ArrayList<>();
+                categoryName.add(new BasicNameValuePair("category", query));
+
+                String paramString = URLEncodedUtils.format(categoryName, "utf-8");
+                url = url_search_categories + "?" + paramString;
+
+                HttpGet httpGet = new HttpGet(url);
+
+                HttpResponse response = httpClient.execute(httpGet);
+
+                HttpEntity entity = response.getEntity();
+                InputStream webs = entity.getContent();
+
+                try {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(webs,"iso-8859-1"),8);
+                    StringBuilder sb = new StringBuilder();
+                    String line = null;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    webs.close();
+                    result=sb.toString();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                JSONObject jObj = new JSONObject(result);
+                backup = jObj.getJSONArray("tours");
+
+                for (int i=0; i<backup.length(); i++) {
+                    JSONObject c = backup.getJSONObject(i);
+                    try {
+                        bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "img1.jpg").getContent());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    tourInfo.add(new Tour(c.getString(TAG_NAME), Price.getDouble(c.getString(TAG_PRICE)), new ArrayList<>(Arrays.asList(bitmap)), Integer.parseInt(c.getString(TAG_KEY)), Double.parseDouble(c.getString(TAG_EXTREMENESS))));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        protected void onPostExecute(String file_url) {
+            pDialog.dismiss();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    ArrayAdapter<Tour> adapter = new MyListAdapter();
+
+                    listView = (ListView) findViewById(R.id.listView);
+                    listView.setAdapter(adapter);
+                }
+            });
+        }
+
+    }
+
+    private class LoadImage extends AsyncTask<String, String, Bitmap> {
+
+        protected Bitmap doInBackground(String... args) {
+            try {
+                bitmap = BitmapFactory.decodeStream((InputStream) new URL(args[0]).getContent());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return bitmap;
+        }
+        protected void onPostExecute(Bitmap image) {
+            if(image != null){
+                picture.setImageBitmap(image);
+            }
         }
     }
 }
