@@ -5,7 +5,8 @@
 	include_once("dbconnection.php");
 	
 	if(isset($_REQUEST['keyword'])) {
-		$keyword = $_REQUEST['keyword'];
+		$keyword = trim($_REQUEST['keyword']);
+		
 		
 		$result = pg_query($conn, "Select T.tour_key as Key, upper(T.\"tour_Name\") as Name, T.\"tour_Desc\" as Description, T.\"Price\" as Price, T.\"extremeness\" as Extremeness, T.\"tour_photo\" as Photo FROM \"Tour\" as T Where upper(concat(T.\"tour_Name\",' ',T.\"tour_Desc\")) like upper('%$keyword%')");
 		

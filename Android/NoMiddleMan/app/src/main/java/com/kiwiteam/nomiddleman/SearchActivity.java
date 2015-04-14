@@ -36,7 +36,9 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
@@ -376,12 +378,11 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
                 List<NameValuePair> categoryName = new ArrayList<>();
                 categoryName.add(new BasicNameValuePair("category", query));
 
-                String paramString = URLEncodedUtils.format(categoryName, "utf-8");
-                url = url_search_categories + "?" + paramString;
+                HttpPost httppost = new HttpPost(url_search_categories);
 
-                HttpGet httpGet = new HttpGet(url);
+                httppost.setEntity(new UrlEncodedFormEntity(categoryName));
 
-                HttpResponse response = httpClient.execute(httpGet);
+                HttpResponse response = httpClient.execute(httppost);
 
                 HttpEntity entity = response.getEntity();
                 InputStream webs = entity.getContent();
@@ -460,12 +461,11 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
                 List<NameValuePair> categoryName = new ArrayList<>();
                 categoryName.add(new BasicNameValuePair("keyword", query));
 
-                String paramString = URLEncodedUtils.format(categoryName, "utf-8");
-                url = url_search_keyword + "?" + paramString;
+                HttpPost httppost = new HttpPost(url_search_keyword);
 
-                HttpGet httpGet = new HttpGet(url);
+                httppost.setEntity(new UrlEncodedFormEntity(categoryName));
 
-                HttpResponse response = httpClient.execute(httpGet);
+                HttpResponse response = httpClient.execute(httppost);
 
                 HttpEntity entity = response.getEntity();
                 InputStream webs = entity.getContent();

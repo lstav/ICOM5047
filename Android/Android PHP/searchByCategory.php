@@ -4,8 +4,8 @@
 	
 	include_once("dbconnection.php");
 	
-	if(isset($_REQUEST['category'])) {
-		$category = $_REQUEST['category'];
+	if(isset($_POST['category'])) {
+		$category = $_POST['category'];
 		
 		$result = pg_query($conn, "Select T.tour_key as Key, upper(T.\"tour_Name\") as Name, T.\"tour_Desc\" as Description, T.\"Price\" as Price, T.\"extremeness\" as Extremeness, T.\"tour_photo\" as Photo FROM \"Tour\" as T natural join \"isCategory\" natural join(Select \"cat_key\", \"Category_Name\" From \"Tour Category\" Where lower(\"Category_Name\") = lower('$category')) as Refiner");
 		

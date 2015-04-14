@@ -4,9 +4,9 @@
 	
 	include_once("dbconnection.php");
 	
-	if(isset($_REQUEST['t_Email']) && isset($_REQUEST['t_password'])) {
-		$t_Email = $_REQUEST['t_Email'];
-		$t_password = $_REQUEST['t_password'];
+	if(isset($_POST['t_Email']) && isset($_POST['t_password'])) {
+		$t_Email = $_POST['t_Email'];
+		$t_password = $_POST['t_password'];
 		
 		$result = pg_query($conn, "SELECT T.\"t_key\" as key, T.\"t_password\" as password FROM \"Tourist\" as T WHERE T.\"t_Email\" = '$t_Email'");
 		

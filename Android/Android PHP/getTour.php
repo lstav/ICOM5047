@@ -26,7 +26,7 @@
 				$tour['Price'] = $row['Price'];				
 				$tour['extremeness'] = $row['extremeness'];
 				$tour['city'] = $row['city'];
-				$tour['state/province'] = $row['state/province'];
+				$tour['state-province'] = $row['state-province'];
 				$tour['country'] = $row['country'];
 				$tour['g_Email'] = $row['g_Email'];
 				$tour['g_FName'] = $row['g_FName'];

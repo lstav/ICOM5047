@@ -71,6 +71,37 @@
                 android:ems="10"
                 android:id="@+id/lastText" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/birthday"
+                android:id="@+id/textView13" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/pickday"
+                android:id="@+id/button4"
+                android:background="#8cc538"
+                android:textColor="#fff"
+                android:padding="10dp"
+                android:onClick="showDatePickerDialog" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/telephone"
+                android:id="@+id/textView14" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="phone"
+                android:ems="10"
+                android:id="@+id/telephone" />
+
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
