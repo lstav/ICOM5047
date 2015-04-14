@@ -1,12 +1,16 @@
 package com.kiwiteam.nomiddleman;
 
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.media.Rating;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -26,7 +30,24 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -39,11 +60,36 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
     private String date = new String();
     private String time = new String();
     private Spinner tDay;
+    private int query;
     private Spinner tTime;
     private ArrayAdapter<String> tAdapter;
     private ArrayAdapter<String> dAdapter;
     private ArrayAdapter<RatingClass> rAdapter;
+    private ListView listView;
     private List<RatingClass> ratings = new ArrayList<>();
+
+    private Bitmap bitmap;
+
+    private JSONArray response;
+
+    private ProgressDialog pDialog;
+    private static String url_get_tourpage = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/getTour.php";
+
+    private static final String TAG_KEY = "tour_key";
+    private static final String TAG_NAME = "tour_Name";
+    private static final String TAG_DESC = "tour_Desc";
+    private static final String TAG_EXTREMENESS = "extremeness";
+    private static final String TAG_PHOTO = "tour_photo";
+    private static final String TAG_FACEBOOK = "Facebook";
+    private static final String TAG_YOUTUBE = "Youtube";
+    private static final String TAG_INSTAGRAM = "Instagram";
+    private static final String TAG_TWITTER = "Twitter";
+    private static final String TAG_DURATION = "Duration";
+    private static final String TAG_PRICE = "Price";
+    private static final String TAG_QUANTITY = "tour_quantity";
+    private static final String TAG_TIME = "s_Time";
+    private static final String TAG_AVAILBILITY = "Availability";
+
 
 
     @Override
@@ -65,10 +111,11 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
         if( tourID == -1) {
             finish();
         } else {
-            tour = conn.getTourInformation(tourID);
+            query = tourID;
+            //tour = conn.getTourInformation(tourID);
         }
 
-        ratings = tour.getAllRatings();
+        /*ratings = tour.getAllRatings();
 
         TextView tName = (TextView) findViewById(R.id.tourName);
         tName.setText(tour.getTourName());
@@ -111,7 +158,7 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
         ListView reviewList = (ListView) findViewById(R.id.reviewList);
         reviewList.setAdapter(rAdapter);
         setListViewHeightBasedOnChildren(reviewList);
-
+*/
     }
 
     public static void setListViewHeightBasedOnChildren(ListView listView) {
@@ -269,6 +316,87 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
 
             return itemView;
 
+        }
+    }
+
+    class GetTourPage extends AsyncTask<String, String, String> {
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(TourPageActivity.this);
+            pDialog.setMessage("Loading results. Please wait...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String result = "";
+
+            try {
+                HttpClient httpClient = new DefaultHttpClient();
+                String url;
+
+                List<NameValuePair> categoryName = new ArrayList<>();
+                categoryName.add(new BasicNameValuePair("tour_key", Integer.toString(query)));
+
+                String paramString = URLEncodedUtils.format(categoryName, "utf-8");
+                url = url_get_tourpage + "?" + paramString;
+
+                HttpGet httpGet = new HttpGet(url);
+
+                HttpResponse response = httpClient.execute(httpGet);
+
+                HttpEntity entity = response.getEntity();
+                InputStream webs = entity.getContent();
+
+                try {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(webs,"iso-8859-1"),8);
+                    StringBuilder sb = new StringBuilder();
+                    String line = null;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    webs.close();
+                    result=sb.toString();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                JSONObject jObj = new JSONObject(result);
+                response = jObj.getJSONArray("tour");
+
+                for (int i=0; i<response.length(); i++) {
+                    JSONObject c = response.getJSONObject(i);
+                    try {
+                        bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "img1.jpg").getContent());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    //tour = new TourClass(c.getInt(TAG_KEY),c.getString(TAG_NAME),c.getString())
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String file_url) {
+            pDialog.dismiss();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    ArrayAdapter<RatingClass> adapter = new MyListAdapter();
+
+                    listView = (ListView) findViewById(R.id.listView);
+                    listView.setAdapter(adapter);
+                }
+            });
         }
     }
 }

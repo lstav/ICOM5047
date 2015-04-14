@@ -75,17 +75,17 @@ public class DatabaseConnection extends Application {
 
 
 
-        tourInformation.add(new TourClass(0, "Arecibo Skydiving", new ArrayList<>(Arrays.asList("Skydiving")), new String[]{"Arecibo","PR","USA"},
+        tourInformation.add(new TourClass(0, "Arecibo Skydiving", new String[]{"Arecibo","PR","USA"},
                 200.00, new ArrayList<>(Arrays.asList("img1")), "Pepe Perez", "Best Skydiving experience",
                 new ArrayList<>(Arrays.asList(ratings.get(0),ratings.get(1))),
                 new ArrayList<>(Arrays.asList(tourSessions.get(0),tourSessions.get(1),tourSessions.get(2))), "vid1", 4.00));
 
-        tourInformation.add(new TourClass(1, "Ola Surf", new ArrayList<>(Arrays.asList("Surfing")), new String[]{"Isabela","PR","USA"},
+        tourInformation.add(new TourClass(1, "Ola Surf", new String[]{"Isabela","PR","USA"},
                 50.00, new ArrayList<>(Arrays.asList("img2")), "Pancho Rodriguez", "Prepare to surf the waves",
                 new ArrayList<>(Arrays.asList(ratings.get(2), ratings.get(3))),
                 new ArrayList<>(Arrays.asList(tourSessions.get(3),tourSessions.get(4),tourSessions.get(5))), "vid2", 4.00));
 
-        tourInformation.add(new TourClass(2, "Surfing Slide", new ArrayList<>(Arrays.asList("Surfing")), new String[]{"Aguadilla","PR","USA"},
+        tourInformation.add(new TourClass(2, "Surfing Slide", new String[]{"Aguadilla","PR","USA"},
                 40.00, new ArrayList<>(Arrays.asList("img2")), "Jorge Garcia", "Surfing for life",
                 new ArrayList<>(Arrays.asList(ratings.get(4),ratings.get(5),ratings.get(6))),
                 new ArrayList<>(Arrays.asList(tourSessions.get(6),tourSessions.get(7))), "vid3", 3.50));
@@ -255,5 +255,9 @@ public class DatabaseConnection extends Application {
         }
 
         return ID;
+    }
+
+    public void setLogged(boolean bool) {
+        isLogged = bool;
     }
 }

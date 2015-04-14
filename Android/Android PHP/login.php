@@ -20,8 +20,8 @@
 					
 					if($t_password - $tour['password'] == 0) {
 						$response['success'] = 1;
-						$response['login'] = array();
-						array_push($response['login'], $tour);
+						//$response['login'] = array();
+						//array_push($response['login'], $tour);
 						echo json_encode($response);
 					} else {
 						$response['success'] = 0;

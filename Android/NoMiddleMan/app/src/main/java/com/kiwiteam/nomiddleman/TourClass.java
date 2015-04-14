@@ -43,10 +43,9 @@ public class TourClass {
         this.extremeness = 0.00;
     }
 
-    public TourClass(int tourID, String tourName, ArrayList<String> tourCategories, String[] tourLocation, double tourPrices, ArrayList<String> tourPictures, String tourGuide, String tourDescription, ArrayList<RatingClass> tourRatings, ArrayList<TourSession> tourSessions, String tourVideos, double extremeness) {
+    public TourClass(int tourID, String tourName, String[] tourLocation, double tourPrices, ArrayList<String> tourPictures, String tourGuide, String tourDescription, ArrayList<RatingClass> tourRatings, ArrayList<TourSession> tourSessions, String tourVideos, double extremeness) {
         this.tourID = tourID;
         this.tourName = tourName;
-        this.tourCategories = tourCategories;
         this.tourLocation = tourLocation;
         this.tourPrices = tourPrices;
         this.tourPictures = tourPictures;

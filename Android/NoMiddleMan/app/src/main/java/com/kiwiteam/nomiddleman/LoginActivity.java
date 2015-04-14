@@ -1,5 +1,6 @@
 package com.kiwiteam.nomiddleman;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -13,6 +14,9 @@ import android.widget.Toast;
 public class LoginActivity extends ActionBarActivity {
 
     DatabaseConnection conn;
+    private static final String TAG_SUCCESS = "success";
+    private ProgressDialog pDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

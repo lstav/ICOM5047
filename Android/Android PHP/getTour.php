@@ -7,7 +7,7 @@
 	if(isset($_REQUEST['tour_key'])) {
 		$tour_key = $_REQUEST['tour_key'];
 		
-		$result = pg_query($conn, "Select * From \"Tour\" natural join \"Location\" natural join \"Tour Session\" Where \"tour_key\" = $tour_key");
+		$result = pg_query($conn, "Select * From \"Tour\" natural join \"Location\" natural join \"Tour Guide\" Where \"tour_key\" = $tour_key");
 		
 		if(!empty($result)) {
 			if(pg_num_rows($result) > 0) {
@@ -23,13 +23,17 @@
 				$tour['Youtube'] = $row['Youtube'];
 				$tour['Instagram'] = $row['Instagram'];
 				$tour['Twitter'] = $row['Twitter'];
-				$tour['Duration'] = $row['Duration'];
-				$tour['Price'] = $row['Price'];
-				$tour['tour_quantity'] = $row['tour_quantity'];
+				$tour['Price'] = $row['Price'];				
 				$tour['extremeness'] = $row['extremeness'];
-				$tour['tour_photo'] = $row['tour_photo'];
-				$tour['s_Time'] = $row['s_Time'];
-				$tour['Availability'] = $row['Availability'];
+				$tour['city'] = $row['city'];
+				$tour['state/province'] = $row['state/province'];
+				$tour['country'] = $row['country'];
+				$tour['g_Email'] = $row['g_Email'];
+				$tour['g_FName'] = $row['g_FName'];
+				$tour['g_LName'] = $row['g_LName'];
+				$tour['g_License'] = $row['g_License'];
+				$tour['company'] = $row['company'];
+				$tour['g_telephone'] = $row['g_telephone'];
 				
 				$response['success'] = 1;
 				

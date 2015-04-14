@@ -80,6 +80,7 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
 
 
     private static String url_search_categories = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/searchByCategory.php";
+    private static String url_search_keyword = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/searchByKeyword.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,13 +132,8 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
 
     private void handleCategoryIntent(Intent intent) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ArrayList<Integer> indexes;
-        TourClass tour;
-
 
         query = intent.getStringExtra("category");
-        indexes = conn.searchToursByCategories(query);
-
         new LoadByCategory().execute();
 
         /*if(!indexes.isEmpty()) {
@@ -175,11 +171,12 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
         TourClass tour;
 
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
+            query = intent.getStringExtra(SearchManager.QUERY);
+            new LoadByKeyword().execute();
 
-            indexes = conn.searchToursByString(query);
+            //indexes = conn.searchToursByString(query);
 
-            if(!indexes.isEmpty()) {
+            /*if(!indexes.isEmpty()) {
                 for(int i=0;i<indexes.size();i++) {
                     tour = conn.getTourInformation(indexes.get(i));
                     if(tour.isActive()) {
@@ -206,7 +203,7 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
             } else {
                 TextView fName = (TextView) findViewById(R.id.result);
                 fName.setText(R.string.no_results);
-            }
+            }*/
 
         }
     }
@@ -441,20 +438,87 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
 
     }
 
-    private class LoadImage extends AsyncTask<String, String, Bitmap> {
+    class LoadByKeyword extends AsyncTask<String, String, String> {
 
-        protected Bitmap doInBackground(String... args) {
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(SearchActivity.this);
+            pDialog.setMessage("Loading results. Please wait...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String result = "";
+
             try {
-                bitmap = BitmapFactory.decodeStream((InputStream) new URL(args[0]).getContent());
+                HttpClient httpClient = new DefaultHttpClient();
+                String url;
+
+                List<NameValuePair> categoryName = new ArrayList<>();
+                categoryName.add(new BasicNameValuePair("keyword", query));
+
+                String paramString = URLEncodedUtils.format(categoryName, "utf-8");
+                url = url_search_keyword + "?" + paramString;
+
+                HttpGet httpGet = new HttpGet(url);
+
+                HttpResponse response = httpClient.execute(httpGet);
+
+                HttpEntity entity = response.getEntity();
+                InputStream webs = entity.getContent();
+
+                try {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(webs,"iso-8859-1"),8);
+                    StringBuilder sb = new StringBuilder();
+                    String line = null;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    webs.close();
+                    result=sb.toString();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            return bitmap;
-        }
-        protected void onPostExecute(Bitmap image) {
-            if(image != null){
-                picture.setImageBitmap(image);
+
+            try {
+                JSONObject jObj = new JSONObject(result);
+                backup = jObj.getJSONArray("tours");
+
+                for (int i=0; i<backup.length(); i++) {
+                    JSONObject c = backup.getJSONObject(i);
+                    try {
+                        bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "img1.jpg").getContent());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    tourInfo.add(new Tour(c.getString(TAG_NAME), Price.getDouble(c.getString(TAG_PRICE)), new ArrayList<>(Arrays.asList(bitmap)), Integer.parseInt(c.getString(TAG_KEY)), Double.parseDouble(c.getString(TAG_EXTREMENESS))));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
+
+            return null;
         }
+
+        protected void onPostExecute(String file_url) {
+            pDialog.dismiss();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    ArrayAdapter<Tour> adapter = new MyListAdapter();
+
+                    listView = (ListView) findViewById(R.id.listView);
+                    listView.setAdapter(adapter);
+                }
+            });
+        }
+
     }
 }
