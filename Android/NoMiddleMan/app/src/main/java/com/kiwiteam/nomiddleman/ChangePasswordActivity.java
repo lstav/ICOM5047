@@ -82,7 +82,7 @@ public class ChangePasswordActivity extends ActionBarActivity {
 
     public void account() {
         Intent intent = new Intent(this, AccountActivity.class);
-        intent.putExtra("Index", conn.getIndex());
+        intent.putExtra("Index", conn.getT_key());
         startActivity(intent);
     }
 
@@ -92,7 +92,7 @@ public class ChangePasswordActivity extends ActionBarActivity {
         EditText nPass = (EditText) findViewById(R.id.newPass);
         EditText cNPass = (EditText) findViewById(R.id.cNewPass);
 
-        String dbPass = conn.getPassword(0);
+        /*String dbPass = conn.getPassword(0);
 
         if(dbPass.equals(oPass.getText().toString())) {
             if(nPass.getText().toString().equals(cNPass.getText().toString())) {
@@ -103,7 +103,7 @@ public class ChangePasswordActivity extends ActionBarActivity {
             }
         } else {
             Toast.makeText(this, R.string.incorrect_password, Toast.LENGTH_SHORT).show();
-        }
+        }*/
     }
 
     public void cancel(View view) {

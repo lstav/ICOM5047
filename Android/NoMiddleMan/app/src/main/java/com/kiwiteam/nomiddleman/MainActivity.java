@@ -82,7 +82,7 @@ public class MainActivity extends ActionBarActivity {
     protected void onResume() {
         super.onResume();
         if(conn.isLogged()) {
-            this.index = conn.getIndex();
+            this.index = conn.getT_key();
             // Login
             findViewById(R.id.login_description).setVisibility(View.GONE);
             findViewById(R.id.login_button).setVisibility(View.GONE);
@@ -142,13 +142,13 @@ public class MainActivity extends ActionBarActivity {
 
     public void account() {
         intent = new Intent(this, AccountActivity.class);
-        intent.putExtra("Index", conn.getIndex());
+        intent.putExtra("Index", conn.getT_key());
         startActivity(intent);
     }
 
     public void account(View view) {
         intent = new Intent(this, AccountActivity.class);
-        intent.putExtra("Index", conn.getIndex());
+        intent.putExtra("Index", conn.getT_key());
         startActivity(intent);
     }
 
@@ -165,14 +165,6 @@ public class MainActivity extends ActionBarActivity {
     public void searchCat(View view) {
         intent = new Intent(this, CategoriesActivity.class);
         startActivity(intent);
-    }
-
-
-    public void itemSelected(View view) {
-        intent = new Intent(this, TourPageActivity.class);
-        startActivity(intent);
-
-        //Toast.makeText(this, "Ola Surf", Toast.LENGTH_SHORT).show();
     }
 
     public void settings(View view) {

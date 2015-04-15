@@ -153,7 +153,7 @@ public class ShoppingCartActivity extends ActionBarActivity {
 
     private void account() {
             Intent intent = new Intent(this, AccountActivity.class);
-            intent.putExtra("Index", conn.getIndex());
+            intent.putExtra("Index", conn.getT_key());
             startActivity(intent);
         }
 

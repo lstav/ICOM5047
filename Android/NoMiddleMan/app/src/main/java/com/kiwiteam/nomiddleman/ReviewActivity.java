@@ -96,7 +96,7 @@ public class ReviewActivity extends ActionBarActivity {
 
     public void account() {
         Intent intent = new Intent(this, AccountActivity.class);
-        intent.putExtra("Index", conn.getIndex());
+        intent.putExtra("Index", conn.getT_key());
         startActivity(intent);
     }
 }

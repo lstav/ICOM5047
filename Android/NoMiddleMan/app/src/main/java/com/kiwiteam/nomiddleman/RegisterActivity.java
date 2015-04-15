@@ -44,6 +44,9 @@ public class RegisterActivity extends ActionBarActivity {
     private String userName;
     private String userLName;
     private String birthday;
+    private String telephoneNumber;
+
+    public int success;
 
     public String bday;
 
@@ -145,9 +148,11 @@ public class RegisterActivity extends ActionBarActivity {
             selectedCalendar.set(Calendar.MONTH, month);
             selectedCalendar.set(Calendar.DAY_OF_MONTH, day);*/
 
-            bday = year + "-" + year + "-" + month + "-" + day;
+            month = month + 1;
 
-            TextView bDate = (TextView) findViewById(R.id.register);
+            bday = year + "-" + month + "-" + day;
+
+            TextView bDate = (TextView) findViewById(R.id.bday);
             bDate.setText(bday);
 
         }
@@ -178,17 +183,19 @@ public class RegisterActivity extends ActionBarActivity {
                 userName = uName.getText().toString();
                 EditText uLName = (EditText) findViewById(R.id.lastText);
                 userLName = uLName.getText().toString();
-
                 TextView bDate = (TextView) findViewById(R.id.bday);
-                bDate  = bDate.getText().toString();
-
-                EditText telephone = (EditText) findViewById(R.id.register);
-                telephone = telephone.getText().toString();
+                birthday  = bDate.getText().toString();
+                EditText telephone = (EditText) findViewById(R.id.telephone);
+                telephoneNumber = telephone.getText().toString();
 
 
                 List<NameValuePair> categoryName = new ArrayList<>();
                 categoryName.add(new BasicNameValuePair("t_Email", userEmail));
                 categoryName.add(new BasicNameValuePair("t_password", password));
+                categoryName.add(new BasicNameValuePair("t_FName", userName));
+                categoryName.add(new BasicNameValuePair("t_LName", userLName));
+                categoryName.add(new BasicNameValuePair("t_BDate", birthday));
+                categoryName.add(new BasicNameValuePair("t_telephone", telephoneNumber));
 
                 //////////////////////////////////
 
@@ -220,13 +227,8 @@ public class RegisterActivity extends ActionBarActivity {
             try {
                 JSONObject jObj = new JSONObject(result);
 
-                int success = jObj.getInt(TAG_SUCCESS);
+                success = jObj.getInt(TAG_SUCCESS);
 
-                if(success == 1) {
-                    conn.setLogged(true);
-                } else {
-
-                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -238,10 +240,10 @@ public class RegisterActivity extends ActionBarActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if(conn.isLogged()) {
+                    if(success == 1) {
                         finish();
                     } else {
-                        Toast.makeText(getApplicationContext(), R.string.wrong_login, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Could not register", Toast.LENGTH_SHORT).show();
                     }
                 }
             });

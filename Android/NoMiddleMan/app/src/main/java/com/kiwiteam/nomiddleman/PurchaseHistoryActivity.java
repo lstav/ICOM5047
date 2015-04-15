@@ -74,7 +74,7 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
 
     private void handleIntent(Intent intent) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        purchaseHistory = conn.getHistory();
+       /* purchaseHistory = conn.getHistory();
         ArrayList<PurchaseHistory.HistoryItem> activeHistory = new ArrayList<>();
         ArrayList<PurchaseHistory.HistoryItem> pastHistory = new ArrayList<>();
 
@@ -100,7 +100,7 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
         pastListView.setAdapter(pastAdapter);
 
         setListViewHeightBasedOnChildren(upcomingListView);
-        setListViewHeightBasedOnChildren(pastListView);
+        setListViewHeightBasedOnChildren(pastListView);*/
     }
 
 
@@ -159,7 +159,7 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
 
     public void account() {
         Intent intent = new Intent(this, AccountActivity.class);
-        intent.putExtra("Index", conn.getIndex());
+        intent.putExtra("Index", conn.getT_key());
         startActivity(intent);
     }
 

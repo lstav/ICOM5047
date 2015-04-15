@@ -32,13 +32,13 @@ public class EditAccountActivity extends ActionBarActivity {
     }
 
     private void fillText() {
-        String[] tourist = conn.getTouristInfo(0);
+        /*String[] tourist = conn.getTouristInfo(0);
         EditText fName = (EditText) findViewById(R.id.userName);
         fName.setText(tourist[1]);
         EditText lName = (EditText) findViewById(R.id.userLName);
         lName.setText(tourist[2]);
         EditText email = (EditText) findViewById(R.id.email);
-        email.setText(tourist[0]);
+        email.setText(tourist[0]);*/
     }
 
     @Override
@@ -95,7 +95,7 @@ public class EditAccountActivity extends ActionBarActivity {
 
     public void account() {
         Intent intent = new Intent(this, AccountActivity.class);
-        intent.putExtra("Index", conn.getIndex());
+        intent.putExtra("Index", conn.getT_key());
         startActivity(intent);
     }
 
@@ -111,10 +111,10 @@ public class EditAccountActivity extends ActionBarActivity {
         String uEmail = email.getText().toString();
 
         if(validateEmail(uEmail)) {
-            conn.setTouristFName(0, firstName);
+            /*conn.setTouristFName(0, firstName);
             conn.setTouristLName(0, lastName);
             conn.setTouristEmail(0, uEmail);
-
+*/
             finish();
         } else {
             Toast.makeText(this, "No valid email", Toast.LENGTH_SHORT).show();

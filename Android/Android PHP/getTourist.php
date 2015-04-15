@@ -5,9 +5,9 @@
 	include_once("dbconnection.php");
 	
 	if(isset($_REQUEST['t_key'])) {
-		$email = $_REQUEST['t_key'];
+		$key = $_REQUEST['t_key'];
 		
-		$result = pg_query($conn, "SELECT * FROM \"Tourist\" as T WHERE \"t_key\"=$email");
+		$result = pg_query($conn, "SELECT * FROM \"Tourist\" as T WHERE \"t_key\"=$key");
 		
 		if(!empty($result)) {
 			

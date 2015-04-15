@@ -41,6 +41,7 @@ public class LoginActivity extends ActionBarActivity {
 
     DatabaseConnection conn;
     private static final String TAG_SUCCESS = "success";
+    private static final String TAG_KEY = "key";
     private ProgressDialog pDialog;
     private static String url_login = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/login.php";
     private JSONArray backup;
@@ -142,7 +143,7 @@ public class LoginActivity extends ActionBarActivity {
                 int success = jObj.getInt(TAG_SUCCESS);
 
                 if(success == 1) {
-                    conn.setLogged(true);
+                    conn.setLogged(true, jObj.getInt(TAG_KEY));
                 } else {
 
                 }

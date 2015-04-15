@@ -92,7 +92,7 @@ public class PaypalActivity extends ActionBarActivity {
 
     public void account() {
         Intent intent = new Intent(this, AccountActivity.class);
-        intent.putExtra("Index", conn.getIndex());
+        intent.putExtra("Index", conn.getT_key());
         startActivity(intent);
     }
 
@@ -104,7 +104,7 @@ public class PaypalActivity extends ActionBarActivity {
         EditText pPass = (EditText) findViewById(R.id.payPalPass);
         password = pPass.getText().toString();
 
-        if(conn.payPalLogin(email, password)) {
+        /*if(conn.payPalLogin(email, password)) {
             ArrayList<ShoppingItem> shoppingCart = conn.getShoppingCart(0);
 
             System.out.println("Shopping Size " +shoppingCart.size());
@@ -120,7 +120,7 @@ public class PaypalActivity extends ActionBarActivity {
             startActivity(intent);
         } else {
             Toast.makeText(this, R.string.wrong_login, Toast.LENGTH_SHORT).show();
-        }
+        }*/
 
     }
 
