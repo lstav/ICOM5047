@@ -19,7 +19,7 @@
 		if($result) {
 			
 			$response['success'] = 1;
-			$response['message'] = "Added to cart";
+			$response['message'] = "Register Completed";
 			
 			echo json_encode($response);
 		} else {

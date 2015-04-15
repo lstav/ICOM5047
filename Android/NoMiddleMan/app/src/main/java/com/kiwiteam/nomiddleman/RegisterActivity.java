@@ -2,7 +2,9 @@ package com.kiwiteam.nomiddleman;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.provider.ContactsContract;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBarActivity;
@@ -12,9 +14,26 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.regex.Pattern;
 
 
@@ -24,7 +43,13 @@ public class RegisterActivity extends ActionBarActivity {
     private String password;
     private String userName;
     private String userLName;
+    private String birthday;
 
+    public String bday;
+
+    private static final String TAG_SUCCESS = "success";
+    private ProgressDialog pDialog;
+    private static String url_register = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/register.php";
     DatabaseConnection conn;
 
 
@@ -75,14 +100,16 @@ public class RegisterActivity extends ActionBarActivity {
         userEmail = uEmail.getText().toString();
 
         if(validateEmail(userEmail)) {
-            EditText pass = (EditText) findViewById(R.id.password);
+
+            new Register().execute();
+            /*EditText pass = (EditText) findViewById(R.id.password);
             password = pass.getText().toString();
             EditText uName = (EditText) findViewById(R.id.firstText);
             userName = uName.getText().toString();
             EditText uLName = (EditText) findViewById(R.id.lastText);
             userLName = uLName.getText().toString();
             conn.register(userEmail, password, userName, userLName);
-            finish();
+            finish();*/
         } else {
             Toast.makeText(this, "No valid email", Toast.LENGTH_SHORT).show();
         }
@@ -96,7 +123,7 @@ public class RegisterActivity extends ActionBarActivity {
         return pattern.matcher(email).matches();
     }
 
-    public static class DatePickerFragment extends DialogFragment
+    public class DatePickerFragment extends DialogFragment
             implements DatePickerDialog.OnDateSetListener {
 
         @Override
@@ -113,7 +140,113 @@ public class RegisterActivity extends ActionBarActivity {
 
         public void onDateSet(DatePicker view, int year, int month, int day) {
             // Do something with the date chosen by the user
+            /*Calendar selectedCalendar = Calendar.getInstance();
+            selectedCalendar.set(Calendar.YEAR, year);
+            selectedCalendar.set(Calendar.MONTH, month);
+            selectedCalendar.set(Calendar.DAY_OF_MONTH, day);*/
+
+            bday = year + "-" + year + "-" + month + "-" + day;
+
+            TextView bDate = (TextView) findViewById(R.id.register);
+            bDate.setText(bday);
+
         }
+    }
+
+    class Register extends AsyncTask<String, String, String> {
+
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(RegisterActivity.this);
+            pDialog.setMessage("Registering. Please wait...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
+
+        protected String doInBackground(String... params) {
+            String result = "";
+
+            try {
+                HttpClient httpClient = new DefaultHttpClient();
+
+                EditText uEmail = (EditText) findViewById(R.id.email);
+                userEmail = uEmail.getText().toString();
+                EditText pass = (EditText) findViewById(R.id.password);
+                password = pass.getText().toString();
+                EditText uName = (EditText) findViewById(R.id.firstText);
+                userName = uName.getText().toString();
+                EditText uLName = (EditText) findViewById(R.id.lastText);
+                userLName = uLName.getText().toString();
+
+                TextView bDate = (TextView) findViewById(R.id.bday);
+                bDate  = bDate.getText().toString();
+
+                EditText telephone = (EditText) findViewById(R.id.register);
+                telephone = telephone.getText().toString();
+
+
+                List<NameValuePair> categoryName = new ArrayList<>();
+                categoryName.add(new BasicNameValuePair("t_Email", userEmail));
+                categoryName.add(new BasicNameValuePair("t_password", password));
+
+                //////////////////////////////////
+
+                HttpPost httppost = new HttpPost(url_register);
+
+                httppost.setEntity(new UrlEncodedFormEntity(categoryName));
+
+                HttpResponse response = httpClient.execute(httppost);
+
+                HttpEntity entity = response.getEntity();
+                InputStream webs = entity.getContent();
+
+                try {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(webs,"iso-8859-1"),8);
+                    StringBuilder sb = new StringBuilder();
+                    String line = null;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    webs.close();
+                    result=sb.toString();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                JSONObject jObj = new JSONObject(result);
+
+                int success = jObj.getInt(TAG_SUCCESS);
+
+                if(success == 1) {
+                    conn.setLogged(true);
+                } else {
+
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String file_url) {
+            pDialog.dismiss();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(conn.isLogged()) {
+                        finish();
+                    } else {
+                        Toast.makeText(getApplicationContext(), R.string.wrong_login, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+
     }
 
 
