@@ -45,6 +45,10 @@ public class CheckoutActivity extends ActionBarActivity {
         handleIntent(intent);
     }
 
+    /**
+     * Removes item from list
+     * @param position
+     */
     public void removeItem(int position) {
         conn.removeFromShoppingCart(position);
         adapter.notifyDataSetChanged();
@@ -60,6 +64,10 @@ public class CheckoutActivity extends ActionBarActivity {
         }
     }
 
+    /**
+     * Shows objects from the shopping cart that are still active
+     * @param intent
+     */
     private void handleIntent(Intent intent) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         shoppingCart = conn.getShoppingCart(0);
@@ -181,13 +189,13 @@ public class CheckoutActivity extends ActionBarActivity {
             ShoppingItem currentTour = shoppingCart.get(position);
 
             // fill the view
-            int draw = getResources().getIdentifier(currentTour.getTourPicture().get(0),"drawable",getPackageName());
+            //int draw = getResources().getIdentifier(currentTour.getTourPicture().get(0),"drawable",getPackageName());
 
-            ImageView picture = (ImageView) itemView.findViewById(R.id.tourPic);
+            /*ImageView picture = (ImageView) itemView.findViewById(R.id.tourPic);
             Drawable img = getResources().getDrawable(draw);
 
             picture.setImageDrawable(img);
-
+*/
 
             TextView tName = (TextView) itemView.findViewById(R.id.tourName);
             tName.setText(currentTour.getTourName());

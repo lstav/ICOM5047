@@ -7,7 +7,10 @@
 	if(isset($_REQUEST['t_key'])) {
 		$keyword = $_REQUEST['t_key'];
 		
-		$result = pg_query($conn, "Select T.tour_key as Key, upper(T.\"tour_Name\") as Name, T.\"tour_Desc\" as Description, T.\"Price\" as Price, T.\"extremeness\" as Extremeness, T.\"tour_photo\" as Photo, T.\"s_Time\" as Time, T.\"p_quantity\" as Qty FROM \"Shopping Cart\" as T Where \"t_key\"=$keyword");
+		$result = pg_query($conn, "Select T.tour_key as Key, upper(T.\"tour_Name\") as Name, 
+		T.\"tour_Desc\" as Description, T.\"Price\" as Price, T.\"extremeness\" as Extremeness, 
+		T.\"tour_photo\" as Photo, T.\"s_Time\" as Time, T.\"p_quantity\" as Qty FROM \"Shopping Cart\" as T 
+		Where \"t_key\"=$keyword");
 		
 		if(pg_num_rows($result) > 0) {
 			$response['tours'] = array();

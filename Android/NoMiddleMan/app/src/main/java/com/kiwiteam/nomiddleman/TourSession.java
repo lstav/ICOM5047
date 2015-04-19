@@ -9,20 +9,20 @@ public class TourSession {
     private String day;
     private String time;
     private int id;
-    private boolean isActive;
+    private int availability;
 
     public TourSession() {
         day = "";
         time = "";
         id = -1;
-        isActive = false;
+        availability = 0;
     }
 
-    public TourSession(String day, String time, int id, boolean isActive) {
+    public TourSession(String day, String time, int id, int availability) {
         this.day = day;
         this.time = time;
         this.id = id;
-        this.isActive = isActive;
+        this.availability = availability;
     }
 
     public String getSessionDay() {
@@ -37,12 +37,12 @@ public class TourSession {
         return id;
     }
 
-    public void setActive(boolean isActive) {
-        this.isActive = isActive;
+    public int getAvailability() {
+        return availability;
     }
 
-    public boolean isActive() {
-        return isActive;
+    public void updateAvailability(int qty) {
+        availability = availability - qty;
     }
 
 

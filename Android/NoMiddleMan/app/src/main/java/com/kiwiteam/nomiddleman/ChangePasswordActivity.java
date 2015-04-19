@@ -1,9 +1,11 @@
 package com.kiwiteam.nomiddleman;
 
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -12,12 +14,43 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class ChangePasswordActivity extends ActionBarActivity {
 
     private DatabaseConnection conn;
+    private String newPass;
+    private String confirmPass;
+    private ProgressDialog pDialog;
+    private int index;
+    private int success;
+
+    private static final String TAG_SUCCESS = "success";
+
+    private JSONArray response;
+
+    private static String url_change_password = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/changePass.php";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +58,7 @@ public class ChangePasswordActivity extends ActionBarActivity {
         setContentView(R.layout.activity_change_password);
 
         conn = (DatabaseConnection) getApplicationContext();
+        index = conn.getT_key();
     }
 
 
@@ -86,27 +120,102 @@ public class ChangePasswordActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
-
     public void confirm(View view) {
-        EditText oPass = (EditText) findViewById(R.id.oldPass);
         EditText nPass = (EditText) findViewById(R.id.newPass);
         EditText cNPass = (EditText) findViewById(R.id.cNewPass);
 
-        /*String dbPass = conn.getPassword(0);
+        if(nPass.getText().toString().equals(cNPass.getText().toString())) {
+            newPass = nPass.getText().toString();
+            confirmPass = cNPass.getText().toString();
 
-        if(dbPass.equals(oPass.getText().toString())) {
-            if(nPass.getText().toString().equals(cNPass.getText().toString())) {
-                conn.setPassword(0, nPass.getText().toString());
-                finish();
-            } else {
-                Toast.makeText(this, R.string.password_not_match, Toast.LENGTH_SHORT).show();
-            }
+            new PassChange().execute();
+            finish();
         } else {
-            Toast.makeText(this, R.string.incorrect_password, Toast.LENGTH_SHORT).show();
-        }*/
+            Toast.makeText(this, R.string.password_not_match, Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     public void cancel(View view) {
         finish();
     }
+
+    /**
+     * Sends new password to database and updates the database
+     */
+    class PassChange extends AsyncTask<String, String, String> {
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(ChangePasswordActivity.this);
+            pDialog.setMessage("Loading results. Please wait...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String result = "";
+
+            try {
+                HttpClient httpClient = new DefaultHttpClient();
+                String url;
+
+                List<NameValuePair> categoryName = new ArrayList<>();
+                categoryName.add(new BasicNameValuePair("key", Integer.toString(index)));
+                categoryName.add(new BasicNameValuePair("password", newPass));
+
+                HttpPost httppost = new HttpPost(url_change_password);
+
+                httppost.setEntity(new UrlEncodedFormEntity(categoryName));
+
+                HttpResponse response = httpClient.execute(httppost);
+
+                HttpEntity entity = response.getEntity();
+                InputStream webs = entity.getContent();
+
+                try {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(webs,"iso-8859-1"),8);
+                    StringBuilder sb = new StringBuilder();
+                    String line = null;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    webs.close();
+                    result=sb.toString();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                JSONObject jObj = new JSONObject(result);
+
+                success = jObj.getInt(TAG_SUCCESS);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        protected void onPostExecute(String file_url) {
+            pDialog.dismiss();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(success == 1) {
+                        finish();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Could not change password", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+
+    }
+
 }

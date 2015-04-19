@@ -2,6 +2,7 @@ package com.kiwiteam.nomiddleman;
 
 import android.app.Application;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.widget.EditText;
 
 import java.lang.reflect.Array;
@@ -23,12 +24,23 @@ public class DatabaseConnection extends Application {
     private ArrayList<String> tourNames = new ArrayList<>();
     private ArrayList<RatingClass> ratings = new ArrayList<>();
     private ShoppingCart shoppingCart;
-    private PurchaseHistory purchaseHistory = new PurchaseHistory();;
+    private PurchaseHistory purchaseHistory = new PurchaseHistory();
     private int t_key = -1;
+
+    private static final String PREFS_NAME = "LoggedInFile";
+    private static final String PREF_LOGGED = "isLogged";
+    private static final String PREF_KEY = "key";
+    public SharedPreferences pref;
 
 
     public void onCreate() {
         super.onCreate();
+        pref = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
+        isLogged  = pref.getBoolean(PREF_LOGGED, false);
+        t_key = pref.getInt(PREF_KEY, -1);
+        if (isLogged != false && t_key != -1) {
+            setLogged(true, t_key, true);
+        }
         populateLists();
     }
 
@@ -71,9 +83,12 @@ public class DatabaseConnection extends Application {
         startActivity(intent);
     }
 
-    public void setLogged(boolean bool, int key) {
+    public void setLogged(boolean bool, int key, boolean isChecked) {
         setT_key(key);
         isLogged = bool;
+        if(isChecked) {
+            getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit().putInt(PREF_KEY, key).putBoolean(PREF_LOGGED, bool).commit();
+        }
     }
 
     public boolean isLogged() {

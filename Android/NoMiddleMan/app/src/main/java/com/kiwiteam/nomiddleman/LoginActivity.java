@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -80,12 +81,14 @@ public class LoginActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    // Executes login query
     public void login(View view) {
         new Login().execute();
     }
 
     class Login extends AsyncTask<String, String, String> {
 
+        // Creates a loading dialog
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(LoginActivity.this);
@@ -95,6 +98,10 @@ public class LoginActivity extends ActionBarActivity {
             pDialog.show();
         }
 
+        /**
+         * Calls query to login
+         * @return success
+         */
         protected String doInBackground(String... params) {
             String result = "";
 
@@ -142,10 +149,11 @@ public class LoginActivity extends ActionBarActivity {
 
                 int success = jObj.getInt(TAG_SUCCESS);
 
+                // Checks if user wants to remember login
                 if(success == 1) {
-                    conn.setLogged(true, jObj.getInt(TAG_KEY));
-                } else {
-
+                    CheckBox checkBox = (CheckBox) findViewById(R.id.checkBox);
+                    boolean isChecked = checkBox.isChecked();
+                    conn.setLogged(true, jObj.getInt(TAG_KEY), isChecked);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -153,6 +161,11 @@ public class LoginActivity extends ActionBarActivity {
             return null;
         }
 
+        /**
+         * If success = 1, the user is logged in and returned to previous activity
+         * If success = 0, the user is given a "Wrong Login" message
+         * @param file_url
+         */
         protected void onPostExecute(String file_url) {
             pDialog.dismiss();
             runOnUiThread(new Runnable() {

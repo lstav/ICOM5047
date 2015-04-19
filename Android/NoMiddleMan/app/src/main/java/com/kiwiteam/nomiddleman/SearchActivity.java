@@ -94,6 +94,7 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
 
         String category = intent.getStringExtra("searchCategory");
 
+        // Choose search method
         if(category == null) {
             selectedCategory = false;
         } else {
@@ -132,41 +133,21 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
         registerClickCallback();
     }
 
+    /**
+     * Search tours by category
+     * @param intent
+     */
     private void handleCategoryIntent(Intent intent) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         query = intent.getStringExtra("category");
         new LoadByCategory().execute();
-
-        /*if(!indexes.isEmpty()) {
-            for(int i=0;i<indexes.size();i++) {
-                tour = conn.getTourInformation(indexes.get(i));
-                if(tour.isActive()) {
-                    this.tourInfo.add(new Tour(tour.getTourName(), tour.getTourPrice(), tour.getTourPictures(), indexes.get(i), tour.getExtremeness()));
-                }
-            }
-
-            findViewById(R.id.result).setVisibility(View.GONE);
-
-            sortBy = (Spinner) findViewById(R.id.sortBy);
-            sAdapter = ArrayAdapter.createFromResource(this, R.array.sort_by_array, android.R.layout.simple_spinner_item);
-            sAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            sortBy.setOnItemSelectedListener(this);
-
-            sortBy.setAdapter(sAdapter);
-
-
-            ArrayAdapter<Tour> adapter = new MyListAdapter();
-
-            listView = (ListView) findViewById(R.id.listView);
-            listView.setAdapter(adapter);
-
-        } else {
-            TextView fName = (TextView) findViewById(R.id.result);
-            fName.setText("No Results");
-        }*/
     }
 
+    /**
+     * Search tours by keyword
+     * @param intent
+     */
     private void handleIntent(Intent intent) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ArrayList<Integer> indexes;
@@ -175,38 +156,6 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             query = intent.getStringExtra(SearchManager.QUERY);
             new LoadByKeyword().execute();
-
-            //indexes = conn.searchToursByString(query);
-
-            /*if(!indexes.isEmpty()) {
-                for(int i=0;i<indexes.size();i++) {
-                    tour = conn.getTourInformation(indexes.get(i));
-                    if(tour.isActive()) {
-                        //this.tourInfo.add(new Tour(tour.getTourName(), tour.getTourPrice(), tour.getTourPictures(), indexes.get(i), tour.getExtremeness()));
-                    }
-                }
-
-                findViewById(R.id.result).setVisibility(View.GONE);
-
-                sortBy = (Spinner) findViewById(R.id.sortBy);
-                sAdapter = ArrayAdapter.createFromResource(this, R.array.sort_by_array, android.R.layout.simple_spinner_item);
-                sAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                sortBy.setOnItemSelectedListener(this);
-
-                sortBy.setAdapter(sAdapter);
-
-
-                ArrayAdapter<Tour> adapter = new MyListAdapter();
-
-
-                listView = (ListView) findViewById(R.id.listView);
-                listView.setAdapter(adapter);
-
-            } else {
-                TextView fName = (TextView) findViewById(R.id.result);
-                fName.setText(R.string.no_results);
-            }*/
-
         }
     }
 
@@ -226,6 +175,9 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
         return true;
     }
 
+    /**
+     * Starts search manager
+     */
     private void initSearchView() {
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         final SearchView searchView = (SearchView) findViewById(R.id.searchView);
@@ -264,12 +216,18 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Calls tourist account activity
+     */
     public void account() {
         Intent intent = new Intent(this, AccountActivity.class);
         intent.putExtra("Index", conn.getT_key());
         startActivity(intent);
     }
 
+    /**
+     * Click listener for search results
+     */
     private void registerClickCallback() {
         ListView list = (ListView) findViewById(R.id.listView);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -307,6 +265,9 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
 
     }
 
+    /**
+     * Fills the listview with query results
+     */
     private class MyListAdapter extends ArrayAdapter<Tour> {
 
         public MyListAdapter() {
@@ -356,6 +317,9 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
         }
     }
 
+    /**
+     * Search database with results by categories
+     */
     class LoadByCategory extends AsyncTask<String, String, String> {
 
         protected void onPreExecute() {
@@ -439,6 +403,9 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
 
     }
 
+    /**
+     * Search database with results by keyword
+     */
     class LoadByKeyword extends AsyncTask<String, String, String> {
 
         protected void onPreExecute() {

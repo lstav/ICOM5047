@@ -1,5 +1,6 @@
 package com.kiwiteam.nomiddleman;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -126,6 +127,7 @@ public class RegisterActivity extends ActionBarActivity {
         return pattern.matcher(email).matches();
     }
 
+    @SuppressLint("ValidFragment")
     public class DatePickerFragment extends DialogFragment
             implements DatePickerDialog.OnDateSetListener {
 
@@ -250,6 +252,4 @@ public class RegisterActivity extends ActionBarActivity {
         }
 
     }
-
-
 }

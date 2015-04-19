@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.Rating;
 import android.net.Uri;
@@ -34,7 +35,9 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
@@ -62,35 +65,54 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
     private Spinner tDay;
     private int query;
     private Spinner tTime;
+    private Spinner tQty;
     private ArrayAdapter<String> tAdapter;
     private ArrayAdapter<String> dAdapter;
+    private ArrayAdapter<Integer> qAdapter;
     private ArrayAdapter<RatingClass> rAdapter;
     private ListView listView;
     private List<RatingClass> ratings = new ArrayList<>();
+    private ImageView picture;
+    ArrayList<RatingClass> tourRatingsA = new ArrayList<>();
+    ArrayList<TourSession> tourSessionsA = new ArrayList<>();
 
     private Bitmap bitmap;
 
-    private JSONArray response;
+    private JSONArray tourResponse;
+    private JSONArray tourSessions;
+    private JSONArray tourReviews;
 
     private ProgressDialog pDialog;
     private static String url_get_tourpage = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/getTour.php";
+    private static String url_add_to_cart = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/addToCart.php";
 
-    private static final String TAG_KEY = "tour_key";
-    private static final String TAG_NAME = "tour_Name";
-    private static final String TAG_DESC = "tour_Desc";
+    private static final String TAG_KEY = "key";
+    private static final String TAG_NAME = "name";
+    private static final String TAG_DESC = "description";
+    private static final String TAG_FACEBOOK = "facebook";
+    private static final String TAG_YOUTUBE = "youtube";
+    private static final String TAG_INSTAGRAM = "instagram";
+    private static final String TAG_TWITTER = "twitter";
+    private static final String TAG_PRICE = "price";
     private static final String TAG_EXTREMENESS = "extremeness";
-    private static final String TAG_PHOTO = "tour_photo";
-    private static final String TAG_FACEBOOK = "Facebook";
-    private static final String TAG_YOUTUBE = "Youtube";
-    private static final String TAG_INSTAGRAM = "Instagram";
-    private static final String TAG_TWITTER = "Twitter";
-    private static final String TAG_DURATION = "Duration";
-    private static final String TAG_PRICE = "Price";
-    private static final String TAG_QUANTITY = "tour_quantity";
-    private static final String TAG_TIME = "s_Time";
-    private static final String TAG_AVAILBILITY = "Availability";
+    private static final String TAG_PHOTO = "photo";
+    private static final String TAG_ADDRESS = "address";
+    private static final String TAG_EMAIL = "gemail";
+    private static final String TAG_GNAME = "gname";
+    private static final String TAG_LICENSE = "license";
+    private static final String TAG_COMPANY = "company";
+    private static final String TAG_TELEPHONE = "telephone";
+    private static final String TAG_AVGRATE = "averagerate";
+    private static final String TAG_RATECOUNT = "ratecount";
 
+    private static final String TAG_TSKEY = "tskey";
+    private static final String TAG_TIME = "time";
+    private static final String TAG_DATE = "date";
+    private static final String TAG_AVAILABILITY = "availability";
 
+    private static final String TAG_TKEY = "tkey";
+    private static final String TAG_RATING = "rating";
+    private static final String TAG_REVIEW = "review";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,59 +128,15 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
     public void initTourPage(Intent intent) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-         tourID = intent.getIntExtra("tourId", -1);
+        tourID = intent.getIntExtra("tourId", -1);
 
         if( tourID == -1) {
             finish();
         } else {
             query = tourID;
+            new GetTourPage().execute();
             //tour = conn.getTourInformation(tourID);
         }
-
-        /*ratings = tour.getAllRatings();
-
-        TextView tName = (TextView) findViewById(R.id.tourName);
-        tName.setText(tour.getTourName());
-
-        RatingBar tRating = (RatingBar) findViewById(R.id.tourRating);
-        tRating.setRating((float) tour.getTourRating());
-
-        tRating = (RatingBar) findViewById(R.id.ratingBar);
-        tRating.setRating((float) tour.getTourRating());
-
-        RatingBar extremeBar = (RatingBar) findViewById(R.id.extremeness);
-        extremeBar.setRating((float) tour.getExtremeness());
-
-        TextView ratingNumber = (TextView) findViewById(R.id.review_number);
-        ratingNumber.setText("(" +tour.getTourRatings().size() + ")");
-
-        TextView totalReviews = (TextView) findViewById(R.id.totalReviews);
-        totalReviews.setText(String.format("%.1f", tour.getTourRating()) + " of 5.0");
-
-        ImageView tPicture = (ImageView) findViewById(R.id.tourPicture);
-        Drawable img = getResources().getDrawable(getResources().getIdentifier(tour.getTourPictures().get(0),"drawable",getPackageName()));
-        tPicture.setImageDrawable(img);
-
-        TextView tPrice = (TextView) findViewById(R.id.tourPrice);
-        tPrice.setText("$" + String.format("%.2f", tour.getTourPrice()));
-
-        tDay = (Spinner) findViewById(R.id.day);
-        dAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,tour.getTourSessionsDate());
-        dAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        tDay.setOnItemSelectedListener(this);
-
-        tDay.setAdapter(dAdapter);
-
-        TextView tDescription = (TextView) findViewById(R.id.description);
-        tDescription.setText(tour.getTourDescription());
-
-        rAdapter = new MyListAdapter();
-
-        ListView reviewList = (ListView) findViewById(R.id.reviewList);
-        reviewList.setAdapter(rAdapter);
-        setListViewHeightBasedOnChildren(reviewList);
-*/
     }
 
     public static void setListViewHeightBasedOnChildren(ListView listView) {
@@ -244,8 +222,8 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
     }
 
     public void addToCart(View view) {
-        EditText qty = (EditText) findViewById(R.id.quantity);
-        this.quantity = Integer.parseInt(qty.getText().toString());
+        Spinner qty = (Spinner) findViewById(R.id.quantity);
+        this.quantity = Integer.parseInt(qty.getSelectedItem().toString());
         this.date = tDay.getSelectedItem().toString();
         this.time = tTime.getSelectedItem().toString();
 
@@ -260,14 +238,32 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        String day = parent.getItemAtPosition(position).toString();
-        ArrayList<String> times = tour.getTourSessionsTime(day);
+        int vId = parent.getId();
+        switch (vId) {
+            case R.id.day:
+                String day = parent.getItemAtPosition(position).toString();
+                ArrayList<String> times = tour.getTourSessionsTime(day);
 
-        tTime = (Spinner) findViewById(R.id.time);
-        tAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,times);
-        tAdapter.notifyDataSetChanged();
-        tAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        tTime.setAdapter(tAdapter);
+                tTime = (Spinner) findViewById(R.id.time);
+                tAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, times);
+                tAdapter.notifyDataSetChanged();
+
+                tTime.setOnItemSelectedListener(this);
+                tAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                tTime.setAdapter(tAdapter);
+                break;
+            case R.id.time:
+                String time = parent.getItemAtPosition(position).toString();
+                ArrayList<Integer> quantities = tour.getTourSessionAvailability(tDay.getSelectedItem().toString(), time);
+
+                tQty = (Spinner) findViewById(R.id.quantity);
+                qAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, quantities);
+                qAdapter.notifyDataSetChanged();
+
+                qAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                tQty.setAdapter(qAdapter);
+                break;
+        }
     }
 
     @Override
@@ -325,7 +321,7 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
             pDialog = new ProgressDialog(TourPageActivity.this);
             pDialog.setMessage("Loading results. Please wait...");
             pDialog.setIndeterminate(false);
-            pDialog.setCancelable(false);
+            pDialog.setCancelable(true);
             pDialog.show();
         }
 
@@ -340,12 +336,11 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                 List<NameValuePair> categoryName = new ArrayList<>();
                 categoryName.add(new BasicNameValuePair("tour_key", Integer.toString(query)));
 
-                String paramString = URLEncodedUtils.format(categoryName, "utf-8");
-                url = url_get_tourpage + "?" + paramString;
+                HttpPost httpPost = new HttpPost(url_get_tourpage);
 
-                HttpGet httpGet = new HttpGet(url);
+                httpPost.setEntity(new UrlEncodedFormEntity(categoryName));
 
-                HttpResponse response = httpClient.execute(httpGet);
+                HttpResponse response = httpClient.execute(httpPost);
 
                 HttpEntity entity = response.getEntity();
                 InputStream webs = entity.getContent();
@@ -368,17 +363,35 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
 
             try {
                 JSONObject jObj = new JSONObject(result);
-                response = jObj.getJSONArray("tour");
+                tourResponse = jObj.getJSONArray("tour");
+                tourSessions = jObj.getJSONArray("sessions");
+                tourReviews = jObj.getJSONArray("reviews");
 
-                for (int i=0; i<response.length(); i++) {
-                    JSONObject c = response.getJSONObject(i);
+                for(int i=0; i<tourResponse.length(); i++) {
+                    JSONObject c = tourResponse.getJSONObject(i);
                     try {
                         bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "img1.jpg").getContent());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
 
-                    //tour = new TourClass(c.getInt(TAG_KEY),c.getString(TAG_NAME),c.getString())
+                    for (int j = 0; j < tourSessions.length(); j++) {
+                        JSONObject d = tourSessions.getJSONObject(j);
+
+                        tourSessionsA.add(new TourSession(d.getString(TAG_DATE), d.getString(TAG_TIME), d.getInt(TAG_TSKEY), d.getInt(TAG_AVAILABILITY)));
+                    }
+
+                    for (int j = 0; j < tourReviews.length(); j++) {
+                        JSONObject d = tourReviews.getJSONObject(j);
+
+                        tourRatingsA.add(new RatingClass(d.getDouble(TAG_RATING), d.getString(TAG_REVIEW)));
+                    }
+
+                    tour = new TourClass(c.getInt(TAG_KEY), c.getString(TAG_NAME), c.getString(TAG_DESC), c.getString(TAG_FACEBOOK), c.getString(TAG_YOUTUBE),
+                            c.getString(TAG_INSTAGRAM), c.getString(TAG_TWITTER), Price.getDouble(c.getString(TAG_PRICE)), c.getDouble(TAG_EXTREMENESS), new ArrayList<>(Arrays.asList(bitmap)),
+                            c.getString(TAG_ADDRESS), c.getString(TAG_EMAIL), c.getString(TAG_GNAME), c.getString(TAG_LICENSE), c.getString(TAG_COMPANY),
+                            c.getString(TAG_TELEPHONE), c.getDouble(TAG_AVGRATE), c.getInt(TAG_RATECOUNT), tourRatingsA, tourSessionsA);
+
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -391,10 +404,140 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    ArrayAdapter<RatingClass> adapter = new MyListAdapter();
+                    ratings = tourRatingsA;
+
+                    TextView tName = (TextView) findViewById(R.id.tourName);
+                    tName.setText(tour.getTourName());
+
+                    RatingBar tRating = (RatingBar) findViewById(R.id.tourRating);
+                    tRating.setRating((float) tour.getAverageRating());
+
+                    tRating = (RatingBar) findViewById(R.id.ratingBar);
+                    tRating.setRating((float) tour.getAverageRating());
+
+                    RatingBar extremeBar = (RatingBar) findViewById(R.id.extremeness);
+                    extremeBar.setRating((float) tour.getExtremeness());
+
+                    TextView ratingNumber = (TextView) findViewById(R.id.review_number);
+                    ratingNumber.setText("(" +tour.getRateCount() + ")");
+
+                    TextView totalReviews = (TextView) findViewById(R.id.totalReviews);
+                    totalReviews.setText(String.format("%.1f", tour.getAverageRating()) + " of 5.0");
+
+                    ImageView tPicture = (ImageView) findViewById(R.id.tourPicture);
+                    tPicture.setImageBitmap(tour.getTourPictures().get(0));
+
+                    TextView tPrice = (TextView) findViewById(R.id.tourPrice);
+                    tPrice.setText("$" + String.format("%.2f", tour.getTourPrice()));
+
+                    tDay = (Spinner) findViewById(R.id.day);
+
+                    dAdapter = new ArrayAdapter<>(TourPageActivity.this, android.R.layout.simple_spinner_item,tour.getTourSessionsDate());
+                    dAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                    tDay.setOnItemSelectedListener(TourPageActivity.this);
+
+                    tDay.setAdapter(dAdapter);
+
+                    TextView tDescription = (TextView) findViewById(R.id.description);
+                    tDescription.setText(tour.getTourDescription());
+
+                    TextView tAddress = (TextView) findViewById(R.id.address);
+                    tAddress.setText(tour.getTourAddress());
+
+                    TextView gMail = (TextView) findViewById(R.id.gEmail);
+                    gMail.setText(tour.getGuideEmail());
+
+                    TextView gName = (TextView) findViewById(R.id.gName);
+                    gName.setText(tour.getGuideName());
+
+                    TextView license = (TextView) findViewById(R.id.license);
+                    license.setText(tour.getGuideLicense());
+
+                    TextView company = (TextView) findViewById(R.id.company);
+                    gName.setText(tour.getCompany());
+
+                    TextView telephone = (TextView) findViewById(R.id.telephone);
+                    license.setText(tour.getTelephone());
+
+                    rAdapter = new MyListAdapter();
+
+                    ListView reviewList = (ListView) findViewById(R.id.reviewList);
+                    reviewList.setAdapter(rAdapter);
+                    setListViewHeightBasedOnChildren(reviewList);
+
+                    /*ArrayAdapter<RatingClass> adapter = new MyListAdapter();
 
                     listView = (ListView) findViewById(R.id.listView);
-                    listView.setAdapter(adapter);
+                    listView.setAdapter(adapter);*/
+                }
+            });
+        }
+    }
+    class AddToCart extends AsyncTask<String, String, String> {
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(TourPageActivity.this);
+            pDialog.setMessage("Loading results. Please wait...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String result = "";
+
+            try {
+                HttpClient httpClient = new DefaultHttpClient();
+                String url;
+
+                List<NameValuePair> categoryName = new ArrayList<>();
+                categoryName.add(new BasicNameValuePair("t_key", Integer.toString(query)));
+                categoryName.add(new BasicNameValuePair("ts_key", Integer.toString(query)));
+                categoryName.add(new BasicNameValuePair("quantity", tQty.getSelectedItem().toString()));
+
+                HttpPost httpPost = new HttpPost(url_get_tourpage);
+
+                httpPost.setEntity(new UrlEncodedFormEntity(categoryName));
+
+                HttpResponse response = httpClient.execute(httpPost);
+
+                HttpEntity entity = response.getEntity();
+                InputStream webs = entity.getContent();
+
+                try {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(webs, "iso-8859-1"), 8);
+                    StringBuilder sb = new StringBuilder();
+                    String line = null;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    webs.close();
+                    result = sb.toString();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                JSONObject jObj = new JSONObject(result);
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String file_url) {
+            pDialog.dismiss();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
                 }
             });
         }

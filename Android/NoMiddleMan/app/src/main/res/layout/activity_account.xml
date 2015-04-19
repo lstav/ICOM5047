@@ -171,17 +171,6 @@
                         android:onClick="purchaseHistory"
                         android:layout_weight="1" />
 
-                    <Button
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:text="@string/edit_account"
-                        android:id="@+id/EditButton"
-                        android:background="#8cc538"
-                        android:layout_margin="10dp"
-                        android:textColor="#fff"
-                        android:padding="10dp"
-                        android:onClick="edit"
-                        android:layout_weight="1" />
                 </TableRow>
 
                 <Button

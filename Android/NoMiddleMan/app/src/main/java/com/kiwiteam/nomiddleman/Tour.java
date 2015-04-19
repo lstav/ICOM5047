@@ -6,7 +6,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
- * Created by Luis on 3/19/2015.
+ * Class to save tour values to be presented on the search activity
  */
 public class Tour {
     private String name;

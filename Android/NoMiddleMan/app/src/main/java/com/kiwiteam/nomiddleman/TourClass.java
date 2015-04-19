@@ -1,5 +1,7 @@
 package com.kiwiteam.nomiddleman;
 
+import android.graphics.Bitmap;
+
 import java.util.ArrayList;
 
 /**
@@ -9,56 +11,55 @@ public class TourClass {
 
     private int tourID;
     private String tourName;
-    private ArrayList<String> tourCategories;
-    private String[] tourLocation;
-    private double tourPrices;
-    private ArrayList<String> tourPictures;
-    private String tourGuide;
     private String tourDescription;
+    private String facebook;
+    private String youtube;
+    private String instagram;
+    private String twitter;
+    private double tourPrice;
+    private double extremeness;
+    private ArrayList<Bitmap> tourPictures;
+    private String tourAddress;
+    private String guideEmail;
+    private String guideName;
+    private String guideLicense;
+    private String company;
+    private String telephone;
+    private double averageRating;
+    private int rateCount;
+
     private ArrayList<RatingClass> tourRatings;
     private ArrayList<Double> ratings;
     private ArrayList<String> reviews;
     private ArrayList<TourSession> tourSessions;
     private ArrayList<String> tourSessionsDate;
     private ArrayList<String> tourSessionsTime;
-    private String tourVideos;
-    private double extremeness;
 
-    public TourClass() {
-        this.tourID = -1;
-        this.tourName = new String();
-        this.tourCategories = new ArrayList<>();
-        this.tourLocation = new String[3];
-        this.tourPrices = 0.00;
-        this.tourPictures = new ArrayList<>();
-        this.tourGuide = new String();
-        this.tourDescription = new String();
-        this.tourRatings = new ArrayList<>();
-        this.ratings = new ArrayList<>();
-        this.reviews = new ArrayList<>();
-        this.tourSessions = new ArrayList<>();
-        this.tourSessionsDate = new ArrayList<>();
-        this.tourSessionsTime = new ArrayList<>();
-        this.tourVideos = new String();
-        this.extremeness = 0.00;
-    }
-
-    public TourClass(int tourID, String tourName, String[] tourLocation, double tourPrices, ArrayList<String> tourPictures, String tourGuide, String tourDescription, ArrayList<RatingClass> tourRatings, ArrayList<TourSession> tourSessions, String tourVideos, double extremeness) {
+    public TourClass(int tourID, String tourName, String tourDescription, String facebook, String youtube, String instagram, String twitter, double tourPrice, double extremeness, ArrayList<Bitmap> tourPictures, String tourAddress, String guideEmail, String guideName, String guideLicense, String company, String telephone, double averageRating, int rateCount, ArrayList<RatingClass> tourRatings, ArrayList<TourSession> tourSessions) {
         this.tourID = tourID;
         this.tourName = tourName;
-        this.tourLocation = tourLocation;
-        this.tourPrices = tourPrices;
-        this.tourPictures = tourPictures;
-        this.tourGuide = tourGuide;
         this.tourDescription = tourDescription;
+        this.facebook = facebook;
+        this.youtube = youtube;
+        this.instagram = instagram;
+        this.twitter = twitter;
+        this.tourPrice = tourPrice;
+        this.extremeness = extremeness;
+        this.tourPictures = tourPictures;
+        this.tourAddress = tourAddress;
+        this.guideEmail = guideEmail;
+        this.guideName = guideName;
+        this.guideLicense = guideLicense;
+        this.company = company;
+        this.telephone = telephone;
+        this.averageRating = averageRating;
+        this.rateCount = rateCount;
         this.tourRatings = tourRatings;
         this.ratings = new ArrayList<>();
         this.reviews = new ArrayList<>();
         this.tourSessions = tourSessions;
         this.tourSessionsDate = new ArrayList<>();
         this.tourSessionsTime = new ArrayList<>();
-        this.tourVideos = tourVideos;
-        this.extremeness = extremeness;
     }
 
     public int getTourID() {
@@ -69,37 +70,72 @@ public class TourClass {
         return tourName;
     }
 
-    public ArrayList<String> getTourCategories() {
-        return tourCategories;
-    }
-
-    public String[] getTourLocation() {
-        return tourLocation;
-    }
-
-    public double getTourPrice() {
-        return tourPrices;
-    }
-
-    public ArrayList<String> getTourPictures() {
-        return tourPictures;
-    }
-
-    public String getTourGuide() {
-        return tourGuide;
-    }
-
     public String getTourDescription() {
         return tourDescription;
     }
 
-    public double getTourRating() {
-        double tourRating = 0.00;
-        for(int i = 0; i < tourRatings.size(); i++) {
-            tourRating = tourRating + tourRatings.get(i).getRating();
-        }
+    public String getFacebook() {
+        return facebook;
+    }
 
-        return tourRating/tourRatings.size();
+    public String getYoutube() {
+        return youtube;
+    }
+
+    public String getInstagram() {
+        return instagram;
+    }
+
+    public String getTwitter() {
+        return twitter;
+    }
+
+    public double getTourPrice() {
+        return tourPrice;
+    }
+
+    public double getExtremeness() {
+        return extremeness;
+    }
+
+    public ArrayList<Bitmap> getTourPictures() {
+        return tourPictures;
+    }
+
+    public String getTourAddress() {
+        return tourAddress;
+    }
+
+    public String getGuideEmail() {
+        return guideEmail;
+    }
+
+    public String getGuideName() {
+        return guideName;
+    }
+
+    public String getGuideLicense() {
+        return guideLicense;
+    }
+
+    public String getCompany() {
+        return company;
+    }
+
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public double getAverageRating() {
+        return averageRating;
+    }
+
+    public int getRateCount() {
+        return rateCount;
+    }
+
+    public ArrayList<TourSession> getTourSessions() {
+        return tourSessions;
     }
 
     public void rate(double rating, String review) {
@@ -118,7 +154,7 @@ public class TourClass {
         return ratings;
     }
 
-    public ArrayList<String> getTourReview() {
+    public ArrayList<String> getTourReviews() {
         reviews.clear();
         for(int i = 0; i<tourRatings.size(); i++) {
             reviews.add(tourRatings.get(i).getReview());
@@ -128,64 +164,44 @@ public class TourClass {
 
     public ArrayList<String> getTourSessionsDate() {
         for (int i=0; i<tourSessions.size(); i++) {
-            if (tourSessions.get(i).isActive() && !tourSessionsDate.contains(tourSessions.get(i).getSessionDay())) {
+            if (!tourSessionsDate.contains(tourSessions.get(i).getSessionDay())) {
                 tourSessionsDate.add(tourSessions.get(i).getSessionDay());
             }
         }
         return tourSessionsDate;
     }
 
+    public int getTourSessionID(String date, String time) {
+        int id = -1;
+
+        return id;
+    }
+
     public ArrayList<String> getTourSessionsTime(String date) {
         tourSessionsTime.clear();
         for (int i=0; i<tourSessions.size(); i++) {
-            if (tourSessions.get(i).isActive()) {
-                if(tourSessions.get(i).getSessionDay().equals(date) && !tourSessionsTime.contains(tourSessions.get(i).getSessionTime())) {
+            if(tourSessions.get(i).getSessionDay().equals(date) && !tourSessionsTime.contains(tourSessions.get(i).getSessionTime())) {
                     tourSessionsTime.add(tourSessions.get(i).getSessionTime());
-                }
             }
         }
         return tourSessionsTime;
     }
 
-    public ArrayList<Integer> getTourSessionsID() {
-        ArrayList<Integer> IDs = new ArrayList<>();
+    public ArrayList<Integer> getTourSessionAvailability(String date, String time) {
+        ArrayList<Integer> tourAvailability = new ArrayList<>();
+        int availabilityIndex = 0;
         for (int i=0; i<tourSessions.size(); i++) {
-            IDs.add(tourSessions.get(i).getSessionID());
-        }
-        return IDs;
-    }
-
-    public ArrayList<TourSession> getTourSessions() {
-        return tourSessions;
-    }
-
-    public String getTourVideos() {
-        return tourVideos;
-    }
-
-    public boolean sessionIsActive(int id) {
-        for(int i=0; i<tourSessions.size(); i++) {
-            if (tourSessions.get(i).getSessionID() == id) {
-                return tourSessions.get(i).isActive();
+            if(tourSessions.get(i).getSessionDay().equals(date) && tourSessions.get(i).getSessionTime().equals(time)) {
+                availabilityIndex = i;
+                break;
             }
         }
-        return false;
-    }
 
-    public boolean isActive() {
-        for (int i=0; i<tourSessions.size(); i++) {
-            if (tourSessions.get(i).isActive()) {
-                return true;
-            }
+        for(int i=0; i<tourSessions.get(availabilityIndex).getAvailability(); i++){
+            tourAvailability.add(i+1);
         }
-        return false;
+
+        return tourAvailability;
     }
 
-    public double getExtremeness() {
-        return extremeness;
-    }
-
-    public void setExtremeness(double extremeness) {
-        this.extremeness = extremeness;
-    }
 }

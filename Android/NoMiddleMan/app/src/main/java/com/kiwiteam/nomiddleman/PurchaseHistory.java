@@ -34,7 +34,7 @@ public class PurchaseHistory {
             time = new String();
             sessionID = -1;
             quantity = 0;
-            tour = new TourClass();
+            //tour = new TourClass();
             isRated = false;
         }
 

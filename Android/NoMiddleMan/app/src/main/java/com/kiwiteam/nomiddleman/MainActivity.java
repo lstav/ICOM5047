@@ -1,5 +1,6 @@
 package com.kiwiteam.nomiddleman;
 
+import android.app.Activity;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
@@ -8,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.provider.ContactsContract;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -30,7 +32,6 @@ import java.util.List;
 public class MainActivity extends ActionBarActivity {
 
     public Intent intent;
-    private Menu menu;
     public int index = -1;
 
 
@@ -45,33 +46,35 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
+    // Fills and selects the home page (logged in or not logged in)
     private void initMainView() {
         conn = (DatabaseConnection)getApplicationContext();
 
         if(conn.isLogged()) {
-            // Login
+            // Login button
             findViewById(R.id.login_description).setVisibility(View.GONE);
             findViewById(R.id.login_button).setVisibility(View.GONE);
 
-            // Register
+            // Register button
             findViewById(R.id.register_description).setVisibility(View.GONE);
             findViewById(R.id.register_button).setVisibility(View.GONE);
 
-            // Account
+            // Account view button
             findViewById(R.id.account_button).setVisibility(View.VISIBLE);
 
-            //Categories
+            // Categories
             findViewById(R.id.categories_button).setVisibility(View.VISIBLE);
             findViewById(R.id.categories_row).setVisibility(View.GONE);
         } else {
             // Account
             findViewById(R.id.account_button).setVisibility(View.GONE);
 
-            //Categories
+            // Categories
             findViewById(R.id.categories_button).setVisibility(View.GONE);
         }
     }
 
+    // Starts the search searvice
     private void initSearchView() {
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         final SearchView searchView = (SearchView) findViewById(R.id.searchView);
@@ -79,8 +82,12 @@ public class MainActivity extends ActionBarActivity {
         searchView.setSearchableInfo(searchableInfo);
     }
 
+    // Recreates home after resuming
     protected void onResume() {
         super.onResume();
+        // Recreates action bar
+        ActivityCompat.invalidateOptionsMenu(this);
+
         if(conn.isLogged()) {
             this.index = conn.getT_key();
             // Login
@@ -97,9 +104,6 @@ public class MainActivity extends ActionBarActivity {
             //Categories
             findViewById(R.id.categories_button).setVisibility(View.VISIBLE);
             findViewById(R.id.categories_row).setVisibility(View.GONE);
-
-            /*menu.findItem(R.id.account).setVisible(true);
-            menu.findItem(R.id.signout).setVisible(true);*/
         }
     }
 
@@ -108,7 +112,6 @@ public class MainActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        this.menu = menu;
         if (conn.isLogged())
         {
             menu.findItem(R.id.account).setVisible(true);
@@ -140,33 +143,39 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    // Opens tourist account page from home button
     public void account() {
-        intent = new Intent(this, AccountActivity.class);
+        intent = new Intent(getApplicationContext(), AccountActivity.class);
         intent.putExtra("Index", conn.getT_key());
         startActivity(intent);
     }
 
+    // Opens tourist account page from action bar option
     public void account(View view) {
-        intent = new Intent(this, AccountActivity.class);
+        intent = new Intent(getApplicationContext(), AccountActivity.class);
         intent.putExtra("Index", conn.getT_key());
         startActivity(intent);
     }
 
+    // Calls login activity
     public void login(View view) {
         intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
 
+    // Calls register activity
     public void register(View view) {
         intent = new Intent(this, RegisterActivity.class);
         startActivity(intent);
     }
 
+    // Calls search by category activity
     public void searchCat(View view) {
         intent = new Intent(this, CategoriesActivity.class);
         startActivity(intent);
     }
 
+    // Opens settings
     public void settings(View view) {
         intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);

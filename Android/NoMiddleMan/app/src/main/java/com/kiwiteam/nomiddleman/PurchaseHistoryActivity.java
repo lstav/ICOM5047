@@ -193,12 +193,12 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
             PurchaseHistory.HistoryItem currentTour = pHistory.get(position);
 
             // fill the view
-            int draw = getResources().getIdentifier(currentTour.getTour().getTourPictures().get(0),"drawable",getPackageName());
+            /*int draw = getResources().getIdentifier(currentTour.getTour().getTourPictures().get(0),"drawable",getPackageName());
 
             ImageView picture = (ImageView) itemView.findViewById(R.id.tourPic);
             Drawable img = getResources().getDrawable(draw);
 
-            picture.setImageDrawable(img);
+            picture.setImageDrawable(img);*/
 
             TextView tName = (TextView) itemView.findViewById(R.id.tourName);
             tName.setText(currentTour.getTour().getTourName());

@@ -4,12 +4,13 @@
 	
 	include_once("dbconnection.php");
 	
-	if(isset($_POST['t_key']) && isset($_POST['ts_key']) && isset($_POST['quantity'])) {
+	if(isset($_POST['t_key']) && isset($_POST['ts_key']) && isset($_POST['Quantity'])) {
 		$t_key = $_POST['t_key'];
 		$ts_key = $_POST['ts_key'];
-		$quantity = $_POST['quantity'];
+		$Quantity = $_POST['Quantity'];
 		
-		$result = pg_query($conn, "Insert into \"Participants\" (\"t_key\",\"ts_key\",\"p_quantity\") Values($t_key,$ts_key,$quantity)");
+		$result = pg_query($conn, "Delete from \"Participants\" 
+			Where P.\"$t_key\"=$t_key and P.\"$ts_key\"=$ts_key ");
 		
 		if($result) {
 			

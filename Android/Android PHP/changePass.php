@@ -4,17 +4,16 @@
 	
 	include_once("dbconnection.php");
 	
-	if(isset($_POST['t_key']) && isset($_POST['ts_key']) && isset($_POST['quantity'])) {
-		$t_key = $_POST['t_key'];
-		$ts_key = $_POST['ts_key'];
-		$quantity = $_POST['quantity'];
-		
-		$result = pg_query($conn, "Insert into \"Participants\" (\"t_key\",\"ts_key\",\"p_quantity\") Values($t_key,$ts_key,$quantity)");
+	if(isset($_POST['key']) && isset($_POST['password'])) {
+		$key = $_POST['key'];
+		$password = $_POST['password'];
+			
+		$result = pg_query($conn, "UPDATE \"Tourist\" as t SET \"t_password\" = '$password' WHERE t.\"t_key\" = $key");
 		
 		if($result) {
 			
 			$response['success'] = 1;
-			$response['message'] = "Added to cart";
+			$response['message'] = "Password Changed";
 			
 			echo json_encode($response);
 		} else {

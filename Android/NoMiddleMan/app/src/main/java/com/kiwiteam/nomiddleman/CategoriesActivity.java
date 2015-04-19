@@ -68,6 +68,10 @@ public class CategoriesActivity extends ActionBarActivity {
         registerClickCallback();
     }
 
+    /**
+     * Calls class to get categories from database
+     * @param intent
+     */
     private void handleIntent(Intent intent) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         listV = (ListView) findViewById(R.id.listView);
@@ -127,12 +131,18 @@ public class CategoriesActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Opens account information activity
+     */
     public void account() {
         Intent intent = new Intent(this, AccountActivity.class);
         intent.putExtra("Index", conn.getT_key());
         startActivity(intent);
     }
 
+    /**
+     * Adds click listener to listview
+     */
     private void registerClickCallback() {
         ListView list = (ListView) findViewById(R.id.listView);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -148,14 +158,13 @@ public class CategoriesActivity extends ActionBarActivity {
                 i.putExtra("category", clickedCategory);
 
                 startActivity(i);
-
-                /*String message = "You clicked position " + position
-                        + " Which is category " + categories.get(position);
-                Toast.makeText(CategoriesActivity.this, message, Toast.LENGTH_LONG).show();*/
             }
         });
     }
 
+    /**
+     * Gets all categories from database
+     */
     class LoadAllCategories extends AsyncTask<String, String, String> {
 
         protected void onPreExecute() {

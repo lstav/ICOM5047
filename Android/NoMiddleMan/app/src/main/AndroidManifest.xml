@@ -120,13 +120,6 @@
                 android:value="com.kiwiteam.nomiddleman.MainActivity" />
         </activity>
         <activity
-            android:name=".EditAccountActivity"
-            android:label="@string/title_activity_edit_account" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.kiwiteam.nomiddleman.AccountActivity" />
-        </activity>
-        <activity
             android:name=".ChangePasswordActivity"
             android:label="@string/title_activity_change_password" >
             <meta-data

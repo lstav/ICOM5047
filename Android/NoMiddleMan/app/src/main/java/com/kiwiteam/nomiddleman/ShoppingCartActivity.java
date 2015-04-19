@@ -198,13 +198,13 @@ public class ShoppingCartActivity extends ActionBarActivity {
             }*/
 
             // fill the view
-            int draw = getResources().getIdentifier(currentTour.getTourPicture().get(0),"drawable",getPackageName());
+           /* int draw = getResources().getIdentifier(currentTour.getTourPicture().get(0),"drawable",getPackageName());
 
             ImageView picture = (ImageView) itemView.findViewById(R.id.tourPic);
             Drawable img = getResources().getDrawable(draw);
 
             picture.setImageDrawable(img);
-
+*/
 
             TextView tName = (TextView) itemView.findViewById(R.id.tourName);
             tName.setText(currentTour.getTourName());

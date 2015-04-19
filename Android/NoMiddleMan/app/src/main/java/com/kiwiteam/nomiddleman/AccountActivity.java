@@ -42,7 +42,6 @@ import java.util.List;
 public class AccountActivity extends ActionBarActivity {
 
     private DatabaseConnection conn;
-    private String userEmail;
     private int index;
     private Intent intent;
     private ProgressDialog pDialog;
@@ -54,9 +53,9 @@ public class AccountActivity extends ActionBarActivity {
     private String telephone;
 
     private static final String TAG_EMAIL = "t_Email";
-    private static final String TAG_FNAME = "t_password";
+    private static final String TAG_FNAME = "t_FName";
     private static final String TAG_LNAME = "t_LName";
-    private static final String TAG_BDAY = "t_LName";
+    private static final String TAG_BDAY = "t_BDate";
     private static final String TAG_TELEPHONE = "t_telephone";
 
     private JSONArray tourist;
@@ -68,33 +67,20 @@ public class AccountActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
 
-        conn = (DatabaseConnection)getApplicationContext();
         intent = getIntent();
 
+        conn = (DatabaseConnection)getApplicationContext();
         fillText();
 
     }
 
+    /**
+     * Shows account information to the tourist
+     */
     private void fillText() {
         index = conn.getT_key();
         new LoadTouristPage().execute();
-        /*String[] touristInfo = conn.getTouristInfo(index);
-
-        TextView fName = (TextView) findViewById(R.id.userName);
-        fName.setText(touristInfo[1]);
-
-        TextView lName = (TextView) findViewById(R.id.userLName);
-        lName.setText(touristInfo[2]);
-
-        TextView email = (TextView) findViewById(R.id.email);
-        email.setText(touristInfo[0]);*/
     }
-
-    public void onResume() {
-        super.onResume();
-        fillText();
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -149,33 +135,37 @@ public class AccountActivity extends ActionBarActivity {
 
     public void account() {
         Intent intent = new Intent(this, AccountActivity.class);
-        intent.putExtra("Index", conn.getT_key());
         startActivity(intent);
     }
 
+    /**
+     * Opens the purchase history activity
+     * @param view
+     */
     public void purchaseHistory(View view) {
         Intent intent = new Intent(this, PurchaseHistoryActivity.class);
         startActivity(intent);
     }
 
-    public void edit(View view) {
-        Intent intent = new Intent(this, EditAccountActivity.class);
-        startActivity(intent);
-    }
-
-
+    /**
+     * Open the change password activity
+     * @param view
+     */
     public void changePassword(View view) {
         Intent intent = new Intent(this, ChangePasswordActivity.class);
         startActivity(intent);
     }
 
+    /**
+     * Gets tourist information from the database
+     */
     class LoadTouristPage extends AsyncTask<String, String, String> {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(AccountActivity.this);
             pDialog.setMessage("Loading results. Please wait...");
             pDialog.setIndeterminate(false);
-            pDialog.setCancelable(false);
+            pDialog.setCancelable(true);
             pDialog.show();
         }
 
@@ -236,7 +226,8 @@ public class AccountActivity extends ActionBarActivity {
         }
 
         protected void onPostExecute(String file_url) {
-            pDialog.dismiss();
+
+
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -257,6 +248,7 @@ public class AccountActivity extends ActionBarActivity {
 
                 }
             });
+            pDialog.dismiss();
         }
 
     }
