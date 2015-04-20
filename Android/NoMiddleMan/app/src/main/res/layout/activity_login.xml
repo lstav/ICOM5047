@@ -59,6 +59,18 @@
                 android:onClick="login"
                 android:background="#8cc538"
                 android:textColor="#fff" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/register"
+                android:id="@+id/register"
+                android:layout_gravity="center_horizontal"
+                android:onClick="register"
+                android:background="#8cc538"
+                android:textColor="#fff"
+                android:padding="10dp"
+                android:layout_margin="10dp" />
         </LinearLayout>
 
     </FrameLayout>

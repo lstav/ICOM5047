@@ -132,12 +132,17 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
     public void initTourPage(Intent intent) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        ratings.clear();
+        tourRatingsA.clear();
+        tourSessionsA.clear();
+
         tourID = intent.getIntExtra("tourId", -1);
 
         if( tourID == -1) {
             finish();
         } else {
             query = tourID;
+            System.out.println("Index " + query);
             new GetTourPage().execute();
             //tour = conn.getTourInformation(tourID);
         }
@@ -347,6 +352,8 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                 List<NameValuePair> categoryName = new ArrayList<>();
                 categoryName.add(new BasicNameValuePair("tour_key", Integer.toString(query)));
 
+                System.out.println("Query " + query);
+
                 HttpPost httpPost = new HttpPost(url_get_tourpage);
 
                 httpPost.setEntity(new UrlEncodedFormEntity(categoryName));
@@ -376,7 +383,11 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                 JSONObject jObj = new JSONObject(result);
                 tourResponse = jObj.getJSONArray("tour");
                 tourSessions = jObj.getJSONArray("sessions");
-                tourReviews = jObj.getJSONArray("reviews");
+                try {
+                    tourReviews = jObj.getJSONArray("reviews");
+                } catch (Exception e) {
+                    tourReviews = null;
+                }
 
                 for (int i = 0; i < tourResponse.length(); i++) {
                     JSONObject c = tourResponse.getJSONObject(i);
@@ -392,16 +403,22 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                         tourSessionsA.add(new TourSession(d.getString(TAG_DATE), d.getString(TAG_TIME), d.getInt(TAG_TSKEY), d.getInt(TAG_AVAILABILITY)));
                     }
 
-                    for (int j = 0; j < tourReviews.length(); j++) {
-                        JSONObject d = tourReviews.getJSONObject(j);
+                    if(tourReviews != null) {
+                        for (int j = 0; j < tourReviews.length(); j++) {
+                            JSONObject d = tourReviews.getJSONObject(j);
 
-                        tourRatingsA.add(new RatingClass(d.getDouble(TAG_RATING), d.getString(TAG_REVIEW)));
+                            tourRatingsA.add(new RatingClass(d.getDouble(TAG_RATING), d.getString(TAG_REVIEW)));
+                        }
+                    } else {
+                        tourRatingsA = null;
                     }
 
                     tour = new TourClass(c.getInt(TAG_KEY), c.getString(TAG_NAME), c.getString(TAG_DESC), c.getString(TAG_FACEBOOK), c.getString(TAG_YOUTUBE),
                             c.getString(TAG_INSTAGRAM), c.getString(TAG_TWITTER), Price.getDouble(c.getString(TAG_PRICE)), c.getDouble(TAG_EXTREMENESS), new ArrayList<>(Arrays.asList(bitmap)),
                             c.getString(TAG_ADDRESS), c.getString(TAG_EMAIL), c.getString(TAG_GNAME), c.getString(TAG_LICENSE), c.getString(TAG_COMPANY),
                             c.getString(TAG_TELEPHONE), c.getDouble(TAG_AVGRATE), c.getInt(TAG_RATECOUNT), tourRatingsA, tourSessionsA);
+
+                    System.out.println("Tour Id " + tour.getTourID());
 
                 }
             } catch (JSONException e) {
@@ -466,17 +483,19 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                     license.setText(tour.getGuideLicense());
 
                     TextView company = (TextView) findViewById(R.id.company);
-                    gName.setText(tour.getCompany());
+                    company.setText(tour.getCompany());
 
                     TextView telephone = (TextView) findViewById(R.id.telephone);
-                    license.setText(tour.getTelephone());
+                    telephone.setText(tour.getTelephone());
 
-                    rAdapter = new MyListAdapter();
+                    if (ratings != null) {
 
-                    ListView reviewList = (ListView) findViewById(R.id.reviewList);
-                    reviewList.setAdapter(rAdapter);
-                    setListViewHeightBasedOnChildren(reviewList);
+                        rAdapter = new MyListAdapter();
 
+                        ListView reviewList = (ListView) findViewById(R.id.reviewList);
+                        reviewList.setAdapter(rAdapter);
+                        setListViewHeightBasedOnChildren(reviewList);
+                    }
                     /*ArrayAdapter<RatingClass> adapter = new MyListAdapter();
 
                     listView = (ListView) findViewById(R.id.listView);

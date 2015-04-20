@@ -8,8 +8,9 @@
 		$keyword = $_REQUEST['t_key'];
 		
 		$result = pg_query($conn, "Select T.tour_key as Key, upper(T.\"tour_Name\") as Name, 
-		T.\"tour_Desc\" as Description, T.\"Price\" as Price, T.\"extremeness\" as Extremeness, 
-		T.\"tour_photo\" as Photo, T.\"s_Time\" as Time, T.\"p_quantity\" as Qty FROM \"Shopping Cart\" as T 
+		T.\"tour_Desc\" as Description, T.\"total\" as Price, T.\"extremeness\" as Extremeness, 
+		T.\"tour_photo\" as Photo, T.\"s_Time\" as Time, T.\"p_quantity\" as Qty, T.\"s_isActive\" as isActive
+		FROM \"Shopping Cart\" as T 
 		Where \"t_key\"=$keyword");
 		
 		if(pg_num_rows($result) > 0) {
@@ -22,6 +23,7 @@
 				$tour['price'] = $row['price'];
 				$tour['extremeness'] = $row['extremeness'];
 				$tour['photo'] = $row['photo'];
+				$tour['isActive'] = $row['isActive'];
 				$tour['time'] = date("g:i:s A" , strtotime($row['time']));
 				$tour['date'] = date("M-d-Y", strtotime($row['time']));
 				$tour['qty'] = $row['qty'];

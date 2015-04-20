@@ -243,7 +243,9 @@ public class RegisterActivity extends ActionBarActivity {
                 @Override
                 public void run() {
                     if(success == 1) {
-                        finish();
+                        Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
                     } else {
                         Toast.makeText(getApplicationContext(), "Could not register", Toast.LENGTH_SHORT).show();
                     }

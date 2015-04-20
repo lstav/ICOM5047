@@ -86,6 +86,11 @@ public class LoginActivity extends ActionBarActivity {
         new Login().execute();
     }
 
+    public void register(View view) {
+        Intent intent = new Intent(this, RegisterActivity.class);
+        startActivity(intent);
+    }
+
     class Login extends AsyncTask<String, String, String> {
 
         // Creates a loading dialog

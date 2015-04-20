@@ -127,6 +127,7 @@ public class TourClass {
     }
 
     public double getAverageRating() {
+
         return averageRating;
     }
 

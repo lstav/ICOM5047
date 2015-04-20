@@ -9,6 +9,11 @@ public class RatingClass {
     private double rating;
     private String review;
 
+    public RatingClass () {
+        this.rating = 0;
+        this.review = "";
+    }
+
     public RatingClass (double rating, String review) {
         this.rating = rating;
         this.review = review;

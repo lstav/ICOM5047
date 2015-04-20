@@ -4,10 +4,11 @@ import java.util.ArrayList;
 
 public class ShoppingItem {
     private int tourID;
-    private TourClass tour;
+    private Tour tour;
     private int quantity;
     private String date;
     private String time;
+    private boolean isActive;
 
     public ShoppingItem() {
         //this.tour = new TourClass();
@@ -16,12 +17,13 @@ public class ShoppingItem {
         this.time = "";
     }
 
-    public ShoppingItem(TourClass tour, int quantity, String date, String time) {
-        this.tourID = tour.getTourID();
+    public ShoppingItem(Tour tour, int quantity, String date, String time, boolean isActive) {
+        this.tourID = tour.getId();
         this.tour = tour;
         this.quantity = quantity;
         this.date = date;
         this.time = time;
+        this.isActive = isActive;
     }
 
     public int getTourID() {
@@ -29,11 +31,11 @@ public class ShoppingItem {
     }
 
     public String getTourName() {
-        return tour.getTourName();
+        return tour.getName();
     }
 
     public double getTourPrice() {
-        return tour.getTourPrice()*quantity;
+        return tour.getPrice();
     }
 
     /*public ArrayList<String> getTourPicture() {
@@ -57,13 +59,7 @@ public class ShoppingItem {
     }
 
     public boolean isActive() {
-        for (int i=0; i<tour.getTourSessions().size(); i++) {
-            if (tour.getTourSessions().get(i).getSessionDay().matches(date) &&
-                    tour.getTourSessions().get(i).getSessionTime().matches(time)) {
-                return true;
-            }
-        }
-        return false;
+        return isActive;
     }
 
     public boolean equals(ShoppingItem sItem) {
