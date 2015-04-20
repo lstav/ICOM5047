@@ -1,0 +1,10 @@
+<?php	
+	$ts_key = 4;
+	$t_key = 5;
+	$pay = pg_query($conn, "UPDATE \"Participants\" SET \"isPayed\" = True WHERE \"t_key\" = $t_key  AND \"ts_key\" = $ts_key ");
+	$quantity = pg_query(" SELECT \"p_quantity\" FROM \"Participants\"  WHERE \"t_key\" = $t_key  AND \"ts_key\" = $ts_key ");
+	$row = pg_fetch_array($quantity);
+	$qty = $row['p_quantity'];
+	$tsupdt = pg_query($conn, " UPDATE \"Tour Session\" SET \"Availability\" = (\"Availability\" - $qty) WHERE \"ts_key\" = $ts_key ");
+	pg_close($conn);
+?>
