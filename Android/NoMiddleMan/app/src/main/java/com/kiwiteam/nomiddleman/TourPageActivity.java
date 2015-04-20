@@ -231,13 +231,19 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
         this.date = tDay.getSelectedItem().toString();
         this.time = tTime.getSelectedItem().toString();
 
-        if(quantity > 0) {
+        if(conn.isLogged()) {
+            new AddToCart().execute();
+        } else {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+        }
+        /*if(quantity > 0) {
             //Toast.makeText(this, R.string.added_to_cart, Toast.LENGTH_SHORT).show();
             new AddToCart().execute();
             //conn.putToursToShoppingCart(tourID, quantity, date, time);
         } else {
             Toast.makeText(this, R.string.no_quantity, Toast.LENGTH_SHORT).show();
-        }
+        }*/
 
     }
 
@@ -351,14 +357,14 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                 InputStream webs = entity.getContent();
 
                 try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(webs,"iso-8859-1"),8);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(webs, "iso-8859-1"), 8);
                     StringBuilder sb = new StringBuilder();
                     String line = null;
                     while ((line = reader.readLine()) != null) {
                         sb.append(line);
                     }
                     webs.close();
-                    result=sb.toString();
+                    result = sb.toString();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -372,7 +378,7 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                 tourSessions = jObj.getJSONArray("sessions");
                 tourReviews = jObj.getJSONArray("reviews");
 
-                for(int i=0; i<tourResponse.length(); i++) {
+                for (int i = 0; i < tourResponse.length(); i++) {
                     JSONObject c = tourResponse.getJSONObject(i);
                     try {
                         bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "img1.jpg").getContent());
@@ -424,7 +430,7 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                     extremeBar.setRating((float) tour.getExtremeness());
 
                     TextView ratingNumber = (TextView) findViewById(R.id.review_number);
-                    ratingNumber.setText("(" +tour.getRateCount() + ")");
+                    ratingNumber.setText("(" + tour.getRateCount() + ")");
 
                     TextView totalReviews = (TextView) findViewById(R.id.totalReviews);
                     totalReviews.setText(String.format("%.1f", tour.getAverageRating()) + " of 5.0");
@@ -437,7 +443,7 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
 
                     tDay = (Spinner) findViewById(R.id.day);
 
-                    dAdapter = new ArrayAdapter<>(TourPageActivity.this, android.R.layout.simple_spinner_item,tour.getTourSessionsDate());
+                    dAdapter = new ArrayAdapter<>(TourPageActivity.this, android.R.layout.simple_spinner_item, tour.getTourSessionsDate());
                     dAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
                     tDay.setOnItemSelectedListener(TourPageActivity.this);
@@ -479,6 +485,8 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
             });
         }
     }
+
+    ///
     class AddToCart extends AsyncTask<String, String, String> {
         protected void onPreExecute() {
             super.onPreExecute();
