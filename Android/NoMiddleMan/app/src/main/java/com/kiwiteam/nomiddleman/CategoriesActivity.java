@@ -176,10 +176,18 @@ public class CategoriesActivity extends ActionBarActivity {
             pDialog.show();
         }
 
+        /**
+         * Connects to php files
+         * @param params
+         * @return
+         */
         @Override
         protected String doInBackground(String... params) {
             String result = "";
 
+            /**
+             * Calls php files to get all categories from database
+             */
             try {
                 HttpClient httpClient = new DefaultHttpClient();
                 HttpGet httpGet = new HttpGet(url_all_categories);
@@ -205,15 +213,15 @@ public class CategoriesActivity extends ActionBarActivity {
                 e.printStackTrace();
             }
 
+            /**
+             * Gets categories in JSON object
+             */
             try {
                 JSONObject jObj = new JSONObject(result);
                 category = jObj.getJSONArray("categories");
 
                 for (int i=0; i<category.length(); i++) {
                     JSONObject c = category.getJSONObject(i);
-
-                    //String key = c.getString(TAG_KEY);
-                    System.out.println("Category " + i + " " + c.getString(TAG_NAME));
                     catArray.add(c.getString(TAG_NAME));
                 }
 
@@ -224,6 +232,10 @@ public class CategoriesActivity extends ActionBarActivity {
             return null;
         }
 
+        /**
+         * Shows all categories in activity
+         * @param file_url
+         */
         protected void onPostExecute(String file_url) {
             pDialog.dismiss();
             runOnUiThread(new Runnable() {

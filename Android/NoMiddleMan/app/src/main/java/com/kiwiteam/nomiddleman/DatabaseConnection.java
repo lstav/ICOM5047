@@ -15,7 +15,7 @@ import java.util.Arrays;
 public class DatabaseConnection extends Application {
 
 
-    private boolean isLogged;
+    private boolean isLogged = false;
     private String payPalEmail = new String();
     private String payPalPass = new String();
     private ArrayList<TourSession> tourSessions = new ArrayList<>();
@@ -41,12 +41,6 @@ public class DatabaseConnection extends Application {
         if (isLogged != false && t_key != -1) {
             setLogged(true, t_key, true);
         }
-        populateLists();
-    }
-
-    private void populateLists() {
-        isLogged = false;
-
     }
 
     public void rate(int tourID, double rating, String review) {
@@ -77,6 +71,7 @@ public class DatabaseConnection extends Application {
     public void signout() {
         this.t_key = -1;
         isLogged = false;
+        getSharedPreferences(PREFS_NAME, 0).edit().clear().commit();
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

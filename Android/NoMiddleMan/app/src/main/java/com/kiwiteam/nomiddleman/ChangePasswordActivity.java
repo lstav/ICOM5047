@@ -114,12 +114,19 @@ public class ChangePasswordActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Opens account information activity
+     */
     public void account() {
         Intent intent = new Intent(this, AccountActivity.class);
         intent.putExtra("Index", conn.getT_key());
         startActivity(intent);
     }
 
+    /**
+     * Calls password change and changes password in database
+     * @param view
+     */
     public void confirm(View view) {
         EditText nPass = (EditText) findViewById(R.id.newPass);
         EditText cNPass = (EditText) findViewById(R.id.cNewPass);
@@ -136,6 +143,10 @@ public class ChangePasswordActivity extends ActionBarActivity {
 
     }
 
+    /**
+     * Returns to previous activity
+     * @param view
+     */
     public void cancel(View view) {
         finish();
     }
@@ -157,6 +168,9 @@ public class ChangePasswordActivity extends ActionBarActivity {
         protected String doInBackground(String... params) {
             String result = "";
 
+            /**
+             * Sends parameters to php file to change password
+             */
             try {
                 HttpClient httpClient = new DefaultHttpClient();
                 String url;
@@ -190,6 +204,9 @@ public class ChangePasswordActivity extends ActionBarActivity {
                 e.printStackTrace();
             }
 
+            /**
+             * Gets success in changing password
+             */
             try {
                 JSONObject jObj = new JSONObject(result);
 
@@ -202,6 +219,10 @@ public class ChangePasswordActivity extends ActionBarActivity {
             return null;
         }
 
+        /**
+         * If password change was successful, go back to previous activity, else, give feedback to user
+         * @param file_url
+         */
         protected void onPostExecute(String file_url) {
             pDialog.dismiss();
             runOnUiThread(new Runnable() {

@@ -133,6 +133,9 @@ public class AccountActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Access account activity
+     */
     public void account() {
         Intent intent = new Intent(this, AccountActivity.class);
         startActivity(intent);
@@ -173,10 +176,16 @@ public class AccountActivity extends ActionBarActivity {
         protected String doInBackground(String... params) {
             String result = "";
 
+            /**
+             * Connects to PHP files to access database
+             */
             try {
                 HttpClient httpClient = new DefaultHttpClient();
                 String url;
 
+                /**
+                 * Parameters for php file
+                 */
                 List<NameValuePair> categoryName = new ArrayList<>();
                 categoryName.add(new BasicNameValuePair("t_key", Integer.toString(index)));
 
@@ -189,6 +198,9 @@ public class AccountActivity extends ActionBarActivity {
                 HttpEntity entity = response.getEntity();
                 InputStream webs = entity.getContent();
 
+                /**
+                 * Saves JSON response from php file
+                 */
                 try {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(webs,"iso-8859-1"),8);
                     StringBuilder sb = new StringBuilder();
@@ -205,6 +217,9 @@ public class AccountActivity extends ActionBarActivity {
                 e.printStackTrace();
             }
 
+            /**
+             * Gets tourist array from JSON and saves values in java objects
+             */
             try {
                 JSONObject jObj = new JSONObject(result);
                 tourist = jObj.getJSONArray("tourist");
@@ -225,9 +240,10 @@ public class AccountActivity extends ActionBarActivity {
             return null;
         }
 
+        /**
+         * Shows account information on activity
+         */
         protected void onPostExecute(String file_url) {
-
-
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
