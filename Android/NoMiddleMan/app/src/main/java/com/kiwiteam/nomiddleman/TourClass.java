@@ -172,9 +172,12 @@ public class TourClass {
     }
 
     public int getTourSessionID(String date, String time) {
-        int id = -1;
-
-        return id;
+        for (int i=0; i<tourSessions.size(); i++) {
+            if(tourSessions.get(i).getSessionDay().equals(date) && tourSessions.get(i).getSessionTime().equals(time)) {
+                return tourSessions.get(i).getSessionID();
+            }
+        }
+        return -1;
     }
 
     public ArrayList<String> getTourSessionsTime(String date) {

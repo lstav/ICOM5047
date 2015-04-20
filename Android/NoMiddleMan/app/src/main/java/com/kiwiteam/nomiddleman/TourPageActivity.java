@@ -86,6 +86,8 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
     private static String url_get_tourpage = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/getTour.php";
     private static String url_add_to_cart = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/addToCart.php";
 
+    private static final String TAG_SUCCESS = "success";
+
     private static final String TAG_KEY = "key";
     private static final String TAG_NAME = "name";
     private static final String TAG_DESC = "description";
@@ -113,6 +115,8 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
     private static final String TAG_TKEY = "tkey";
     private static final String TAG_RATING = "rating";
     private static final String TAG_REVIEW = "review";
+
+    private int success;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -228,8 +232,9 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
         this.time = tTime.getSelectedItem().toString();
 
         if(quantity > 0) {
-            Toast.makeText(this, R.string.added_to_cart, Toast.LENGTH_SHORT).show();
-            conn.putToursToShoppingCart(tourID, quantity, date, time);
+            //Toast.makeText(this, R.string.added_to_cart, Toast.LENGTH_SHORT).show();
+            new AddToCart().execute();
+            //conn.putToursToShoppingCart(tourID, quantity, date, time);
         } else {
             Toast.makeText(this, R.string.no_quantity, Toast.LENGTH_SHORT).show();
         }
@@ -493,11 +498,11 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                 String url;
 
                 List<NameValuePair> categoryName = new ArrayList<>();
-                categoryName.add(new BasicNameValuePair("t_key", Integer.toString(query)));
-                categoryName.add(new BasicNameValuePair("ts_key", Integer.toString(query)));
+                categoryName.add(new BasicNameValuePair("t_key", Integer.toString(conn.getT_key())));
+                categoryName.add(new BasicNameValuePair("ts_key", Integer.toString(tour.getTourSessionID(tDay.getSelectedItem().toString(),tTime.getSelectedItem().toString()))));
                 categoryName.add(new BasicNameValuePair("quantity", tQty.getSelectedItem().toString()));
 
-                HttpPost httpPost = new HttpPost(url_get_tourpage);
+                HttpPost httpPost = new HttpPost(url_add_to_cart);
 
                 httpPost.setEntity(new UrlEncodedFormEntity(categoryName));
 
@@ -525,6 +530,10 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
             try {
                 JSONObject jObj = new JSONObject(result);
 
+                success = jObj.getInt(TAG_SUCCESS);
+
+                System.out.println("Success = " + success);
+                System.out.println("Message = " + jObj.getString("message"));
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -537,7 +546,9 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-
+                    if(success == 1) {
+                        Toast.makeText(TourPageActivity.this, R.string.added_to_cart, Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         }
