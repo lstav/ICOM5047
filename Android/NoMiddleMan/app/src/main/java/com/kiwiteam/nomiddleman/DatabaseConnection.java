@@ -35,6 +35,7 @@ public class DatabaseConnection extends Application {
 
     public void onCreate() {
         super.onCreate();
+        // Gets preferences file to provide a remember me function for the application
         pref = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
         isLogged  = pref.getBoolean(PREF_LOGGED, false);
         t_key = pref.getInt(PREF_KEY, -1);
@@ -68,6 +69,9 @@ public class DatabaseConnection extends Application {
         //shoppingCart.putTour(tour, quantity, day, time);
     }
 
+    /**
+     * Signs the user out and clears the preferences file
+     */
     public void signout() {
         this.t_key = -1;
         isLogged = false;
@@ -78,6 +82,12 @@ public class DatabaseConnection extends Application {
         startActivity(intent);
     }
 
+    /**
+     * Sets the user looged in or logged out
+     * @param bool defines log status of the user
+     * @param key defines tourist id
+     * @param isChecked option to maintain session
+     */
     public void setLogged(boolean bool, int key, boolean isChecked) {
         setT_key(key);
         isLogged = bool;
@@ -86,14 +96,26 @@ public class DatabaseConnection extends Application {
         }
     }
 
+    /**
+     * Checks if user is logged in
+     * @return
+     */
     public boolean isLogged() {
         return isLogged;
     }
 
+    /**
+     * Sets the tourist's key
+     * @param key
+     */
     public void setT_key(int key) {
         t_key = key;
     }
 
+    /**
+     * Returns the tourist's key
+     * @return
+     */
     public int getT_key() {
         return t_key;
     }

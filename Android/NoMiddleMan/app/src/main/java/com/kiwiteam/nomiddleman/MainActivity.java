@@ -74,7 +74,7 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    // Starts the search searvice
+    // Starts the search service
     private void initSearchView() {
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         final SearchView searchView = (SearchView) findViewById(R.id.searchView);

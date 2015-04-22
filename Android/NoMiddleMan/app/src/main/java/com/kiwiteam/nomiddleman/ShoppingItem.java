@@ -1,5 +1,7 @@
 package com.kiwiteam.nomiddleman;
 
+import android.graphics.Bitmap;
+
 import java.util.ArrayList;
 
 public class ShoppingItem {
@@ -38,9 +40,9 @@ public class ShoppingItem {
         return tour.getPrice();
     }
 
-    /*public ArrayList<String> getTourPicture() {
-        return tour.getTourPictures();
-    }*/
+    public ArrayList<Bitmap> getTourPicture() {
+        return tour.getPictures();
+    }
 
     public int getQuantity() {
         return quantity;

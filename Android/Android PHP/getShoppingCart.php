@@ -4,12 +4,12 @@
 	
 	include_once("dbconnection.php");
 	
-	if(isset($_REQUEST['t_key'])) {
-		$keyword = $_REQUEST['t_key'];
+	if(isset($_POST['t_key'])) {
+		$keyword = $_POST['t_key'];
 		
 		$result = pg_query($conn, "Select T.tour_key as Key, upper(T.\"tour_Name\") as Name, 
 		T.\"tour_Desc\" as Description, T.\"total\" as Price, T.\"extremeness\" as Extremeness, 
-		T.\"tour_photo\" as Photo, T.\"s_Time\" as Time, T.\"p_quantity\" as Qty, T.\"s_isActive\" as isActive
+		T.\"tour_photo\" as Photo, T.\"s_Time\" as Time, T.\"p_quantity\" as Qty, T.\"s_isActive\" as isactive
 		FROM \"Shopping Cart\" as T 
 		Where \"t_key\"=$keyword");
 		
@@ -23,10 +23,10 @@
 				$tour['price'] = $row['price'];
 				$tour['extremeness'] = $row['extremeness'];
 				$tour['photo'] = $row['photo'];
-				$tour['isActive'] = $row['isActive'];
+				$tour['isActive'] = $row['isactive'];
 				$tour['time'] = date("g:i:s A" , strtotime($row['time']));
 				$tour['date'] = date("M-d-Y", strtotime($row['time']));
-				$tour['qty'] = $row['qty'];
+				$tour['quantity'] = $row['qty'];
 				
 				array_push($response['tours'], $tour);
 			}
@@ -35,7 +35,7 @@
 			echo json_encode($response);
 		} else {
 			$response['success'] = 0;
-			$response['message'] = "No tours found";
+			$response['message'] = "No tours found on cart";
 				
 			echo json_encode($response);
 		}

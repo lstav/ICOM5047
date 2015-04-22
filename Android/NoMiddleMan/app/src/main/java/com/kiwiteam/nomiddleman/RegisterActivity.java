@@ -10,6 +10,7 @@ import android.provider.ContactsContract;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.format.Time;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -94,11 +95,20 @@ public class RegisterActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Opens dialog to pick time
+     * @param v
+     */
     public void showDatePickerDialog(View v) {
         DialogFragment newFragment = new DatePickerFragment();
+
         newFragment.show(getSupportFragmentManager(), "datePicker");
     }
 
+    /**
+     * Calls register class to send to php
+     * @param view
+     */
     public void register(View view) {
         EditText uEmail = (EditText) findViewById(R.id.email);
         userEmail = uEmail.getText().toString();
@@ -106,19 +116,17 @@ public class RegisterActivity extends ActionBarActivity {
         if(validateEmail(userEmail)) {
 
             new Register().execute();
-            /*EditText pass = (EditText) findViewById(R.id.password);
-            password = pass.getText().toString();
-            EditText uName = (EditText) findViewById(R.id.firstText);
-            userName = uName.getText().toString();
-            EditText uLName = (EditText) findViewById(R.id.lastText);
-            userLName = uLName.getText().toString();
-            conn.register(userEmail, password, userName, userLName);
-            finish();*/
+
         } else {
             Toast.makeText(this, "No valid email", Toast.LENGTH_SHORT).show();
         }
     }
 
+    /**
+     * Validates email with regular expression
+     * @param email
+     * @return
+     */
     private boolean validateEmail(String email) {
         String EMAIL_REGEX = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" +
                 "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
@@ -135,12 +143,18 @@ public class RegisterActivity extends ActionBarActivity {
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             // Use the current date as the default date in the picker
             final Calendar c = Calendar.getInstance();
+
+
+
             int year = c.get(Calendar.YEAR);
             int month = c.get(Calendar.MONTH);
             int day = c.get(Calendar.DAY_OF_MONTH);
 
+            DatePickerDialog dialog = new DatePickerDialog(getActivity(), this, year, month, day);
+            dialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+
             // Create a new instance of DatePickerDialog and return it
-            return new DatePickerDialog(getActivity(), this, year, month, day);
+            return dialog;
         }
 
         public void onDateSet(DatePicker view, int year, int month, int day) {

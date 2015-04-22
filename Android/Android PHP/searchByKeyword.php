@@ -4,8 +4,8 @@
 	
 	include_once("dbconnection.php");
 	
-	if(isset($_REQUEST['keyword'])) {
-		$keyword = trim($_REQUEST['keyword']);
+	if(isset($_POST['keyword'])) {
+		$keyword = trim($_POST['keyword']);
 		
 		
 		$result = pg_query($conn, "Select T.tour_key as Key, upper(T.\"tour_Name\") as Name, T.\"tour_Desc\" as Description, T.\"Price\" as Price, 

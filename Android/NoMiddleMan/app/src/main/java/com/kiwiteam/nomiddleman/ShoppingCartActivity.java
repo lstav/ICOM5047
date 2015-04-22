@@ -52,6 +52,8 @@ public class ShoppingCartActivity extends ActionBarActivity {
     private ListView listView;
     private List<ShoppingItem> shoppingCart = new ArrayList<>();
 
+    private double totalPrice = 0.0;
+
     private Bitmap bitmap;
     private ProgressDialog pDialog;
     private ImageView picture;
@@ -70,7 +72,7 @@ public class ShoppingCartActivity extends ActionBarActivity {
     private static final String TAG_SUCCESS = "success";
 
 
-    private static String url_get_shopping_cart = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/searchByCategory.php";
+    private static String url_get_shopping_cart = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/getShoppingCart.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +91,7 @@ public class ShoppingCartActivity extends ActionBarActivity {
     }
 
     public void removeItem(int position) {
-        conn.removeFromShoppingCart(position);
+        //conn.removeFromShoppingCart(position);
         adapter.notifyDataSetChanged();
         TextView tPrice = (TextView) findViewById(R.id.price);
         if(!adapter.isEmpty()) {
@@ -111,11 +113,14 @@ public class ShoppingCartActivity extends ActionBarActivity {
 
     private void handleIntent(Intent intent) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        shoppingCart = conn.getShoppingCart(0);
+        new LoadShoppingCart().execute();
+        /*shoppingCart = conn.getShoppingCart(0);
 
         if(!shoppingCart.isEmpty()) {
 
             findViewById(R.id.result).setVisibility(View.GONE);
+
+
 
             adapter = new MyListAdapter();
 
@@ -136,7 +141,7 @@ public class ShoppingCartActivity extends ActionBarActivity {
             findViewById(R.id.items).setVisibility(View.GONE);
             findViewById(R.id.price).setVisibility(View.GONE);
             findViewById(R.id.checkout).setVisibility(View.GONE);
-        }
+        }*/
     }
 
     @Override
@@ -246,6 +251,8 @@ public class ShoppingCartActivity extends ActionBarActivity {
 
             picture.setImageDrawable(img);
 */
+            picture = (ImageView) itemView.findViewById(R.id.tourPic);
+            picture.setImageBitmap(currentTour.getTourPicture().get(0));
 
             TextView tName = (TextView) itemView.findViewById(R.id.tourName);
             tName.setText(currentTour.getTourName());
@@ -278,7 +285,7 @@ public class ShoppingCartActivity extends ActionBarActivity {
             pDialog = new ProgressDialog(ShoppingCartActivity.this);
             pDialog.setMessage("Loading results. Please wait...");
             pDialog.setIndeterminate(false);
-            pDialog.setCancelable(false);
+            pDialog.setCancelable(true);
             pDialog.show();
         }
 
@@ -330,8 +337,18 @@ public class ShoppingCartActivity extends ActionBarActivity {
                         e.printStackTrace();
                     }
 
-                    shoppingCart.add(new ShoppingItem(new Tour(c.getString(TAG_NAME),Price.getDouble(c.getString(TAG_PRICE)),new ArrayList<>(Arrays.asList(bitmap)),
-                            c.getInt(TAG_KEY),c.getDouble(TAG_EXTREMENESS)),c.getInt(TAG_QUANTITY),c.getString(TAG_DATE), c.getString(TAG_TIME), c.getBoolean(TAG_ACTIVE)));
+                    boolean isActive = false;
+                    if(c.getString(TAG_ACTIVE).equals("t")) {
+                        isActive = true;
+                    }
+                    shoppingCart.add(new ShoppingItem(new Tour(c.getString(TAG_NAME),
+                            Price.getDouble(c.getString(TAG_PRICE)),
+                            new ArrayList<>(Arrays.asList(bitmap)),
+                            c.getInt(TAG_KEY),c.getDouble(TAG_EXTREMENESS)),
+                            c.getInt(TAG_QUANTITY),c.getString(TAG_DATE), c.getString(TAG_TIME),
+                            isActive));
+
+                    totalPrice = totalPrice + Price.getDouble(c.getString(TAG_PRICE));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -349,6 +366,9 @@ public class ShoppingCartActivity extends ActionBarActivity {
 
                     listView = (ListView) findViewById(R.id.listView);
                     listView.setAdapter(adapter);
+
+                    TextView tPrice = (TextView) findViewById(R.id.price);
+                    tPrice.setText("$" + String.format("%.2f", totalPrice));
                 }
             });
         }
