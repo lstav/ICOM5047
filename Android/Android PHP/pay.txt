@@ -5,13 +5,13 @@
 	include_once("dbconnection.php");
 	
 	if(isset($_POST['t_key'])) {
-		$keyword = $_POST['t_key'];
+		$t_key = $_POST['t_key'];
 		
 		$result = pg_query($conn, "Select T.tour_key as Key, T.ts_key as ts_key, upper(T.\"tour_Name\") as Name, 
 		T.\"tour_Desc\" as Description, T.\"total\" as Price, T.\"extremeness\" as Extremeness, 
 		T.\"tour_photo\" as Photo, T.\"s_Time\" as Time, T.\"p_quantity\" as Qty, T.\"s_isActive\" as isactive, T.\"passed\" as passed
 		FROM \"Shopping Cart\" as T 
-		Where \"t_key\"=$keyword");
+		Where \"t_key\"=$keyword and \"s_isActive\" = True and \"passed\" = False");
 		
 		if(pg_num_rows($result) > 0) {
 			$response['tours'] = array();

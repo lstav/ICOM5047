@@ -15,8 +15,8 @@ public class ShoppingCart {
         this.accountID = accountID;
     }
 
-    public void putTour(Tour tour, int quantity, String date, String time) {
-        ShoppingItem sItem = new ShoppingItem(tour, quantity, date, time, true);
+    public void putTour(Tour tour, int sessionID, int quantity, String date, String time) {
+        ShoppingItem sItem = new ShoppingItem(tour, sessionID, quantity, date, time, true);
         boolean same = false;
         int index = -1;
         for (int i = 0; i<item.size(); i++) {

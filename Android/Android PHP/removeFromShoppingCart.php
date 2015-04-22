@@ -8,7 +8,7 @@
 		$t_key = $_POST['t_key'];
 		$ts_key = $_POST['ts_key'];
 		
-		$result = pg_query($conn, "UPDATE \"Participants\" SET \"p_isActive\" = False
+		$result = pg_query($conn, "UPDATE \"Participants\" SET \"p_isActive\" = False, \"p_quantity\" = 0
 		WHERE \"t_key\" = $t_key AND \"ts_key\" = $ts_key");
 		
 		if($result) {

@@ -53,6 +53,8 @@ public class ShoppingCartActivity extends ActionBarActivity {
     private List<ShoppingItem> shoppingCart = new ArrayList<>();
 
     private double totalPrice = 0.0;
+    private int ts_key = -1;
+    private int success = 0;
 
     private Bitmap bitmap;
     private ProgressDialog pDialog;
@@ -61,6 +63,7 @@ public class ShoppingCartActivity extends ActionBarActivity {
     private JSONArray backup;
 
     private static final String TAG_KEY = "key";
+    private static final String TAG_TSKEY = "ts_key";
     private static final String TAG_NAME = "name";
     private static final String TAG_PRICE = "price";
     private static final String TAG_EXTREMENESS = "extremeness";
@@ -73,6 +76,7 @@ public class ShoppingCartActivity extends ActionBarActivity {
 
 
     private static String url_get_shopping_cart = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/getShoppingCart.php";
+    private static String url_remove_from_cart = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/removeFromShoppingCart.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,10 +94,21 @@ public class ShoppingCartActivity extends ActionBarActivity {
         handleIntent(intent);
     }
 
+    /**
+     * Removes item from shopping cart
+     * @param position
+     */
     public void removeItem(int position) {
         //conn.removeFromShoppingCart(position);
+        ts_key = shoppingCart.get(position).getSessionID();
+
+        totalPrice = totalPrice - shoppingCart.get(position).getTourPrice();
+
+        new RemoveFromShoppingCart().execute();
+
         adapter.notifyDataSetChanged();
-        TextView tPrice = (TextView) findViewById(R.id.price);
+
+        /*TextView tPrice = (TextView) findViewById(R.id.price);
         if(!adapter.isEmpty()) {
             double price = conn.getTotalPrice();
             tPrice.setText("$" + String.format("%.2f", price));
@@ -108,7 +123,7 @@ public class ShoppingCartActivity extends ActionBarActivity {
             findViewById(R.id.checkout).setVisibility(View.GONE);
 
             //tPrice.setText("$0.00");
-        }
+        }*/
     }
 
     private void handleIntent(Intent intent) {
@@ -198,10 +213,10 @@ public class ShoppingCartActivity extends ActionBarActivity {
     }
 
     private void account() {
-            Intent intent = new Intent(this, AccountActivity.class);
-            intent.putExtra("Index", conn.getT_key());
-            startActivity(intent);
-        }
+        Intent intent = new Intent(this, AccountActivity.class);
+        intent.putExtra("Index", conn.getT_key());
+        startActivity(intent);
+    }
 
     public void checkout(View view) {
         if(conn.isLogged()) {
@@ -239,18 +254,11 @@ public class ShoppingCartActivity extends ActionBarActivity {
             // find the list
             ShoppingItem currentTour = shoppingCart.get(position);
 
-            /*if(!currentTour.isActive()) {
-                itemView.findViewById(R.id.active).setVisibility(View.VISIBLE);
-            }*/
+            if(!currentTour.isActive()) {
+                TextView isAct = (TextView) itemView.findViewById(R.id.active);
+                isAct.setVisibility(View.VISIBLE);
+            }
 
-            // fill the view
-           /* int draw = getResources().getIdentifier(currentTour.getTourPicture().get(0),"drawable",getPackageName());
-
-            ImageView picture = (ImageView) itemView.findViewById(R.id.tourPic);
-            Drawable img = getResources().getDrawable(draw);
-
-            picture.setImageDrawable(img);
-*/
             picture = (ImageView) itemView.findViewById(R.id.tourPic);
             picture.setImageBitmap(currentTour.getTourPicture().get(0));
 
@@ -327,28 +335,34 @@ public class ShoppingCartActivity extends ActionBarActivity {
 
             try {
                 JSONObject jObj = new JSONObject(result);
-                backup = jObj.getJSONArray("tours");
 
-                for (int i=0; i<backup.length(); i++) {
-                    JSONObject c = backup.getJSONObject(i);
-                    try {
-                        bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "img1.jpg").getContent());
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                success = jObj.getInt(TAG_SUCCESS);
+
+                if(success == 1) {
+
+                    backup = jObj.getJSONArray("tours");
+
+                    for (int i=0; i<backup.length(); i++) {
+                        JSONObject c = backup.getJSONObject(i);
+                        try {
+                            bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "img1.jpg").getContent());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        boolean isActive = false;
+                        if(c.getString(TAG_ACTIVE).equals("t")) {
+                            isActive = true;
+                        }
+                        shoppingCart.add(new ShoppingItem(new Tour(c.getString(TAG_NAME),
+                                Price.getDouble(c.getString(TAG_PRICE)),
+                                new ArrayList<>(Arrays.asList(bitmap)),
+                                c.getInt(TAG_KEY),c.getDouble(TAG_EXTREMENESS)),c.getInt(TAG_TSKEY),
+                                c.getInt(TAG_QUANTITY),c.getString(TAG_DATE), c.getString(TAG_TIME),
+                                isActive));
+
+                        totalPrice = totalPrice + Price.getDouble(c.getString(TAG_PRICE));
                     }
-
-                    boolean isActive = false;
-                    if(c.getString(TAG_ACTIVE).equals("t")) {
-                        isActive = true;
-                    }
-                    shoppingCart.add(new ShoppingItem(new Tour(c.getString(TAG_NAME),
-                            Price.getDouble(c.getString(TAG_PRICE)),
-                            new ArrayList<>(Arrays.asList(bitmap)),
-                            c.getInt(TAG_KEY),c.getDouble(TAG_EXTREMENESS)),
-                            c.getInt(TAG_QUANTITY),c.getString(TAG_DATE), c.getString(TAG_TIME),
-                            isActive));
-
-                    totalPrice = totalPrice + Price.getDouble(c.getString(TAG_PRICE));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -362,13 +376,90 @@ public class ShoppingCartActivity extends ActionBarActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    ArrayAdapter<ShoppingItem> adapter = new MyListAdapter();
+                    if(success == 1) {
+                        adapter = new MyListAdapter();
 
-                    listView = (ListView) findViewById(R.id.listView);
-                    listView.setAdapter(adapter);
+                        listView = (ListView) findViewById(R.id.listView);
+                        listView.setAdapter(adapter);
 
-                    TextView tPrice = (TextView) findViewById(R.id.price);
-                    tPrice.setText("$" + String.format("%.2f", totalPrice));
+                        adapter.notifyDataSetChanged();
+
+                        TextView tPrice = (TextView) findViewById(R.id.price);
+                        tPrice.setText("$" + String.format("%.2f", totalPrice));
+                    } else {
+                        TextView fName = (TextView) findViewById(R.id.result);
+                        findViewById(R.id.result).setVisibility(View.VISIBLE);
+                        fName.setText(R.string.empty_cart);
+
+                        findViewById(R.id.items).setVisibility(View.GONE);
+                        findViewById(R.id.price).setVisibility(View.GONE);
+                        findViewById(R.id.checkout).setVisibility(View.GONE);
+                    }
+                }
+            });
+        }
+
+    }
+
+    class RemoveFromShoppingCart extends AsyncTask<String, String, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            String result = "";
+
+            try {
+                HttpClient httpClient = new DefaultHttpClient();
+                String url;
+
+                List<NameValuePair> categoryName = new ArrayList<>();
+                categoryName.add(new BasicNameValuePair("t_key", Integer.toString(conn.getT_key())));
+                categoryName.add(new BasicNameValuePair("ts_key", Integer.toString(ts_key)));
+
+                HttpPost httppost = new HttpPost(url_remove_from_cart);
+
+                httppost.setEntity(new UrlEncodedFormEntity(categoryName));
+
+                HttpResponse response = httpClient.execute(httppost);
+
+                HttpEntity entity = response.getEntity();
+                InputStream webs = entity.getContent();
+
+                try {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(webs,"iso-8859-1"),8);
+                    StringBuilder sb = new StringBuilder();
+                    String line = null;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    webs.close();
+                    result=sb.toString();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                JSONObject jObj = new JSONObject(result);
+
+                success = jObj.getInt(TAG_SUCCESS);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        protected void onPostExecute(String file_url) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.clear();
+                    totalPrice = 0;
+
+                    new LoadShoppingCart().execute();
                 }
             });
         }

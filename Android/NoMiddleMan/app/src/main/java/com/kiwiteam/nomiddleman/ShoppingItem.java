@@ -7,6 +7,7 @@ import java.util.ArrayList;
 public class ShoppingItem {
     private int tourID;
     private Tour tour;
+    private int sessionID;
     private int quantity;
     private String date;
     private String time;
@@ -19,9 +20,10 @@ public class ShoppingItem {
         this.time = "";
     }
 
-    public ShoppingItem(Tour tour, int quantity, String date, String time, boolean isActive) {
+    public ShoppingItem(Tour tour, int sessionID, int quantity, String date, String time, boolean isActive) {
         this.tourID = tour.getId();
         this.tour = tour;
+        this.sessionID = sessionID;
         this.quantity = quantity;
         this.date = date;
         this.time = time;
@@ -38,6 +40,10 @@ public class ShoppingItem {
 
     public double getTourPrice() {
         return tour.getPrice();
+    }
+
+    public int getSessionID() {
+        return sessionID;
     }
 
     public ArrayList<Bitmap> getTourPicture() {
