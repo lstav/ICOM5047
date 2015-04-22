@@ -9,7 +9,8 @@
 		
 		$result = pg_query($conn, "Select T.tour_key as Key, T.ts_key as ts_key, upper(T.\"tour_Name\") as Name, 
 		T.\"tour_Desc\" as Description, T.\"total\" as Price, T.\"extremeness\" as Extremeness, 
-		T.\"tour_photo\" as Photo, T.\"s_Time\" as Time, T.\"p_quantity\" as Qty, T.\"s_isActive\" as isactive, T.\"passed\" as passed
+		T.\"tour_photo\" as Photo, T.\"s_Time\" as Time, T.\"p_quantity\" as Qty, T.\"s_isActive\" as isactive, 
+		T.\"passed\" as passed, T.\"isfull\" as full
 		FROM \"Shopping Cart\" as T 
 		Where \"t_key\"=$keyword");
 		
@@ -27,11 +28,9 @@
 				
 				$tour['isActive'] = $row['isactive'];
 				
-				if($row['passed'] == "t") {
+				if($row['passed'] == "t" || $row['full'] == "t") {
 					$tour['isActive'] = "f";
 				}
-				
-				//$tour['isCancelled'] = ($row['isactive'] and !$row['passed']);
 				
 				$tour['passed'] = $row['passed'];
 				$tour['time'] = date("g:i:s A" , strtotime($row['time']));

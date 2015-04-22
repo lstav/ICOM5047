@@ -35,11 +35,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="@string/not_active"
+                android:text="*"
                 android:id="@+id/active"
                 android:textStyle="bold"
                 android:visibility="gone"
-                android:textSize="16dp" />
+                android:textSize="16dp"
+                android:textColor="#f00" />
 
             <TextView
                 android:id="@+id/tourPrice"

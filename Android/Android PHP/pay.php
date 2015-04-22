@@ -12,40 +12,28 @@
 		T.\"tour_photo\" as Photo, T.\"s_Time\" as Time, T.\"p_quantity\" as Qty, T.\"s_isActive\" as isactive, T.\"passed\" as passed, T.\"isfull\" as isfull
 		FROM \"Shopping Cart\" as T 
 		Where \"t_key\"=$t_key and T.\"s_isActive\" = True and passed = False and isfull = False");
-		
+
 		if(pg_num_rows($result) > 0) {
-			$response['tours'] = array();
+			//$response['tours'] = array();
 			
 			while($row = pg_fetch_array($result)) {
-				$tour = array();
-				$tour['key'] = $row['key'];
-				$tour['ts_key'] = $row['ts_key'];
-				$tour['name'] = $row['name'];
-				$tour['price'] = $row['price'];
-				$tour['extremeness'] = $row['extremeness'];
-				$tour['photo'] = $row['photo'];
+				$ts_key = $row['ts_key'];
 				
-				$tour['isActive'] = $row['isactive'];
 				
-				if($row['passed'] == "t" || $row['full'] == "t") {
-					$tour['isActive'] = "f";
-				}
+				$pay = pg_query($conn, "UPDATE \"Participants\" SET \"isPayed\" = True WHERE \"t_key\" = $t_key  AND \"ts_key\" = $ts_key "); 
+ 				$quantity = pg_query(" SELECT \"p_quantity\" FROM \"Participants\"  WHERE \"t_key\" = $t_key  AND \"ts_key\" = $ts_key "); 
+ 				$row = pg_fetch_array($quantity); 
+ 				$qty = $row['p_quantity']; 
+ 				$tsupdt = pg_query($conn, " UPDATE \"Tour Session\" SET \"Availability\" = (\"Availability\" - $qty) WHERE \"ts_key\" = $ts_key "); 
 				
-				//$tour['isCancelled'] = ($row['isactive'] and !$row['passed']);
-				
-				$tour['passed'] = $row['passed'];
-				$tour['time'] = date("g:i:s A" , strtotime($row['time']));
-				$tour['date'] = date("M-d-Y", strtotime($row['time']));
-				$tour['quantity'] = $row['qty'];
-				
-				array_push($response['tours'], $tour);
+				//array_push($response['tours'], $tour);
 			}
 			
 			$response['success'] = 1;
 			echo json_encode($response);
 		} else {
 			$response['success'] = 0;
-			$response['message'] = "No tours found on checkout";
+			$response['message'] = "No tours found on cart";
 				
 			echo json_encode($response);
 		}

@@ -7,7 +7,7 @@
 	if(isset($_POST['tour_key'])) {
 		$tour_key = $_POST['tour_key'];
 		
-		$result = pg_query($conn, "select \"tour_key\" as key, \"tour_Name\" as name, \"tour_Desc\" as description, 
+		$result = pg_query($conn, "select \"tour_key\" as key, \"tour_Name\" as name, \"tour_Desc\" as description,
 		\"Facebook\" as facebook, \"Youtube\" as youtube, \"Instagram\" as instagram, \"Twitter\" as twitter, 
 		\"Price\" as price, \"tour_quantity\" as quantity, \"extremeness\" as extremeness, \"tour_photo\" as photo, 
 		\"g_Email\" as gemail, \"g_FName\" as gfname, \"g_LName\" as glname, \"g_License\" as license, \"Company\" as company,

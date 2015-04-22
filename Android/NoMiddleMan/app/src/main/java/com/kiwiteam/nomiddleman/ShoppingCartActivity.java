@@ -55,6 +55,7 @@ public class ShoppingCartActivity extends ActionBarActivity {
     private double totalPrice = 0.0;
     private int ts_key = -1;
     private int success = 0;
+    private boolean active = true;
 
     private Bitmap bitmap;
     private ProgressDialog pDialog;
@@ -257,6 +258,8 @@ public class ShoppingCartActivity extends ActionBarActivity {
             if(!currentTour.isActive()) {
                 TextView isAct = (TextView) itemView.findViewById(R.id.active);
                 isAct.setVisibility(View.VISIBLE);
+                TextView message = (TextView) findViewById(R.id.message);
+                message.setVisibility(View.VISIBLE);
             }
 
             picture = (ImageView) itemView.findViewById(R.id.tourPic);
@@ -361,7 +364,10 @@ public class ShoppingCartActivity extends ActionBarActivity {
                                 c.getInt(TAG_QUANTITY),c.getString(TAG_DATE), c.getString(TAG_TIME),
                                 isActive));
 
-                        totalPrice = totalPrice + Price.getDouble(c.getString(TAG_PRICE));
+                        if(isActive) {
+                            totalPrice = totalPrice + Price.getDouble(c.getString(TAG_PRICE));
+                        }
+
                     }
                 }
             } catch (JSONException e) {
@@ -383,6 +389,14 @@ public class ShoppingCartActivity extends ActionBarActivity {
                         listView.setAdapter(adapter);
 
                         adapter.notifyDataSetChanged();
+
+                        if(!active) {
+                            TextView message = (TextView) findViewById(R.id.message);
+                            message.setVisibility(View.VISIBLE);
+                        } else {
+                            TextView message = (TextView) findViewById(R.id.message);
+                            message.setVisibility(View.GONE);
+                        }
 
                         TextView tPrice = (TextView) findViewById(R.id.price);
                         tPrice.setText("$" + String.format("%.2f", totalPrice));
