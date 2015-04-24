@@ -1,10 +1,14 @@
 package com.kiwiteam.nomiddleman;
 
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -18,7 +22,24 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -28,6 +49,33 @@ public class CheckoutActivity extends ActionBarActivity {
     private ArrayAdapter<ShoppingItem> adapter;
     private ListView listView;
     private List<ShoppingItem> shoppingCart = new ArrayList<>();
+
+    private double totalPrice = 0.0;
+    private int ts_key = -1;
+    private int success = 0;
+    private boolean active = true;
+
+    private Bitmap bitmap;
+    private ProgressDialog pDialog;
+    private ImageView picture;
+
+    private JSONArray backup;
+
+    private static final String TAG_KEY = "key";
+    private static final String TAG_TSKEY = "ts_key";
+    private static final String TAG_NAME = "name";
+    private static final String TAG_PRICE = "price";
+    private static final String TAG_EXTREMENESS = "extremeness";
+    private static final String TAG_PHOTO = "photo";
+    private static final String TAG_QUANTITY = "quantity";
+    private static final String TAG_DATE = "date";
+    private static final String TAG_TIME = "time";
+    private static final String TAG_ACTIVE = "isActive";
+    private static final String TAG_SUCCESS = "success";
+
+
+    private static String url_get_checkout = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/checkout.php";
+    private static String url_remove_from_cart = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/removeFromShoppingCart.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +98,16 @@ public class CheckoutActivity extends ActionBarActivity {
      * @param position
      */
     public void removeItem(int position) {
-        conn.removeFromShoppingCart(position);
+
+        ts_key = shoppingCart.get(position).getSessionID();
+
+        totalPrice = totalPrice - shoppingCart.get(position).getTourPrice();
+
+        new RemoveFromShoppingCart().execute();
+
+        adapter.notifyDataSetChanged();
+
+        /*conn.removeFromShoppingCart(position);
         adapter.notifyDataSetChanged();
         TextView tPrice = (TextView) findViewById(R.id.price);
         if(!adapter.isEmpty()) {
@@ -61,7 +118,7 @@ public class CheckoutActivity extends ActionBarActivity {
             Intent intent = new Intent(this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
-        }
+        }*/
     }
 
     /**
@@ -70,7 +127,9 @@ public class CheckoutActivity extends ActionBarActivity {
      */
     private void handleIntent(Intent intent) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        shoppingCart = conn.getShoppingCart(0);
+        new LoadCheckout().execute();
+
+        /*shoppingCart = conn.getShoppingCart(0);
 
         if(!shoppingCart.isEmpty()) {
 
@@ -92,7 +151,7 @@ public class CheckoutActivity extends ActionBarActivity {
 
             TextView tPrice = (TextView) findViewById(R.id.price);
             tPrice.setText("$0.00");
-        }
+        }*/
     }
 
 
@@ -108,7 +167,7 @@ public class CheckoutActivity extends ActionBarActivity {
             menu.findItem(R.id.account).setVisible(false);
             menu.findItem(R.id.signout).setVisible(false);
         }
-        //initSearchView(menu);
+
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
@@ -191,11 +250,8 @@ public class CheckoutActivity extends ActionBarActivity {
             // fill the view
             //int draw = getResources().getIdentifier(currentTour.getTourPicture().get(0),"drawable",getPackageName());
 
-            /*ImageView picture = (ImageView) itemView.findViewById(R.id.tourPic);
-            Drawable img = getResources().getDrawable(draw);
-
-            picture.setImageDrawable(img);
-*/
+            picture = (ImageView) itemView.findViewById(R.id.tourPic);
+            picture.setImageBitmap(currentTour.getTourPicture().get(0));
 
             TextView tName = (TextView) itemView.findViewById(R.id.tourName);
             tName.setText(currentTour.getTourName());
@@ -216,5 +272,202 @@ public class CheckoutActivity extends ActionBarActivity {
 
             return itemView;
         }
+    }
+
+    /**
+    * Search database with results by keyword
+    */
+    class LoadCheckout extends AsyncTask<String, String, String> {
+
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(CheckoutActivity.this);
+            pDialog.setMessage("Loading results. Please wait...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String result = "";
+
+            try {
+                HttpClient httpClient = new DefaultHttpClient();
+                String url;
+
+                List<NameValuePair> categoryName = new ArrayList<>();
+                categoryName.add(new BasicNameValuePair("t_key", Integer.toString(conn.getT_key())));
+
+                HttpPost httppost = new HttpPost(url_get_checkout);
+
+                httppost.setEntity(new UrlEncodedFormEntity(categoryName));
+
+                HttpResponse response = httpClient.execute(httppost);
+
+                HttpEntity entity = response.getEntity();
+                InputStream webs = entity.getContent();
+
+                try {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(webs,"iso-8859-1"),8);
+                    StringBuilder sb = new StringBuilder();
+                    String line = null;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    webs.close();
+                    result=sb.toString();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                JSONObject jObj = new JSONObject(result);
+
+                success = jObj.getInt(TAG_SUCCESS);
+
+                if(success == 1) {
+
+                    backup = jObj.getJSONArray("tours");
+
+                    for (int i=0; i<backup.length(); i++) {
+                        JSONObject c = backup.getJSONObject(i);
+                        try {
+                            bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "img1.jpg").getContent());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        boolean isActive = false;
+                        if(c.getString(TAG_ACTIVE).equals("t")) {
+                            isActive = true;
+                        }
+                        shoppingCart.add(new ShoppingItem(new Tour(c.getString(TAG_NAME),
+                                Price.getDouble(c.getString(TAG_PRICE)),
+                                new ArrayList<>(Arrays.asList(bitmap)),
+                                c.getInt(TAG_KEY),c.getDouble(TAG_EXTREMENESS)),c.getInt(TAG_TSKEY),
+                                c.getInt(TAG_QUANTITY),c.getString(TAG_DATE), c.getString(TAG_TIME),
+                                isActive));
+
+                        if(isActive) {
+                            totalPrice = totalPrice + Price.getDouble(c.getString(TAG_PRICE));
+                        }
+
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        protected void onPostExecute(String file_url) {
+            pDialog.dismiss();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(success == 1) {
+                        adapter = new MyListAdapter();
+
+                        listView = (ListView) findViewById(R.id.listView);
+                        listView.setAdapter(adapter);
+
+                        adapter.notifyDataSetChanged();
+
+                        /*if(!active) {
+                            TextView message = (TextView) findViewById(R.id.message);
+                            message.setVisibility(View.VISIBLE);
+                        } else {
+                            TextView message = (TextView) findViewById(R.id.message);
+                            message.setVisibility(View.GONE);
+                        }*/
+
+                        TextView tPrice = (TextView) findViewById(R.id.price);
+                        tPrice.setText("$" + String.format("%.2f", totalPrice));
+                    } else {
+                        Intent intent = new Intent(CheckoutActivity.this, MainActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                        /*TextView fName = (TextView) findViewById(R.id.result);
+                        findViewById(R.id.result).setVisibility(View.VISIBLE);
+                        fName.setText(R.string.empty_cart);
+
+                        findViewById(R.id.items).setVisibility(View.GONE);
+                        findViewById(R.id.price).setVisibility(View.GONE);
+                        findViewById(R.id.checkout).setVisibility(View.GONE);*/
+                    }
+                }
+            });
+        }
+
+    }
+
+    class RemoveFromShoppingCart extends AsyncTask<String, String, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            String result = "";
+
+            try {
+                HttpClient httpClient = new DefaultHttpClient();
+                String url;
+
+                List<NameValuePair> categoryName = new ArrayList<>();
+                categoryName.add(new BasicNameValuePair("t_key", Integer.toString(conn.getT_key())));
+                categoryName.add(new BasicNameValuePair("ts_key", Integer.toString(ts_key)));
+
+                HttpPost httppost = new HttpPost(url_remove_from_cart);
+
+                httppost.setEntity(new UrlEncodedFormEntity(categoryName));
+
+                HttpResponse response = httpClient.execute(httppost);
+
+                HttpEntity entity = response.getEntity();
+                InputStream webs = entity.getContent();
+
+                try {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(webs,"iso-8859-1"),8);
+                    StringBuilder sb = new StringBuilder();
+                    String line = null;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    webs.close();
+                    result=sb.toString();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                JSONObject jObj = new JSONObject(result);
+
+                success = jObj.getInt(TAG_SUCCESS);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        protected void onPostExecute(String file_url) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.clear();
+                    totalPrice = 0;
+
+                    new LoadCheckout().execute();
+                }
+            });
+        }
+
     }
 }
