@@ -9,7 +9,7 @@
 
     <TableLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+        android:layout_height="wrap_content">
 
         <TableRow
             android:layout_width="fill_parent"
@@ -26,12 +26,10 @@
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:gravity="fill"
             android:id="@+id/review"
-            android:inputType="textMultiLine"
-            android:singleLine="false"/>
+            android:singleLine="true"/>
     </TableLayout>
 
 </LinearLayout>

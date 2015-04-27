@@ -38,7 +38,7 @@ import java.util.Arrays;
 import java.util.List;
 
 
-public class LoginActivity extends ActionBarActivity {
+public class ResetRequestActivity extends ActionBarActivity {
 
     DatabaseConnection conn;
     private static final String TAG_SUCCESS = "success";
@@ -51,7 +51,7 @@ public class LoginActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_reset_request);
         conn = (DatabaseConnection)getApplicationContext();
     }
 
@@ -83,7 +83,7 @@ public class LoginActivity extends ActionBarActivity {
 
     // Executes login query
     public void login(View view) {
-        new Login().execute();
+        new Reset().execute();
     }
 
     public void register(View view) {
@@ -91,12 +91,12 @@ public class LoginActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
-    class Login extends AsyncTask<String, String, String> {
+    class Reset extends AsyncTask<String, String, String> {
 
         // Creates a loading dialog
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog = new ProgressDialog(LoginActivity.this);
+            pDialog = new ProgressDialog(ResetRequestActivity.this);
             pDialog.setMessage("Login. Please wait...");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(false);
@@ -189,9 +189,5 @@ public class LoginActivity extends ActionBarActivity {
 
     }
 
-    public void passwordReset(View view) {
-        Intent intent = new Intent(this, ResetRequestActivity.class);
-        startActivity(intent);
-    }
 
 }

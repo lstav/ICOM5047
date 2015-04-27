@@ -106,6 +106,15 @@
     <string name="address">Dirección</string>
     <string name="information">Información del Guía</string>
     <string name="unavailable_message">* Uno o más artículos no se pueden procesar</string>
+    <string name="terms_conditions">Términos y Condiciones</string>
+    <string name="acceptmessage">Al hacer clic en \'Registrar\', acepto que:</string>
+    <string name="read_conditions">- He leído y aceptado los <a href="http://kiwiteam.ece.uprm.edu/NoMiddleMan/Terms%20and%20Conditions.html">Términos y Condiciones</a>.</string>
+    <string name="at_least_18">- Tengo al menos 18 años</string>
+
+    <string name="lost_password">¿Olvidó su Contraseña?</string>
+    <string name="title_activity_reset_request">ResetRequestActivity</string>
+
+    <string name="reset_message">Por favor escriba el correo electronico que utiliza para comprar en No Middle Man.</string>
 
 
 </resources>

@@ -49,13 +49,11 @@ public class AccountActivity extends ActionBarActivity {
     private String email;
     private String fname;
     private String lname;
-    private String bday;
     private String telephone;
 
     private static final String TAG_EMAIL = "t_Email";
     private static final String TAG_FNAME = "t_FName";
     private static final String TAG_LNAME = "t_LName";
-    private static final String TAG_BDAY = "t_BDate";
     private static final String TAG_TELEPHONE = "t_telephone";
 
     private JSONArray tourist;
@@ -230,7 +228,6 @@ public class AccountActivity extends ActionBarActivity {
                     email = c.getString(TAG_EMAIL);
                     fname = c.getString(TAG_FNAME);
                     lname = c.getString(TAG_LNAME);
-                    bday = c.getString(TAG_BDAY);
                     telephone = c.getString(TAG_TELEPHONE);
                 }
             } catch (JSONException e) {
@@ -255,9 +252,6 @@ public class AccountActivity extends ActionBarActivity {
 
                     TextView emailT = (TextView) findViewById(R.id.email);
                     emailT.setText(email);
-
-                    TextView bdayT = (TextView) findViewById(R.id.bday);
-                    bdayT.setText(bday);
 
                     TextView tel = (TextView) findViewById(R.id.telephone);
                     tel.setText(telephone);

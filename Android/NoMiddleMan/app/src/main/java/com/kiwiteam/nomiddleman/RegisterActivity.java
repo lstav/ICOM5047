@@ -5,12 +5,15 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.ContactsContract;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.format.Time;
+import android.text.method.LinkMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,6 +32,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -45,12 +49,9 @@ public class RegisterActivity extends ActionBarActivity {
     private String password;
     private String userName;
     private String userLName;
-    private String birthday;
     private String telephoneNumber;
 
     public int success;
-
-    public String bday;
 
     private static final String TAG_SUCCESS = "success";
     private ProgressDialog pDialog;
@@ -64,7 +65,22 @@ public class RegisterActivity extends ActionBarActivity {
         setContentView(R.layout.activity_register);
         conn = (DatabaseConnection)getApplicationContext();
 
+        TextView terms = (TextView) findViewById(R.id.textView33);
+        terms.setLinkTextColor(Color.BLUE);
+        terms.setLinksClickable(true);
+
+        terms.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("http://kiwiteam.ece.uprm.edu/NoMiddleMan/Terms%20and%20Conditions.html"));
+                startActivity(intent);
+            }
+        });
+
     }
+
+
 
 
     @Override
@@ -96,26 +112,23 @@ public class RegisterActivity extends ActionBarActivity {
     }
 
     /**
-     * Opens dialog to pick time
-     * @param v
-     */
-    public void showDatePickerDialog(View v) {
-        DialogFragment newFragment = new DatePickerFragment();
-
-        newFragment.show(getSupportFragmentManager(), "datePicker");
-    }
-
-    /**
      * Calls register class to send to php
      * @param view
      */
     public void register(View view) {
         EditText uEmail = (EditText) findViewById(R.id.email);
         userEmail = uEmail.getText().toString();
+        EditText uPhone = (EditText) findViewById(R.id.telephone);
+        telephoneNumber = uPhone.getText().toString();
 
         if(validateEmail(userEmail)) {
 
-            new Register().execute();
+            if(validatePhone(telephoneNumber)) {
+                new Register().execute();
+            } else {
+                Toast.makeText(this, "No valid telephone number", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
         } else {
             Toast.makeText(this, "No valid email", Toast.LENGTH_SHORT).show();
@@ -135,44 +148,13 @@ public class RegisterActivity extends ActionBarActivity {
         return pattern.matcher(email).matches();
     }
 
-    @SuppressLint("ValidFragment")
-    public class DatePickerFragment extends DialogFragment
-            implements DatePickerDialog.OnDateSetListener {
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // Use the current date as the default date in the picker
-            final Calendar c = Calendar.getInstance();
-
-
-
-            int year = c.get(Calendar.YEAR);
-            int month = c.get(Calendar.MONTH);
-            int day = c.get(Calendar.DAY_OF_MONTH);
-
-            DatePickerDialog dialog = new DatePickerDialog(getActivity(), this, year, month, day);
-            dialog.getDatePicker().setMaxDate(System.currentTimeMillis());
-
-            // Create a new instance of DatePickerDialog and return it
-            return dialog;
-        }
-
-        public void onDateSet(DatePicker view, int year, int month, int day) {
-            // Do something with the date chosen by the user
-            /*Calendar selectedCalendar = Calendar.getInstance();
-            selectedCalendar.set(Calendar.YEAR, year);
-            selectedCalendar.set(Calendar.MONTH, month);
-            selectedCalendar.set(Calendar.DAY_OF_MONTH, day);*/
-
-            month = month + 1;
-
-            bday = year + "-" + month + "-" + day;
-
-            TextView bDate = (TextView) findViewById(R.id.bday);
-            bDate.setText(bday);
-
-        }
+    private boolean validatePhone(String phone) {
+        String PHONE_REGEX = "\\\\d{10}";
+        Pattern pattern = Pattern.compile(PHONE_REGEX);
+        return pattern.matcher(phone).matches();
     }
+
+
 
     class Register extends AsyncTask<String, String, String> {
 
@@ -199,8 +181,6 @@ public class RegisterActivity extends ActionBarActivity {
                 userName = uName.getText().toString();
                 EditText uLName = (EditText) findViewById(R.id.lastText);
                 userLName = uLName.getText().toString();
-                TextView bDate = (TextView) findViewById(R.id.bday);
-                birthday  = bDate.getText().toString();
                 EditText telephone = (EditText) findViewById(R.id.telephone);
                 telephoneNumber = telephone.getText().toString();
 
@@ -210,7 +190,6 @@ public class RegisterActivity extends ActionBarActivity {
                 categoryName.add(new BasicNameValuePair("t_password", password));
                 categoryName.add(new BasicNameValuePair("t_FName", userName));
                 categoryName.add(new BasicNameValuePair("t_LName", userLName));
-                categoryName.add(new BasicNameValuePair("t_BDate", birthday));
                 categoryName.add(new BasicNameValuePair("t_telephone", telephoneNumber));
 
                 //////////////////////////////////

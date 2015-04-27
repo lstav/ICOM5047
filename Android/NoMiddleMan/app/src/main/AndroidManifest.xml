@@ -145,6 +145,10 @@
             android:name=".ReviewActivity"
             android:label="@string/title_activity_review" >
         </activity>
+        <activity
+            android:name=".ResetRequestActivity"
+            android:label="@string/title_activity_reset_request" >
+        </activity>
     </application>
 
 </manifest>

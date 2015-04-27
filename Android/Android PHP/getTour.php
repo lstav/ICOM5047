@@ -70,7 +70,8 @@
 		
 		
 		$result = pg_query($conn, "select \"ts_key\" as tskey, \"s_Time\" as time, \"Availability\" as availability
-		from \"Tour Session\" where \"tour_key\" = $tour_key and \"s_isActive\" = true");
+		from \"Tour Session\" where \"tour_key\" = $tour_key and \"s_isActive\" = true
+		Order by (\"s_Time\") ASC");
 		
 		if(!empty($result)) {
 			if(pg_num_rows($result) > 0) {
@@ -113,7 +114,8 @@
 		
 		
 		$result = pg_query($conn, "Select \"tour_key\", \"t_key\", \"ts_key\", \"Text\" as review, 
-		\"Rate\" as rating, \"Date\" as date From \"All Reviews\" Where \"tour_key\" = $tour_key");
+		\"Rate\" as rating, \"Date\" as date From \"All Reviews\" Where \"tour_key\" = $tour_key 
+		Order by (\"Date\") DESC");
 		
 		if(!empty($result)) {
 			if(pg_num_rows($result) > 0) {

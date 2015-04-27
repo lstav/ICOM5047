@@ -137,7 +137,7 @@ public class RateActivity extends ActionBarActivity {
         //conn.rate(tourID, rating, review);
         //conn.getHistory().get(historyID).rated();
 
-        finish();
+        //finish();
     }
 
     /**
@@ -145,6 +145,8 @@ public class RateActivity extends ActionBarActivity {
      * @param view
      */
     public void cancel(View view) {
+        Intent intent = new Intent(RateActivity.this, PurchaseHistoryActivity.class);
+        startActivity(intent);
         finish();
     }
 
@@ -152,14 +154,14 @@ public class RateActivity extends ActionBarActivity {
      * Sends new password to database and updates the database
      */
     class Rate extends AsyncTask<String, String, String> {
-        protected void onPreExecute() {
+        /*protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(RateActivity.this);
             pDialog.setMessage("Loading results. Please wait...");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(true);
             pDialog.show();
-        }
+        }*/
 
         @Override
         protected String doInBackground(String... params) {
@@ -225,7 +227,9 @@ public class RateActivity extends ActionBarActivity {
          * @param file_url
          */
         protected void onPostExecute(String file_url) {
-            pDialog.dismiss();
+            /*if(pDialog.isShowing()) {
+                pDialog.dismiss();
+            }*/
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
