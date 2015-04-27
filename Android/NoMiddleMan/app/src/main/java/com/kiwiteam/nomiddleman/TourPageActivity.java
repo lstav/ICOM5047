@@ -287,8 +287,23 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
 
     }
 
-    public void openLink(View view) {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://m.youtube.com"));
+    public void openYoutube(View view) {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(tour.getYoutube()));
+        startActivity(browserIntent);
+    }
+
+    public void openFacebook(View view) {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(tour.getFacebook()));
+        startActivity(browserIntent);
+    }
+
+    public void openInstagram(View view) {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(tour.getInstagram()));
+        startActivity(browserIntent);
+    }
+
+    public void openTwitter(View view) {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(tour.getTwitter()));
         startActivity(browserIntent);
     }
 

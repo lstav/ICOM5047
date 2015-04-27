@@ -1,10 +1,14 @@
 package com.kiwiteam.nomiddleman;
 
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -19,35 +23,82 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 public class PurchaseHistoryActivity extends ActionBarActivity {
 
     private DatabaseConnection conn;
-    private ArrayList<PurchaseHistory.HistoryItem> purchaseHistory;
-    private ArrayAdapter<PurchaseHistory.HistoryItem> activeAdapter;
-    private ArrayAdapter<PurchaseHistory.HistoryItem> pastAdapter;
+
+    private ArrayAdapter<HistoryItem> activeAdapter;
+    private ArrayAdapter<HistoryItem> pastAdapter;
     private ListView upcomingListView;
     private ListView pastListView;
+    private List<HistoryItem> activeHistory = new ArrayList<>();
+    private List<HistoryItem> pastHistory = new ArrayList<>();
+
+    private double totalPrice = 0.0;
+    private int ts_key = -1;
+    private int success = 0;
+    private boolean active = true;
+
+    private Bitmap bitmap;
+    private ProgressDialog pDialog;
+    private ImageView picture;
+
+    private JSONArray backup;
+
+    private static final String TAG_KEY = "key";
+    private static final String TAG_TSKEY = "ts_key";
+    private static final String TAG_NAME = "name";
+    private static final String TAG_PRICE = "price";
+    private static final String TAG_EXTREMENESS = "extremeness";
+    private static final String TAG_PHOTO = "photo";
+    private static final String TAG_QUANTITY = "quantity";
+    private static final String TAG_DATE = "date";
+    private static final String TAG_TIME = "time";
+    private static final String TAG_ACTIVE = "isActive";
+    private static final String TAG_SUCCESS = "success";
+    private static final String TAG_RATED = "isRated";
+
+
+    private static String url_get_upcoming_tours = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/getUpcomingTours.php";
+    private static String url_get_past_tours = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/getPastTours.php";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_purchase_history);
+
         conn = (DatabaseConnection) getApplicationContext();
-
         Intent intent = getIntent();
-
         handleIntent(intent);
     }
 
-    public void onResume() {
+    /*public void onResume() {
         super.onResume();
         Intent intent = getIntent();
         handleIntent(intent);
-    }
+    }*/
 
     public static void setListViewHeightBasedOnChildren(ListView listView) {
         ListAdapter listAdapter = listView.getAdapter();
@@ -74,6 +125,13 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
 
     private void handleIntent(Intent intent) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        new LoadUpcomingTours().execute();
+        new LoadPastTours().execute();
+
+        /*if(pDialog.isShowing()) {
+            pDialog.dismiss();
+        }*/
+
        /* purchaseHistory = conn.getHistory();
         ArrayList<PurchaseHistory.HistoryItem> activeHistory = new ArrayList<>();
         ArrayList<PurchaseHistory.HistoryItem> pastHistory = new ArrayList<>();
@@ -165,23 +223,26 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
 
 
 
-    public void rateItem(int tourID, int position) {
+    public void rateItem(int ts_ID, int position) {
         Intent intent = new Intent(this, RateActivity.class);
-        intent.putExtra("Tour ID", tourID);
+        intent.putExtra("TourSession ID", ts_ID);
         intent.putExtra("History ID", position);
         startActivity(intent);
+        finish();
     }
 
-    private class MyListAdapter extends ArrayAdapter<PurchaseHistory.HistoryItem> {
-        private ArrayList<PurchaseHistory.HistoryItem> pHistory;
+    private class MyListAdapter extends ArrayAdapter<HistoryItem> {
+        //private List<HistoryItem> pHistory;
 
-        public MyListAdapter(ArrayList<PurchaseHistory.HistoryItem> purchaseHistory) {
-            super(PurchaseHistoryActivity.this, R.layout.shopping_cart_item, purchaseHistory);
-            pHistory = purchaseHistory;
+        //public MyListAdapter(ArrayList<HistoryItem> purchaseHistory) {
+        public MyListAdapter() {
+            super(PurchaseHistoryActivity.this, R.layout.shopping_cart_item, activeHistory);
+            //pHistory = purchaseHistory;
         }
 
         public View getView(final int position, View convertView, ViewGroup parent) {
             View itemView = convertView;
+
             if (itemView == null) {
                 itemView = getLayoutInflater().inflate(R.layout.shopping_cart_item, parent, false);
 
@@ -190,18 +251,13 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
             itemView.findViewById(R.id.remove).setVisibility(View.GONE);
 
             // find the list
-            PurchaseHistory.HistoryItem currentTour = pHistory.get(position);
+            HistoryItem currentTour = activeHistory.get(position);
 
-            // fill the view
-            /*int draw = getResources().getIdentifier(currentTour.getTour().getTourPictures().get(0),"drawable",getPackageName());
-
-            ImageView picture = (ImageView) itemView.findViewById(R.id.tourPic);
-            Drawable img = getResources().getDrawable(draw);
-
-            picture.setImageDrawable(img);*/
+            picture = (ImageView) itemView.findViewById(R.id.tourPic);
+            picture.setImageBitmap(currentTour.getTour().getPictures().get(0));
 
             TextView tName = (TextView) itemView.findViewById(R.id.tourName);
-            tName.setText(currentTour.getTour().getTourName());
+            tName.setText(currentTour.getTour().getName());
 
             TextView tPrice = (TextView) itemView.findViewById(R.id.tourPrice);
             double price = currentTour.getPrice();
@@ -216,11 +272,11 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
             TextView tTime = (TextView) itemView.findViewById(R.id.time);
             tTime.setText(currentTour.getTime());
 
-            if(!pHistory.get(position).isRated()) {
+            if(!activeHistory.get(position).isRated()) {
                 itemView.findViewById(R.id.rate).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        rateItem(pHistory.get(position).getTour().getTourID(), position);
+                        rateItem(activeHistory.get(position).getSessionID(), position);
                     }
                 });
             } else {
@@ -231,7 +287,7 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getApplicationContext(), TourPageActivity.class);
-                    intent.putExtra("tourId",pHistory.get(position).getTour().getTourID());
+                    intent.putExtra("tourId",activeHistory.get(position).getTour().getId());
                     startActivity(intent);
                 }
             });
@@ -240,4 +296,308 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
         }
     }
 
+    private class MyListAdapterPast extends ArrayAdapter<HistoryItem> {
+        //private List<HistoryItem> pHistory;
+
+        //public MyListAdapter(ArrayList<HistoryItem> purchaseHistory) {
+        public MyListAdapterPast() {
+            super(PurchaseHistoryActivity.this, R.layout.shopping_cart_item, pastHistory);
+            //pHistory = purchaseHistory;
+        }
+
+        public View getView(final int position, View convertView, ViewGroup parent) {
+            View itemView = convertView;
+
+            if (itemView == null) {
+                itemView = getLayoutInflater().inflate(R.layout.shopping_cart_item, parent, false);
+
+            }
+
+            itemView.findViewById(R.id.remove).setVisibility(View.GONE);
+
+            // find the list
+            HistoryItem currentTour = pastHistory.get(position);
+
+            picture = (ImageView) itemView.findViewById(R.id.tourPic);
+            picture.setImageBitmap(currentTour.getTour().getPictures().get(0));
+
+            TextView tName = (TextView) itemView.findViewById(R.id.tourName);
+            tName.setText(currentTour.getTour().getName());
+
+            TextView tPrice = (TextView) itemView.findViewById(R.id.tourPrice);
+            double price = currentTour.getPrice();
+            tPrice.setText("$"+ String.format("%.2f", price));
+
+            TextView tQuantity = (TextView) itemView.findViewById(R.id.quantity);
+            tQuantity.setText(Integer.toString(currentTour.getQuantity()));
+
+            TextView tDate = (TextView) itemView.findViewById(R.id.date);
+            tDate.setText(currentTour.getDate());
+
+            TextView tTime = (TextView) itemView.findViewById(R.id.time);
+            tTime.setText(currentTour.getTime());
+
+            if(!pastHistory.get(position).isRated()) {
+                itemView.findViewById(R.id.rate).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        rateItem(pastHistory.get(position).getSessionID(), position);
+                    }
+                });
+            } else {
+                itemView.findViewById(R.id.rate).setVisibility(View.GONE);
+            }
+
+            itemView.findViewById(R.id.tourPic).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getApplicationContext(), TourPageActivity.class);
+                    intent.putExtra("tourId",pastHistory.get(position).getTour().getId());
+                    startActivity(intent);
+                }
+            });
+
+            return itemView;
+        }
+    }
+
+    /**
+     * Search database with results by keyword
+     */
+    class LoadPastTours extends AsyncTask<String, String, String> {
+
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(PurchaseHistoryActivity.this);
+            pDialog.setMessage("Loading results. Please wait...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String result = "";
+
+            try {
+                HttpClient httpClient = new DefaultHttpClient();
+                String url;
+
+                List<NameValuePair> categoryName = new ArrayList<>();
+                categoryName.add(new BasicNameValuePair("t_key", Integer.toString(conn.getT_key())));
+
+                HttpPost httppost = new HttpPost(url_get_past_tours);
+
+                httppost.setEntity(new UrlEncodedFormEntity(categoryName));
+
+                HttpResponse response = httpClient.execute(httppost);
+
+                HttpEntity entity = response.getEntity();
+                InputStream webs = entity.getContent();
+
+                try {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(webs,"iso-8859-1"),8);
+                    StringBuilder sb = new StringBuilder();
+                    String line = null;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    webs.close();
+                    result=sb.toString();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                JSONObject jObj = new JSONObject(result);
+
+                success = jObj.getInt(TAG_SUCCESS);
+
+                if(success == 1) {
+
+                    //pastHistory.clear();
+                    backup = jObj.getJSONArray("tours");
+
+                    for (int i=0; i<backup.length(); i++) {
+                        JSONObject c = backup.getJSONObject(i);
+                        try {
+                            bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "img1.jpg").getContent());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        boolean isActive = false;
+                        if(c.getString(TAG_ACTIVE).equals("t")) {
+                            isActive = true;
+                        }
+
+                        boolean isRated = false;
+                        if(c.getString(TAG_RATED).equals("t")) {
+                            isRated = true;
+                        }
+                        pastHistory.add(new HistoryItem(c.getString(TAG_DATE),
+                                c.getString(TAG_TIME),c.getInt(TAG_TSKEY),c.getInt(TAG_QUANTITY),
+                                isRated, new Tour(c.getString(TAG_NAME),
+                                        Price.getDouble(c.getString(TAG_PRICE)),
+                                        new ArrayList<>(Arrays.asList(bitmap)),c.getInt(TAG_KEY),
+                                        c.getDouble(TAG_EXTREMENESS))));
+
+                        if(isActive) {
+                            totalPrice = totalPrice + Price.getDouble(c.getString(TAG_PRICE));
+                        }
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        protected void onPostExecute(String file_url) {
+            pDialog.dismiss();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(success == 1) {
+                        findViewById(R.id.pastTours).setVisibility(View.GONE);
+
+                        //pastAdapter = new MyListAdapter(pastHistory);
+                        pastAdapter = new MyListAdapterPast();
+
+                        pastListView = (ListView) findViewById(R.id.pastListView);
+                        pastListView.setAdapter(pastAdapter);
+
+                        pastAdapter.notifyDataSetChanged();
+
+                        setListViewHeightBasedOnChildren(pastListView);
+                    }
+                }
+            });
+        }
+
+    }
+
+    /**
+     * Search database with results by keyword
+     */
+    class LoadUpcomingTours extends AsyncTask<String, String, String> {
+
+        /*protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(PurchaseHistoryActivity.this);
+            pDialog.setMessage("Loading results. Please wait...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }*/
+
+        @Override
+        protected String doInBackground(String... params) {
+            String result = "";
+
+            try {
+                HttpClient httpClient = new DefaultHttpClient();
+                String url;
+
+                List<NameValuePair> categoryName = new ArrayList<>();
+                categoryName.add(new BasicNameValuePair("t_key", Integer.toString(conn.getT_key())));
+
+                HttpPost httppost = new HttpPost(url_get_upcoming_tours);
+
+                httppost.setEntity(new UrlEncodedFormEntity(categoryName));
+
+                HttpResponse response = httpClient.execute(httppost);
+
+                HttpEntity entity = response.getEntity();
+                InputStream webs = entity.getContent();
+
+                try {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(webs,"iso-8859-1"),8);
+                    StringBuilder sb = new StringBuilder();
+                    String line = null;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    webs.close();
+                    result=sb.toString();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                JSONObject jObj = new JSONObject(result);
+
+                success = jObj.getInt(TAG_SUCCESS);
+
+                if(success == 1) {
+
+                    activeHistory.clear();
+                    backup = jObj.getJSONArray("tours");
+
+                    for (int i=0; i<backup.length(); i++) {
+                        JSONObject c = backup.getJSONObject(i);
+                        try {
+                            bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "img1.jpg").getContent());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        boolean isActive = false;
+                        if(c.getString(TAG_ACTIVE).equals("t")) {
+                            isActive = true;
+                        }
+
+                        boolean isRated = false;
+                        if(c.getString(TAG_RATED).equals("t")) {
+                            isRated = true;
+                        }
+                        activeHistory.add(new HistoryItem(c.getString(TAG_DATE),
+                                c.getString(TAG_TIME),c.getInt(TAG_TSKEY),c.getInt(TAG_QUANTITY),
+                                isRated, new Tour(c.getString(TAG_NAME),
+                                        Price.getDouble(c.getString(TAG_PRICE)),
+                                        new ArrayList<>(Arrays.asList(bitmap)),c.getInt(TAG_KEY),
+                                        c.getDouble(TAG_EXTREMENESS))));
+
+                        if(isActive) {
+                            totalPrice = totalPrice + Price.getDouble(c.getString(TAG_PRICE));
+                        }
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        protected void onPostExecute(String file_url) {
+            //pDialog.dismiss();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(success == 1) {
+                        findViewById(R.id.noUpcomingTours).setVisibility(View.GONE);
+
+                        //activeAdapter = new MyListAdapter(activeHistory);
+                        activeAdapter = new MyListAdapter();
+
+                        upcomingListView = (ListView) findViewById(R.id.upcommingListView);
+                        upcomingListView.setAdapter(activeAdapter);
+
+                        setListViewHeightBasedOnChildren(upcomingListView);
+
+                        activeAdapter.notifyDataSetChanged();
+                    }
+                }
+            });
+        }
+
+    }
 }

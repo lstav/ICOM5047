@@ -13,7 +13,7 @@ public class PurchaseHistory {
         item = new ArrayList<>();
     }
 
-    public void addToHistory(String date, String time, int sessionID, int quantity, TourClass tour) {
+    public void addToHistory(String date, String time, int sessionID, int quantity, Tour tour) {
         item.add(new HistoryItem(date, time, sessionID, quantity, tour));
     }
 
@@ -26,7 +26,7 @@ public class PurchaseHistory {
         private String time;
         private int sessionID;
         private int quantity;
-        private TourClass tour;
+        private Tour tour;
         private boolean isRated;
 
         public HistoryItem() {
@@ -38,7 +38,7 @@ public class PurchaseHistory {
             isRated = false;
         }
 
-        public HistoryItem(String date, String time, int sessionID, int quantity, TourClass tour) {
+        public HistoryItem(String date, String time, int sessionID, int quantity, Tour tour) {
             this.date = date;
             this.time = time;
             this.sessionID = sessionID;
@@ -55,7 +55,7 @@ public class PurchaseHistory {
             return time;
         }
 
-        public TourClass getTour() {
+        public Tour getTour() {
             return tour;
         }
 
@@ -68,7 +68,7 @@ public class PurchaseHistory {
         }
 
         public double getPrice() {
-            return tour.getTourPrice()*quantity;
+            return tour.getPrice()*quantity;
         }
 
         public boolean isRated() {

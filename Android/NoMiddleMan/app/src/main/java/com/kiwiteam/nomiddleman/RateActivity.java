@@ -1,9 +1,11 @@
 package com.kiwiteam.nomiddleman;
 
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.provider.ContactsContract;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
@@ -14,13 +16,43 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RatingBar;
+import android.widget.Toast;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class RateActivity extends ActionBarActivity {
 
     private DatabaseConnection conn;
-    private int tourID;
-    private int historyID;
+    private int ts_ID;
+    private ProgressDialog pDialog;
+    private int index;
+    private int success;
+    double rating;
+    String review;
+
+    private static final String TAG_SUCCESS = "success";
+
+    private JSONArray response;
+
+    private static String url_rate = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/rate.php";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,8 +60,8 @@ public class RateActivity extends ActionBarActivity {
         setContentView(R.layout.activity_rate);
         conn = (DatabaseConnection) getApplicationContext();
         Intent intent = getIntent();
-        tourID = intent.getIntExtra("Tour ID",-1);
-        historyID = intent.getIntExtra("History ID",-1);
+        ts_ID = intent.getIntExtra("TourSession ID",-1);
+        index = conn.getT_key();
 
     }
 
@@ -94,18 +126,120 @@ public class RateActivity extends ActionBarActivity {
 
 
     public void submit(View view) {
-        double rating;
-        String review;
-
         RatingBar rBar = (RatingBar) findViewById(R.id.ratingBar);
         rating = (double) rBar.getRating();
 
         EditText rev = (EditText) findViewById(R.id.reviewTour);
         review = rev.getText().toString();
 
-        conn.rate(tourID, rating, review);
+        new Rate().execute();
+
+        //conn.rate(tourID, rating, review);
         //conn.getHistory().get(historyID).rated();
 
         finish();
     }
+
+    /**
+     * Returns to previous activity
+     * @param view
+     */
+    public void cancel(View view) {
+        finish();
+    }
+
+    /**
+     * Sends new password to database and updates the database
+     */
+    class Rate extends AsyncTask<String, String, String> {
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(RateActivity.this);
+            pDialog.setMessage("Loading results. Please wait...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String result = "";
+
+            /**
+             * Sends parameters to php file to change password
+             */
+            try {
+                HttpClient httpClient = new DefaultHttpClient();
+                String url;
+
+                List<NameValuePair> categoryName = new ArrayList<>();
+                categoryName.add(new BasicNameValuePair("t_key", Integer.toString(index)));
+                categoryName.add(new BasicNameValuePair("ts_key", Integer.toString(ts_ID)));
+                categoryName.add(new BasicNameValuePair("review", review));
+                categoryName.add(new BasicNameValuePair("rate", Double.toString(rating)));
+
+                System.out.println("T_key " + index + " Ts_key " + ts_ID + " Review " + review + " Rating " + rating);
+
+                HttpPost httppost = new HttpPost(url_rate);
+
+                httppost.setEntity(new UrlEncodedFormEntity(categoryName));
+
+                HttpResponse response = httpClient.execute(httppost);
+
+                HttpEntity entity = response.getEntity();
+                InputStream webs = entity.getContent();
+
+                try {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(webs,"iso-8859-1"),8);
+                    StringBuilder sb = new StringBuilder();
+                    String line = null;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    webs.close();
+                    result=sb.toString();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            /**
+             * Gets success in changing password
+             */
+            try {
+                JSONObject jObj = new JSONObject(result);
+
+                success = jObj.getInt(TAG_SUCCESS);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        /**
+         * If password change was successful, go back to previous activity, else, give feedback to user
+         * @param file_url
+         */
+        protected void onPostExecute(String file_url) {
+            pDialog.dismiss();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(success == 1) {
+                        Intent intent = new Intent(RateActivity.this, PurchaseHistoryActivity.class);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Could not change rate", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+
+    }
+
 }
