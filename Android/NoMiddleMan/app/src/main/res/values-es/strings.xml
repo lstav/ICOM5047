@@ -42,7 +42,7 @@
     <string name="title_activity_settings">Configuración</string>
 
     <string name="change_password">Cambiar contraseña</string>
-    <string name="first_name">Primer nombre</string>
+    <string name="first_name">Nombre</string>
     <string name="last_name">Apellido</string>
     <string name="email">Correo electrónico</string>
     <string name="purchase_history">Historial de compras</string>
@@ -81,13 +81,31 @@
 
     <string name="reviews">Reseñas</string>
     <string name="rate">Califica</string>
-    <string name="rate_tour">Califica este tour</string>
-    <string name="review_tour">Reseña este tour</string>
-    <string name="submit">Enviar</string>
 
     <string-array name="language_array">
         <item>English</item>
         <item>Español</item>
     </string-array>
+    <string name="title_activity_rate">Califica</string>
+
+    <string-array name="sort_by_array">
+        <item>A-Z</item>
+        <item>Z-A</item>
+        <item>Precio Menor</item>
+        <item>Precio Mayor</item>
+    </string-array>
+
+    <string name="rate_tour">Califica este tour</string>
+    <string name="review_tour">Reseña este tour</string>
+    <string name="submit">Enviar</string>
+    <string name="title_activity_review">Reseña</string>
+
+    <string name="birthday">Cumpleaños</string>
+    <string name="telephone">Teléfono</string>
+    <string name="pickday">Escoge Día</string>
+    <string name="address">Dirección</string>
+    <string name="information">Información del Guía</string>
+    <string name="unavailable_message">* Uno o más artículos no se pueden procesar</string>
+
 
 </resources>

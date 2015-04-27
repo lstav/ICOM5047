@@ -16,6 +16,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.paypal.android.MEP.PayPal;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -58,6 +60,31 @@ public class PaypalActivity extends ActionBarActivity {
 
     private void handleIntent(Intent intent) {
 
+    }
+
+    public void initLibrary() {
+        PayPal pp = PayPal.getInstance();
+        if (pp == null) {  // Test to see if the library is already initialized
+
+            // This main initialization call takes your Context, AppID, and target server
+            pp = PayPal.initWithAppID(this, "APP-80W284485P519543T", PayPal.ENV_NONE);
+
+            // Required settings:
+
+            // Set the language for the library
+            pp.setLanguage("en_US");
+
+            // Some Optional settings:
+
+            // Sets who pays any transaction fees. Possible values are:
+            // FEEPAYER_SENDER, FEEPAYER_PRIMARYRECEIVER, FEEPAYER_EACHRECEIVER, and FEEPAYER_SECONDARYONLY
+            pp.setFeesPayer(PayPal.FEEPAYER_EACHRECEIVER);
+
+            // true = transaction requires shipping
+            pp.setShippingEnabled(true);
+
+            //_paypalLibraryInit = true;
+        }
     }
 
     @Override
@@ -125,6 +152,9 @@ public class PaypalActivity extends ActionBarActivity {
 
         EditText pPass = (EditText) findViewById(R.id.payPalPass);
         password = pPass.getText().toString();
+
+
+
 
         new Paying().execute();
 

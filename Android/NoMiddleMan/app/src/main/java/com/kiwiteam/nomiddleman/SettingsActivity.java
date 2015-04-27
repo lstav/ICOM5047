@@ -16,11 +16,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.util.Locale;
 
 
-public class SettingsActivity extends ActionBarActivity implements AdapterView.OnItemSelectedListener {
+public class SettingsActivity extends ActionBarActivity {
 
     private DatabaseConnection conn;
 
@@ -101,28 +102,30 @@ public class SettingsActivity extends ActionBarActivity implements AdapterView.O
         startActivity(intent);
     }
 
-
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+    public void confirm(View view) {
         String language = new String();
 
-        if(parent.getItemAtPosition(position).toString().equals("English")) {
+        Spinner parent = (Spinner) findViewById(R.id.spinner);
+
+        if(parent.getSelectedItem().toString().equals("English")) {
             language = "en";
-        } else if(parent.getItemAtPosition(position).toString().equals("Español")) {
+            System.out.println(language);
+        } else if(parent.getSelectedItem().toString().equals("Español")) {
             language = "es";
+            System.out.println(language);
         }
 
-        Locale locale = new Locale(language );
+        Locale locale = new Locale(language);
         Locale.setDefault(locale);
         Configuration config = new Configuration();
         config.locale = locale;
         getBaseContext().getResources().updateConfiguration(
                 config, getBaseContext().getResources().getDisplayMetrics());
-    }
 
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
+        Toast.makeText(this, parent.getSelectedItem().toString(), Toast.LENGTH_LONG).show();
 
+        Intent refresh = new Intent(this, MainActivity.class);
+        refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(refresh);
     }
 }

@@ -267,7 +267,6 @@ public class ShoppingCartActivity extends ActionBarActivity {
 
             TextView tName = (TextView) itemView.findViewById(R.id.tourName);
             tName.setText(currentTour.getTourName());
-            //System.out.println(currentTour.getName());
 
             TextView tPrice = (TextView) itemView.findViewById(R.id.tourPrice);
             double price = currentTour.getTourPrice();
@@ -281,6 +280,15 @@ public class ShoppingCartActivity extends ActionBarActivity {
 
             TextView tTime = (TextView) itemView.findViewById(R.id.time);
             tTime.setText(currentTour.getTime());
+
+            itemView.findViewById(R.id.tourPic).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getApplicationContext(), TourPageActivity.class);
+                    intent.putExtra("tourId",shoppingCart.get(position).getTourID());
+                    startActivity(intent);
+                }
+            });
 
             return itemView;
         }

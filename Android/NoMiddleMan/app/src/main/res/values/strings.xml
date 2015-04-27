@@ -100,10 +100,12 @@
     <string name="submit">Submit</string>
     <string name="title_activity_review">Review</string>
 
-    <string name="hello_world">Hello world!</string>
     <string name="birthday">Birthday</string>
     <string name="telephone">Telephone</string>
     <string name="pickday">Pick Day</string>
+    <string name="address">Address</string>
+    <string name="information">Guide Information</string>
+    <string name="unavailable_message">* One or more items cannot be processed</string>
 
 
 </resources>

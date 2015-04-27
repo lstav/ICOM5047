@@ -58,4 +58,15 @@
         android:background="#8cc538"
         android:textColor="#fff"/>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/cancel"
+        android:id="@+id/button8"
+        android:onClick="cancel"
+        android:background="#8cc538"
+        android:textColor="#fff"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>

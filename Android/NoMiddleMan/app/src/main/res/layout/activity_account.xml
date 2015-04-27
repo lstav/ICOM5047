@@ -32,7 +32,7 @@
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:text="@string/account"
                         android:id="@+id/textView"
-                        android:textSize="32dp"
+                        android:textSize="32sp"
                         android:textColor="#000" />
                 </TableRow>
 
@@ -121,7 +121,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:text="Birthday"
+                        android:text="@string/birthday"
                         android:id="@+id/textView15"
                         android:textSize="28sp" />
 

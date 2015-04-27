@@ -72,7 +72,7 @@
                         android:background="#8cc538"
                         android:textColor="#fff"
                         android:layout_margin="10dp"
-                        android:onClick="openLink"
+                        android:onClick="openYoutube"
                         android:layout_weight="1" />
                 </TableRow>
 
@@ -88,7 +88,8 @@
                         android:layout_weight="1"
                         android:background="#8cc538"
                         android:textColor="#fff"
-                        android:layout_margin="10dp"/>
+                        android:layout_margin="10dp"
+                        android:onClick="openFacebook" />
 
                     <Button
                         android:layout_width="0dp"
@@ -98,7 +99,8 @@
                         android:layout_weight="1"
                         android:background="#8cc538"
                         android:textColor="#fff"
-                        android:layout_margin="10dp"/>
+                        android:layout_margin="10dp"
+                        android:onClick="openInstagram" />
 
                     <Button
                         android:layout_width="0dp"
@@ -108,7 +110,8 @@
                         android:layout_weight="1"
                         android:background="#8cc538"
                         android:textColor="#fff"
-                        android:layout_margin="10dp"/>
+                        android:layout_margin="10dp"
+                        android:onClick="openTwitter" />
                 </TableRow>
 
                 <TableRow
@@ -223,7 +226,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Address"
+                    android:text="@string/address"
                     android:id="@+id/textView31"
                     android:textSize="24sp"
                     android:textColor="#000"
@@ -258,7 +261,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Guide Information"
+                    android:text="@string/information"
                     android:id="@+id/textView32"
                     android:textSize="24sp"
                     android:textColor="#000"
