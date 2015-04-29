@@ -62,6 +62,7 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
 
     private DatabaseConnection conn;
     private boolean selectedCategory = false;
+    private boolean selectedLocation = false;
     private List<Tour> tourInfo = new ArrayList<>();
     private Menu menu;
     private Spinner sortBy;
@@ -69,6 +70,15 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
     private ListView listView;
     private ProgressDialog pDialog;
     private String query;
+    private String countryQuery;
+    private String stateQuery;
+    private String cityQuery;
+
+    private Intent intent;
+
+    private String order;
+    private String by;
+
     private ImageView picture;
     private Bitmap bitmap;
 
@@ -79,10 +89,13 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
     private static final String TAG_PRICE = "price";
     private static final String TAG_EXTREMENESS = "extremeness";
     private static final String TAG_PHOTO = "photo";
+    private static final String TAG_ORDER = "order";
+    private static final String TAG_BY = "by";
 
 
     private static String url_search_categories = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/searchByCategory.php";
     private static String url_search_keyword = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/searchByKeyword.php";
+    private static String url_search_location = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/searchByLocation.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,22 +103,45 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
         setContentView(R.layout.activity_search);
         conn = (DatabaseConnection)getApplicationContext();
 
-        Intent intent = getIntent();
+        intent = getIntent();
 
         String category = intent.getStringExtra("searchCategory");
+        String location = intent.getStringExtra("searchLocation");
+
+        order = "tour_Name";
+        by = "ASC";
+
+        Spinner spinner = (Spinner) findViewById(R.id.sortBy);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.sort_by_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        spinner.setOnItemSelectedListener(SearchActivity.this);
+        // Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
 
         // Choose search method
-        if(category == null) {
+        /*if(category == null) {
             selectedCategory = false;
         } else {
             selectedCategory = category.equals("true");
         }
 
+        if(location == null) {
+            selectedLocation = false;
+        } else {
+            selectedLocation = location.equals("true");
+        }
+
         if(selectedCategory) {
             handleCategoryIntent(intent);
+        } else if (selectedLocation) {
+            handleLocationIntent(intent);
         } else {
             handleIntent(intent);
-        }
+        }*/
         initSearchView();
         registerClickCallback();
     }
@@ -117,18 +153,40 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
         tourInfo.clear();
 
         String category = intent.getStringExtra("searchCategory");
+        String location = intent.getStringExtra("searchLocation");
 
+        order = "tour_Name";
+        by = "ASC";
+
+        Spinner spinner = (Spinner) findViewById(R.id.sortBy);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.sort_by_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
+
+        /*// Choose search method
         if(category == null) {
             selectedCategory = false;
         } else {
             selectedCategory = category.equals("true");
         }
 
+        if(location == null) {
+            selectedLocation = false;
+        } else {
+            selectedLocation = location.equals("true");
+        }
+
         if(selectedCategory) {
             handleCategoryIntent(intent);
+        } else if (selectedLocation) {
+            handleLocationIntent(intent);
         } else {
             handleIntent(intent);
-        }
+        }*/
         initSearchView();
         registerClickCallback();
     }
@@ -142,6 +200,20 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
 
         query = intent.getStringExtra("category");
         new LoadByCategory().execute();
+    }
+
+    /**
+     * Search tours by category
+     * @param intent
+     */
+    private void handleLocationIntent(Intent intent) {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        countryQuery = intent.getStringExtra("country");
+        stateQuery = intent.getStringExtra("state");
+        cityQuery = intent.getStringExtra("city");
+
+        new LoadByLocation().execute();
     }
 
     /**
@@ -246,17 +318,67 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         switch (position) {
             case 0:
-
+                tourInfo.clear();
+                order = "tour_Name";
+                by = "ASC";
+                callSearch();
                 break;
             case 1:
-
+                tourInfo.clear();
+                order = "tour_Name";
+                by = "DESC";
+                callSearch();
                 break;
             case 2:
-
+                tourInfo.clear();
+                order = "Price";
+                by = "ASC";
+                callSearch();
                 break;
             case 3:
-
+                tourInfo.clear();
+                order = "Price";
+                by = "DESC";
+                callSearch();
                 break;
+            case 4:
+                tourInfo.clear();
+                order = "extremeness";
+                by = "ASC";
+                callSearch();
+                break;
+            case 5:
+                tourInfo.clear();
+                order = "extremeness";
+                by = "DESC";
+                callSearch();
+                break;
+        }
+    }
+
+    private void callSearch() {
+        String category = intent.getStringExtra("searchCategory");
+        String location = intent.getStringExtra("searchLocation");
+
+        // Choose search method
+        if(category == null) {
+            selectedCategory = false;
+        } else {
+            selectedCategory = category.equals("true");
+        }
+
+        if(location == null) {
+            selectedLocation = false;
+        } else {
+            selectedLocation = location.equals("true");
+        }
+
+        if(selectedCategory) {
+            handleCategoryIntent(intent);
+        } else if (selectedLocation) {
+            handleLocationIntent(intent);
+        } else {
+            handleIntent(intent);
         }
     }
 
@@ -327,7 +449,7 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
             pDialog = new ProgressDialog(SearchActivity.this);
             pDialog.setMessage("Loading results. Please wait...");
             pDialog.setIndeterminate(false);
-            pDialog.setCancelable(false);
+            pDialog.setCancelable(true);
             pDialog.show();
         }
 
@@ -341,8 +463,101 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
 
                 List<NameValuePair> categoryName = new ArrayList<>();
                 categoryName.add(new BasicNameValuePair("category", query));
+                categoryName.add(new BasicNameValuePair("order", order));
+                categoryName.add(new BasicNameValuePair("by", by));
 
                 HttpPost httppost = new HttpPost(url_search_categories);
+
+                httppost.setEntity(new UrlEncodedFormEntity(categoryName));
+
+                HttpResponse response = httpClient.execute(httppost);
+
+                HttpEntity entity = response.getEntity();
+                InputStream webs = entity.getContent();
+
+                try {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(webs,"iso-8859-1"),8);
+                    StringBuilder sb = new StringBuilder();
+                    String line = null;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    webs.close();
+                    result=sb.toString();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                JSONObject jObj = new JSONObject(result);
+                backup = jObj.getJSONArray("tours");
+
+                for (int i=0; i<backup.length(); i++) {
+                    JSONObject c = backup.getJSONObject(i);
+                    try {
+                        bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "img1.jpg").getContent());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    tourInfo.add(new Tour(c.getString(TAG_NAME), Price.getDouble(c.getString(TAG_PRICE)), new ArrayList<>(Arrays.asList(bitmap)), Integer.parseInt(c.getString(TAG_KEY)), Double.parseDouble(c.getString(TAG_EXTREMENESS))));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        protected void onPostExecute(String file_url) {
+            pDialog.dismiss();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    ArrayAdapter<Tour> adapter = new MyListAdapter();
+
+                    listView = (ListView) findViewById(R.id.listView);
+                    listView.setAdapter(adapter);
+                }
+            });
+        }
+
+    }
+
+    /**
+     * Search database with results by categories
+     */
+    class LoadByLocation extends AsyncTask<String, String, String> {
+
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(SearchActivity.this);
+            pDialog.setMessage("Loading results. Please wait...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String result = "";
+
+            try {
+                HttpClient httpClient = new DefaultHttpClient();
+                String url;
+
+                List<NameValuePair> categoryName = new ArrayList<>();
+                categoryName.add(new BasicNameValuePair("country", countryQuery));
+                categoryName.add(new BasicNameValuePair("state", stateQuery));
+                categoryName.add(new BasicNameValuePair("city", cityQuery));
+                categoryName.add(new BasicNameValuePair("order", order));
+                categoryName.add(new BasicNameValuePair("by", by));
+
+
+                HttpPost httppost = new HttpPost(url_search_location);
 
                 httppost.setEntity(new UrlEncodedFormEntity(categoryName));
 
@@ -413,7 +628,7 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
             pDialog = new ProgressDialog(SearchActivity.this);
             pDialog.setMessage("Loading results. Please wait...");
             pDialog.setIndeterminate(false);
-            pDialog.setCancelable(false);
+            pDialog.setCancelable(true);
             pDialog.show();
         }
 
@@ -427,6 +642,9 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
 
                 List<NameValuePair> categoryName = new ArrayList<>();
                 categoryName.add(new BasicNameValuePair("keyword", query));
+                categoryName.add(new BasicNameValuePair("order", order));
+                categoryName.add(new BasicNameValuePair("by", by));
+
 
                 HttpPost httppost = new HttpPost(url_search_keyword);
 

@@ -261,7 +261,8 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                 ArrayList<String> times = tour.getTourSessionsTime(day);
 
                 tTime = (Spinner) findViewById(R.id.time);
-                tAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, times);
+                tAdapter = new ArrayAdapter<>(this,
+                        android.R.layout.simple_spinner_item, times);
                 tAdapter.notifyDataSetChanged();
 
                 tTime.setOnItemSelectedListener(this);
@@ -273,7 +274,8 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                 ArrayList<Integer> quantities = tour.getTourSessionAvailability(tDay.getSelectedItem().toString(), time);
 
                 tQty = (Spinner) findViewById(R.id.quantity);
-                qAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, quantities);
+                qAdapter = new ArrayAdapter<>(this,
+                        android.R.layout.simple_spinner_item, quantities);
                 qAdapter.notifyDataSetChanged();
 
                 qAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -397,7 +399,12 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
             try {
                 JSONObject jObj = new JSONObject(result);
                 tourResponse = jObj.getJSONArray("tour");
-                tourSessions = jObj.getJSONArray("sessions");
+                try {
+                    tourSessions = jObj.getJSONArray("sessions");
+                } catch (Exception e) {
+                    tourSessions = null;
+                }
+
                 try {
                     tourReviews = jObj.getJSONArray("reviews");
                 } catch (Exception e) {
@@ -412,10 +419,14 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                         e.printStackTrace();
                     }
 
-                    for (int j = 0; j < tourSessions.length(); j++) {
-                        JSONObject d = tourSessions.getJSONObject(j);
+                    if(tourSessions != null) {
+                        for (int j = 0; j < tourSessions.length(); j++) {
+                            JSONObject d = tourSessions.getJSONObject(j);
 
-                        tourSessionsA.add(new TourSession(d.getString(TAG_DATE), d.getString(TAG_TIME), d.getInt(TAG_TSKEY), d.getInt(TAG_AVAILABILITY)));
+                            tourSessionsA.add(new TourSession(d.getString(TAG_DATE), d.getString(TAG_TIME), d.getInt(TAG_TSKEY), d.getInt(TAG_AVAILABILITY)));
+                        }
+                    } else {
+                        tourSessionsA = null;
                     }
 
                     if(tourReviews != null) {
@@ -461,6 +472,7 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                     RatingBar extremeBar = (RatingBar) findViewById(R.id.extremeness);
                     extremeBar.setRating((float) tour.getExtremeness());
 
+
                     TextView ratingNumber = (TextView) findViewById(R.id.review_number);
                     ratingNumber.setText("(" + tour.getRateCount() + ")");
 
@@ -473,14 +485,20 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                     TextView tPrice = (TextView) findViewById(R.id.tourPrice);
                     tPrice.setText("$" + String.format("%.2f", tour.getTourPrice()));
 
-                    tDay = (Spinner) findViewById(R.id.day);
+                    if(tourSessionsA != null) {
+                        tDay = (Spinner) findViewById(R.id.day);
 
-                    dAdapter = new ArrayAdapter<>(TourPageActivity.this, android.R.layout.simple_spinner_item, tour.getTourSessionsDate());
-                    dAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        dAdapter = new ArrayAdapter<>(TourPageActivity.this, android.R.layout.simple_spinner_item, tour.getTourSessionsDate());
+                        dAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-                    tDay.setOnItemSelectedListener(TourPageActivity.this);
+                        tDay.setOnItemSelectedListener(TourPageActivity.this);
 
-                    tDay.setAdapter(dAdapter);
+                        tDay.setAdapter(dAdapter);
+                    } else {
+                        findViewById(R.id.sessionSpinners).setVisibility(View.GONE);
+                        findViewById(R.id.button).setVisibility(View.GONE);
+                        findViewById(R.id.textView41).setVisibility(View.VISIBLE);
+                    }
 
                     TextView tDescription = (TextView) findViewById(R.id.description);
                     tDescription.setText(tour.getTourDescription());

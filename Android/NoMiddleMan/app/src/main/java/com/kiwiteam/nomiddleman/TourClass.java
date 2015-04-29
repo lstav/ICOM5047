@@ -184,7 +184,8 @@ public class TourClass {
     public ArrayList<String> getTourSessionsTime(String date) {
         tourSessionsTime.clear();
         for (int i=0; i<tourSessions.size(); i++) {
-            if(tourSessions.get(i).getSessionDay().equals(date) && !tourSessionsTime.contains(tourSessions.get(i).getSessionTime())) {
+            if(tourSessions.get(i).getSessionDay().equals(date) &&
+                    !tourSessionsTime.contains(tourSessions.get(i).getSessionTime())) {
                     tourSessionsTime.add(tourSessions.get(i).getSessionTime());
             }
         }

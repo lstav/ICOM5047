@@ -119,7 +119,8 @@
                     android:layout_height="fill_parent"
                     android:divider="?android:listDivider"
                     android:dividerPadding="2.5dp"
-                    android:showDividers="middle">
+                    android:showDividers="middle"
+                    android:id="@+id/sessionSpinners">
 
                     <TableLayout
                         android:layout_width="0dp"
@@ -183,6 +184,15 @@
                     </TableLayout>
 
                 </TableRow>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="Tour Sessions not available."
+                    android:id="@+id/textView41"
+                    android:textAlignment="center"
+                    android:visibility="gone"/>
 
                 <Button
                     android:layout_width="match_parent"
@@ -255,7 +265,8 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/extremeness"
                     android:numStars="5"
-                    android:stepSize=".5" />
+                    android:stepSize=".5"
+                    android:progressDrawable="@drawable/extreme_rating_bar_big"/>
 
                 <TextView
                     android:layout_width="wrap_content"

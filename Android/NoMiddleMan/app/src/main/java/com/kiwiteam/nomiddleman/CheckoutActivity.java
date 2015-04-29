@@ -1,5 +1,6 @@
 package com.kiwiteam.nomiddleman;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
@@ -13,6 +14,7 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +23,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.paypal.android.sdk.payments.PayPalConfiguration;
+import com.paypal.android.sdk.payments.PayPalPayment;
+import com.paypal.android.sdk.payments.PayPalService;
+import com.paypal.android.sdk.payments.PaymentActivity;
+import com.paypal.android.sdk.payments.PaymentConfirmation;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -37,6 +45,7 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -72,10 +81,18 @@ public class CheckoutActivity extends ActionBarActivity {
     private static final String TAG_TIME = "time";
     private static final String TAG_ACTIVE = "isActive";
     private static final String TAG_SUCCESS = "success";
+    private static PayPalConfiguration config = new PayPalConfiguration()
+
+            // Start with mock environment.  When ready, switch to sandbox (ENVIRONMENT_SANDBOX)
+            // or live (ENVIRONMENT_PRODUCTION)
+            .environment(PayPalConfiguration.ENVIRONMENT_NO_NETWORK)
+
+            .clientId("<YOUR_CLIENT_ID>");
 
 
     private static String url_get_checkout = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/checkout.php";
     private static String url_remove_from_cart = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/removeFromShoppingCart.php";
+    private static String url_pay = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/pay.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +101,14 @@ public class CheckoutActivity extends ActionBarActivity {
 
         conn = (DatabaseConnection)getApplicationContext();
         Intent intent = getIntent();
+
+
+        Intent intent2 = new Intent(this, PayPalService.class);
+
+        intent2.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
+
+        startService(intent2);
+
         handleIntent(intent);
     }
 
@@ -215,8 +240,49 @@ public class CheckoutActivity extends ActionBarActivity {
 
 
     public void checkout(View view) {
-        Intent intent = new Intent(this, PaypalActivity.class);
-        startActivity(intent);
+        // PAYMENT_INTENT_SALE will cause the payment to complete immediately.
+        // Change PAYMENT_INTENT_SALE to
+        //   - PAYMENT_INTENT_AUTHORIZE to only authorize payment and capture funds later.
+        //   - PAYMENT_INTENT_ORDER to create a payment for authorization and capture
+        //     later via calls from your server.
+
+        PayPalPayment payment = new PayPalPayment(new BigDecimal(totalPrice), "USD", "Tours",
+                PayPalPayment.PAYMENT_INTENT_SALE);
+
+        Intent intent = new Intent(this, PaymentActivity.class);
+
+        // send the same configuration for restart resiliency
+        intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
+
+        intent.putExtra(PaymentActivity.EXTRA_PAYMENT, payment);
+
+        startActivityForResult(intent, 0);
+    }
+
+    @Override
+    protected void onActivityResult (int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK) {
+            PaymentConfirmation confirm = data.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
+            if (confirm != null) {
+                try {
+                    Log.i("paymentExample", confirm.toJSONObject().toString(4));
+
+                    // TODO: send 'confirm' to your server for verification.
+                    // see https://developer.paypal.com/webapps/developer/docs/integration/mobile/verify-mobile-payment/
+                    // for more details.
+                    new Paying().execute();
+
+                } catch (JSONException e) {
+                    Log.e("paymentExample", "an extremely unlikely failure occurred: ", e);
+                }
+            }
+        }
+        else if (resultCode == Activity.RESULT_CANCELED) {
+            Log.i("paymentExample", "The user canceled.");
+        }
+        else if (resultCode == PaymentActivity.RESULT_EXTRAS_INVALID) {
+            Log.i("paymentExample", "An invalid Payment or PayPalConfiguration was submitted. Please see the docs.");
+        }
     }
 
     public void cancel(View view) {
@@ -469,5 +535,74 @@ public class CheckoutActivity extends ActionBarActivity {
             });
         }
 
+    }
+
+    class Paying extends AsyncTask<String, String, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            String result = "";
+
+            try {
+                HttpClient httpClient = new DefaultHttpClient();
+                String url;
+
+                List<NameValuePair> categoryName = new ArrayList<>();
+                categoryName.add(new BasicNameValuePair("t_key", Integer.toString(conn.getT_key())));
+
+                HttpPost httppost = new HttpPost(url_pay);
+
+                httppost.setEntity(new UrlEncodedFormEntity(categoryName));
+
+                HttpResponse response = httpClient.execute(httppost);
+
+                HttpEntity entity = response.getEntity();
+                InputStream webs = entity.getContent();
+
+                try {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(webs,"iso-8859-1"),8);
+                    StringBuilder sb = new StringBuilder();
+                    String line = null;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    webs.close();
+                    result=sb.toString();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                JSONObject jObj = new JSONObject(result);
+
+                success = jObj.getInt(TAG_SUCCESS);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        protected void onPostExecute(String file_url) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(CheckoutActivity.this, PurchaseHistoryActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            });
+        }
+
+    }
+
+    @Override
+    public void onDestroy() {
+        stopService(new Intent(this, PayPalService.class));
+        super.onDestroy();
     }
 }

@@ -4,12 +4,16 @@
 	
 	include_once("dbconnection.php");
 	
-	if(isset($_POST['keyword'])) {
+	if(isset($_POST['keyword']) && isset($_POST['order']) && isset($_POST['by'])) {
 		$keyword = trim($_POST['keyword']);
+		$order = trim($_POST['order']);
+		$by = trim($_POST['by']);
 		
-		
-		$result = pg_query($conn, "Select T.tour_key as Key, upper(T.\"tour_Name\") as Name, T.\"tour_Desc\" as Description, T.\"Price\" as Price, 
-		T.\"extremeness\" as Extremeness, T.\"tour_photo\" as Photo FROM \"Tour\" as T Where upper(concat(T.\"tour_Name\",' ',T.\"tour_Desc\")) like upper('%$keyword%')");
+		$result = pg_query($conn, "Select T.tour_key as Key, upper(T.\"tour_Name\") as Name, 
+		T.\"tour_Desc\" as Description, T.\"Price\" as Price, 
+		T.\"extremeness\" as Extremeness, T.\"tour_photo\" as Photo FROM \"Tour\" as T 
+		Where upper(concat(T.\"tour_Name\",' ',T.\"tour_Desc\")) like upper('%$keyword%')
+		Order By (T.\"$order\") $by");
 		
 		if(pg_num_rows($result) > 0) {
 			$response['tours'] = array();

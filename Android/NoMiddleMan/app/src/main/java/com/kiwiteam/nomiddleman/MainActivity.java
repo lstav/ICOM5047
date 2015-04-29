@@ -65,12 +65,19 @@ public class MainActivity extends ActionBarActivity {
             // Categories
             findViewById(R.id.categories_button).setVisibility(View.VISIBLE);
             findViewById(R.id.categories_row).setVisibility(View.GONE);
+
+            //Locations
+            findViewById(R.id.locations_button).setVisibility(View.VISIBLE);
+            findViewById(R.id.locations_row).setVisibility(View.GONE);
         } else {
             // Account
             findViewById(R.id.account_button).setVisibility(View.GONE);
 
             // Categories
             findViewById(R.id.categories_button).setVisibility(View.GONE);
+
+            //Locations
+            findViewById(R.id.locations_button).setVisibility(View.GONE);
         }
     }
 
@@ -104,6 +111,10 @@ public class MainActivity extends ActionBarActivity {
             //Categories
             findViewById(R.id.categories_button).setVisibility(View.VISIBLE);
             findViewById(R.id.categories_row).setVisibility(View.GONE);
+
+            //Locations
+            findViewById(R.id.locations_button).setVisibility(View.VISIBLE);
+            findViewById(R.id.locations_row).setVisibility(View.GONE);
         }
     }
 
@@ -172,6 +183,12 @@ public class MainActivity extends ActionBarActivity {
     // Calls search by category activity
     public void searchCat(View view) {
         intent = new Intent(this, CategoriesActivity.class);
+        startActivity(intent);
+    }
+
+    // Calls search by location activity
+    public void searchLoc(View view) {
+        intent = new Intent(this, LocationsActivity.class);
         startActivity(intent);
     }
 

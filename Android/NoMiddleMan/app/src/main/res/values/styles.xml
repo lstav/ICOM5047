@@ -6,4 +6,11 @@
         <item name="colorPrimary">#8cc538</item>
     </style>
 
+    <!--<style name="foodRatingBarSmall" parent="@android:style/Widget.RatingBar.Small">
+        <item name="android:progressDrawable">@drawable/food_ratingbar_small</item>
+        <item name="android:minHeight">16dip</item>
+        <item name="android:maxHeight">16dip</item>
+    </style>-->
+
+
 </resources>

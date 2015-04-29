@@ -44,9 +44,10 @@ public class ResetRequestActivity extends ActionBarActivity {
     private static final String TAG_SUCCESS = "success";
     private static final String TAG_KEY = "key";
     private ProgressDialog pDialog;
-    private static String url_login = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/login.php";
+    private static String url_request_change_password = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/requestPasswordChange.php";
     private JSONArray backup;
 
+    private int success = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,22 +87,7 @@ public class ResetRequestActivity extends ActionBarActivity {
         new Reset().execute();
     }
 
-    public void register(View view) {
-        Intent intent = new Intent(this, RegisterActivity.class);
-        startActivity(intent);
-    }
-
     class Reset extends AsyncTask<String, String, String> {
-
-        // Creates a loading dialog
-        protected void onPreExecute() {
-            super.onPreExecute();
-            pDialog = new ProgressDialog(ResetRequestActivity.this);
-            pDialog.setMessage("Login. Please wait...");
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(false);
-            pDialog.show();
-        }
 
         /**
          * Calls query to login
@@ -115,16 +101,13 @@ public class ResetRequestActivity extends ActionBarActivity {
                 String url;
 
                 EditText emailText = (EditText) findViewById(R.id.email);
-                EditText passText = (EditText) findViewById(R.id.password);
 
                 String email = emailText.getText().toString();
-                String password = passText.getText().toString();
 
                 List<NameValuePair> categoryName = new ArrayList<>();
                 categoryName.add(new BasicNameValuePair("t_Email", email));
-                categoryName.add(new BasicNameValuePair("t_password", password));
 
-                HttpPost httppost = new HttpPost(url_login);
+                HttpPost httppost = new HttpPost(url_request_change_password);
 
                 httppost.setEntity(new UrlEncodedFormEntity(categoryName));
 
@@ -152,14 +135,8 @@ public class ResetRequestActivity extends ActionBarActivity {
             try {
                 JSONObject jObj = new JSONObject(result);
 
-                int success = jObj.getInt(TAG_SUCCESS);
+                success = jObj.getInt(TAG_SUCCESS);
 
-                // Checks if user wants to remember login
-                if(success == 1) {
-                    CheckBox checkBox = (CheckBox) findViewById(R.id.checkBox);
-                    boolean isChecked = checkBox.isChecked();
-                    conn.setLogged(true, jObj.getInt(TAG_KEY), isChecked);
-                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -172,14 +149,13 @@ public class ResetRequestActivity extends ActionBarActivity {
          * @param file_url
          */
         protected void onPostExecute(String file_url) {
-            pDialog.dismiss();
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if(conn.isLogged()) {
+                    if(success == 1) {
                         finish();
                     } else {
-                        Toast.makeText(getApplicationContext(), R.string.wrong_login, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Could not change", Toast.LENGTH_SHORT).show();
                     }
                 }
             });

@@ -11,7 +11,8 @@
 		\"Facebook\" as facebook, \"Youtube\" as youtube, \"Instagram\" as instagram, \"Twitter\" as twitter, 
 		\"Price\" as price, \"tour_quantity\" as quantity, \"extremeness\" as extremeness, \"tour_photo\" as photo, 
 		\"g_Email\" as gemail, \"g_FName\" as gfname, \"g_LName\" as glname, \"g_License\" as license, \"Company\" as company,
-		\"g_telephone\" as telephone, \"avg\" as averagerate, \"count\" as ratecount, \"tour_address\" as address
+		\"g_telephone\" as telephone, \"avg\" as averagerate, \"count\" as ratecount, \"tour_address\" as address,
+		\"State-Province\" as state, \"City\" as city, \"Country\" as country
 		from \"Tour Info\" where \"tour_key\"=$tour_key");
 		
 		if(!empty($result)) {
@@ -31,7 +32,7 @@
 				$tour['price'] = $row['price'];				
 				$tour['extremeness'] = $row['extremeness'];
 				$tour['photo'] = $row['photo'];
-				$tour['address'] = $row['address'];
+				$tour['address'] = $row['address']."".$row['city'].", ".$row['state'].", ".$row['country'];
 				$tour['gemail'] = $row['gemail'];
 				$tour['gname'] = $row['gfname']." ".$row['glname'];
 				$tour['license'] = $row['license'];

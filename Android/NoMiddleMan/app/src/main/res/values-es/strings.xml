@@ -91,8 +91,10 @@
     <string-array name="sort_by_array">
         <item>A-Z</item>
         <item>Z-A</item>
-        <item>Precio Menor</item>
-        <item>Precio Mayor</item>
+        <item>Menor Precio</item>
+        <item>Mayor Precio</item>
+        <item>Menor Extremo</item>
+        <item>Mayor Extremo</item>
     </string-array>
 
     <string name="rate_tour">Califica este tour</string>
@@ -115,6 +117,11 @@
     <string name="title_activity_reset_request">ResetRequestActivity</string>
 
     <string name="reset_message">Por favor escriba el correo electronico que utiliza para comprar en No Middle Man.</string>
+    <string name="browse_locations">Browse Locations</string>
+    <string name="country">Country</string>
+    <string name="state">State-Province</string>
+    <string name="city">City</string>
+    <string name="search">Search</string>
 
 
 </resources>
