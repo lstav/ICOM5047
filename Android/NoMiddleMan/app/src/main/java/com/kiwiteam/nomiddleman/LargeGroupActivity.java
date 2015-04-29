@@ -54,7 +54,7 @@ import java.util.Arrays;
 import java.util.List;
 
 
-public class TourPageActivity extends ActionBarActivity implements AdapterView.OnItemSelectedListener {
+public class LargeGroupActivity extends ActionBarActivity implements AdapterView.OnItemSelectedListener {
 
     private DatabaseConnection conn;
     private TourClass tour;
@@ -76,6 +76,7 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
 
     private ArrayList<RatingClass> tourRatingsA = new ArrayList<>();
     private ArrayList<TourSession> tourSessionsA = new ArrayList<>();
+    private ArrayList<Integer> tourAvailabilityA = new ArrayList<>();
 
     private Bitmap bitmap;
 
@@ -122,7 +123,7 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tour_page);
+        setContentView(R.layout.activity_large_group);
 
         conn = (DatabaseConnection) getApplicationContext();
 
@@ -253,32 +254,13 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
 
     }
 
-    public void largeGroup(View view) {
-        Intent intent = new Intent(this, LargeGroupActivity.class);
-        intent.putExtra("tourId", tourID);
-        startActivity(intent);
-    }
-
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         int vId = parent.getId();
         switch (vId) {
             case R.id.day:
                 String day = parent.getItemAtPosition(position).toString();
-                ArrayList<String> times = tour.getTourSessionsTime(day);
-
-                tTime = (Spinner) findViewById(R.id.time);
-                tAdapter = new ArrayAdapter<>(this,
-                        android.R.layout.simple_spinner_item, times);
-                tAdapter.notifyDataSetChanged();
-
-                tTime.setOnItemSelectedListener(this);
-                tAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                tTime.setAdapter(tAdapter);
-                break;
-            case R.id.time:
-                String time = parent.getItemAtPosition(position).toString();
-                ArrayList<Integer> quantities = tour.getTourSessionAvailability(tDay.getSelectedItem().toString(), time);
+                ArrayList<Integer> quantities = tour.getAllTourSessionAvailability(day);
 
                 tQty = (Spinner) findViewById(R.id.quantity);
                 qAdapter = new ArrayAdapter<>(this,
@@ -319,7 +301,7 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
     private class MyListAdapter extends ArrayAdapter<RatingClass> {
 
         public MyListAdapter() {
-            super(TourPageActivity.this, R.layout.review_item, ratings);
+            super(LargeGroupActivity.this, R.layout.review_item, ratings);
 
         }
 
@@ -358,7 +340,7 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
     class GetTourPage extends AsyncTask<String, String, String> {
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog = new ProgressDialog(TourPageActivity.this);
+            pDialog = new ProgressDialog(LargeGroupActivity.this);
             pDialog.setMessage("Loading results. Please wait...");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(true);
@@ -431,6 +413,7 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                             JSONObject d = tourSessions.getJSONObject(j);
 
                             tourSessionsA.add(new TourSession(d.getString(TAG_DATE), d.getString(TAG_TIME), d.getInt(TAG_TSKEY), d.getInt(TAG_AVAILABILITY)));
+
                         }
                     } else {
                         tourSessionsA = null;
@@ -470,76 +453,17 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                     TextView tName = (TextView) findViewById(R.id.tourName);
                     tName.setText(tour.getTourName());
 
-                    RatingBar tRating = (RatingBar) findViewById(R.id.tourRating);
-                    tRating.setRating((float) tour.getAverageRating());
-
-                    tRating = (RatingBar) findViewById(R.id.ratingBar);
-                    tRating.setRating((float) tour.getAverageRating());
-
-                    RatingBar extremeBar = (RatingBar) findViewById(R.id.extremeness);
-                    extremeBar.setRating((float) tour.getExtremeness());
-
-
-                    TextView ratingNumber = (TextView) findViewById(R.id.review_number);
-                    ratingNumber.setText("(" + tour.getRateCount() + ")");
-
-                    TextView totalReviews = (TextView) findViewById(R.id.totalReviews);
-                    totalReviews.setText(String.format("%.1f", tour.getAverageRating()) + " of 5.0");
-
                     ImageView tPicture = (ImageView) findViewById(R.id.tourPicture);
                     tPicture.setImageBitmap(tour.getTourPictures().get(0));
 
-                    TextView tPrice = (TextView) findViewById(R.id.tourPrice);
-                    tPrice.setText("$" + String.format("%.2f", tour.getTourPrice()));
+                    tDay = (Spinner) findViewById(R.id.day);
 
-                    if(tourSessionsA != null) {
-                        tDay = (Spinner) findViewById(R.id.day);
+                    dAdapter = new ArrayAdapter<>(LargeGroupActivity.this, android.R.layout.simple_spinner_item, tour.getTourSessionsDate());
+                    dAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-                        dAdapter = new ArrayAdapter<>(TourPageActivity.this, android.R.layout.simple_spinner_item, tour.getTourSessionsDate());
-                        dAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    tDay.setOnItemSelectedListener(LargeGroupActivity.this);
 
-                        tDay.setOnItemSelectedListener(TourPageActivity.this);
-
-                        tDay.setAdapter(dAdapter);
-                    } else {
-                        findViewById(R.id.sessionSpinners).setVisibility(View.GONE);
-                        findViewById(R.id.button).setVisibility(View.GONE);
-                        findViewById(R.id.textView41).setVisibility(View.VISIBLE);
-                    }
-
-                    TextView tDescription = (TextView) findViewById(R.id.description);
-                    tDescription.setText(tour.getTourDescription());
-
-                    TextView tAddress = (TextView) findViewById(R.id.address);
-                    tAddress.setText(tour.getTourAddress());
-
-                    TextView gMail = (TextView) findViewById(R.id.gEmail);
-                    gMail.setText(tour.getGuideEmail());
-
-                    TextView gName = (TextView) findViewById(R.id.gName);
-                    gName.setText(tour.getGuideName());
-
-                    TextView license = (TextView) findViewById(R.id.license);
-                    license.setText(tour.getGuideLicense());
-
-                    TextView company = (TextView) findViewById(R.id.company);
-                    company.setText(tour.getCompany());
-
-                    TextView telephone = (TextView) findViewById(R.id.telephone);
-                    telephone.setText(tour.getTelephone());
-
-                    if (ratings != null) {
-
-                        rAdapter = new MyListAdapter();
-
-                        ListView reviewList = (ListView) findViewById(R.id.reviewList);
-                        reviewList.setAdapter(rAdapter);
-                        setListViewHeightBasedOnChildren(reviewList);
-                    }
-                    /*ArrayAdapter<RatingClass> adapter = new MyListAdapter();
-
-                    listView = (ListView) findViewById(R.id.listView);
-                    listView.setAdapter(adapter);*/
+                    tDay.setAdapter(dAdapter);
                 }
             });
         }
@@ -549,7 +473,7 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
     class AddToCart extends AsyncTask<String, String, String> {
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog = new ProgressDialog(TourPageActivity.this);
+            pDialog = new ProgressDialog(LargeGroupActivity.this);
             pDialog.setMessage("Loading results. Please wait...");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(true);
@@ -614,7 +538,7 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                 @Override
                 public void run() {
                     if(success == 1) {
-                        Toast.makeText(TourPageActivity.this, R.string.added_to_cart, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LargeGroupActivity.this, R.string.added_to_cart, Toast.LENGTH_SHORT).show();
                     }
                 }
             });

@@ -64,6 +64,7 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
     private boolean selectedCategory = false;
     private boolean selectedLocation = false;
     private List<Tour> tourInfo = new ArrayList<>();
+    private List<String> categories = new ArrayList<>();
     private Menu menu;
     private Spinner sortBy;
     private ArrayAdapter<CharSequence> sAdapter;
@@ -74,6 +75,12 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
     private String stateQuery;
     private String cityQuery;
 
+    private Spinner cSpinner;
+    private ArrayAdapter<String> cAdapter;
+
+    private String categorySelectedSpinner;
+
+
     private Intent intent;
 
     private String order;
@@ -83,12 +90,14 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
     private Bitmap bitmap;
 
     private JSONArray backup;
+    private JSONArray backupCat;
 
     private static final String TAG_KEY = "key";
     private static final String TAG_NAME = "name";
     private static final String TAG_PRICE = "price";
     private static final String TAG_EXTREMENESS = "extremeness";
     private static final String TAG_PHOTO = "photo";
+    private static final String TAG_CAT_NAME = "category_name";
     private static final String TAG_ORDER = "order";
     private static final String TAG_BY = "by";
 
@@ -111,6 +120,11 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
         order = "tour_Name";
         by = "ASC";
 
+        categorySelectedSpinner = "All";
+
+        initSearchView();
+        registerClickCallback();
+
         Spinner spinner = (Spinner) findViewById(R.id.sortBy);
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -121,34 +135,13 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
         spinner.setOnItemSelectedListener(SearchActivity.this);
         // Apply the adapter to the spinner
         spinner.setAdapter(adapter);
-
-        // Choose search method
-        /*if(category == null) {
-            selectedCategory = false;
-        } else {
-            selectedCategory = category.equals("true");
-        }
-
-        if(location == null) {
-            selectedLocation = false;
-        } else {
-            selectedLocation = location.equals("true");
-        }
-
-        if(selectedCategory) {
-            handleCategoryIntent(intent);
-        } else if (selectedLocation) {
-            handleLocationIntent(intent);
-        } else {
-            handleIntent(intent);
-        }*/
-        initSearchView();
-        registerClickCallback();
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
         setIntent(intent);
+        this.intent = intent;
 
         tourInfo.clear();
 
@@ -158,6 +151,11 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
         order = "tour_Name";
         by = "ASC";
 
+        categorySelectedSpinner = "All";
+
+        initSearchView();
+        registerClickCallback();
+
         Spinner spinner = (Spinner) findViewById(R.id.sortBy);
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -166,29 +164,6 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         spinner.setAdapter(adapter);
-
-        /*// Choose search method
-        if(category == null) {
-            selectedCategory = false;
-        } else {
-            selectedCategory = category.equals("true");
-        }
-
-        if(location == null) {
-            selectedLocation = false;
-        } else {
-            selectedLocation = location.equals("true");
-        }
-
-        if(selectedCategory) {
-            handleCategoryIntent(intent);
-        } else if (selectedLocation) {
-            handleLocationIntent(intent);
-        } else {
-            handleIntent(intent);
-        }*/
-        initSearchView();
-        registerClickCallback();
     }
 
     /**
@@ -197,6 +172,9 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
      */
     private void handleCategoryIntent(Intent intent) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        findViewById(R.id.categorySpinner).setVisibility(View.GONE);
+        findViewById(R.id.button12).setVisibility(View.GONE);
 
         query = intent.getStringExtra("category");
         new LoadByCategory().execute();
@@ -323,7 +301,7 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
                 by = "ASC";
                 callSearch();
                 break;
-            case 1:
+            case  1:
                 tourInfo.clear();
                 order = "tour_Name";
                 by = "DESC";
@@ -380,6 +358,12 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
         } else {
             handleIntent(intent);
         }
+    }
+
+    public void refine(View view) {
+        tourInfo.clear();
+        categorySelectedSpinner = cSpinner.getSelectedItem().toString();
+        callSearch();
     }
 
     @Override
@@ -555,6 +539,7 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
                 categoryName.add(new BasicNameValuePair("city", cityQuery));
                 categoryName.add(new BasicNameValuePair("order", order));
                 categoryName.add(new BasicNameValuePair("by", by));
+                categoryName.add(new BasicNameValuePair("cat_refine", categorySelectedSpinner));
 
 
                 HttpPost httppost = new HttpPost(url_search_location);
@@ -596,6 +581,20 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
 
                     tourInfo.add(new Tour(c.getString(TAG_NAME), Price.getDouble(c.getString(TAG_PRICE)), new ArrayList<>(Arrays.asList(bitmap)), Integer.parseInt(c.getString(TAG_KEY)), Double.parseDouble(c.getString(TAG_EXTREMENESS))));
                 }
+
+                backupCat = jObj.getJSONArray("categories");
+
+                categories.clear();
+                categories.add("All");
+
+                for (int i=0; i<backupCat.length(); i++) {
+                    JSONObject c = backupCat.getJSONObject(i);
+
+                    if(!categories.contains(c.getString(TAG_CAT_NAME))) {
+                        categories.add(c.getString(TAG_CAT_NAME));
+                    }
+                }
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -609,6 +608,28 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
                 @Override
                 public void run() {
                     ArrayAdapter<Tour> adapter = new MyListAdapter();
+
+                    cSpinner = (Spinner) findViewById(R.id.categorySpinner);
+
+                    cAdapter = new ArrayAdapter<>(SearchActivity.this, android.R.layout.simple_spinner_item, categories);
+                    cAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                    /*cSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            tourInfo.clear();
+                            categorySelectedSpinner = parent.getSelectedItem().toString();
+                            System.out.println("Category Selected " +  categorySelectedSpinner);
+                            callSearch();
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+
+                        }
+                    });*/
+
+                    cSpinner.setAdapter(cAdapter);
 
                     listView = (ListView) findViewById(R.id.listView);
                     listView.setAdapter(adapter);
@@ -644,6 +665,7 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
                 categoryName.add(new BasicNameValuePair("keyword", query));
                 categoryName.add(new BasicNameValuePair("order", order));
                 categoryName.add(new BasicNameValuePair("by", by));
+                categoryName.add(new BasicNameValuePair("cat_refine", categorySelectedSpinner));
 
 
                 HttpPost httppost = new HttpPost(url_search_keyword);
@@ -685,6 +707,19 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
 
                     tourInfo.add(new Tour(c.getString(TAG_NAME), Price.getDouble(c.getString(TAG_PRICE)), new ArrayList<>(Arrays.asList(bitmap)), Integer.parseInt(c.getString(TAG_KEY)), Double.parseDouble(c.getString(TAG_EXTREMENESS))));
                 }
+
+                backupCat = jObj.getJSONArray("categories");
+
+                categories.clear();
+                categories.add("All");
+
+                for (int i=0; i<backupCat.length(); i++) {
+                    JSONObject c = backupCat.getJSONObject(i);
+
+                    if(!categories.contains(c.getString(TAG_CAT_NAME))) {
+                        categories.add(c.getString(TAG_CAT_NAME));
+                    }
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -698,6 +733,28 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
                 @Override
                 public void run() {
                     ArrayAdapter<Tour> adapter = new MyListAdapter();
+
+                    cSpinner = (Spinner) findViewById(R.id.categorySpinner);
+
+                    cAdapter = new ArrayAdapter<>(SearchActivity.this, android.R.layout.simple_spinner_item, categories);
+                    cAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                    /*cSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            tourInfo.clear();
+                            categorySelectedSpinner = parent.getSelectedItem().toString();
+                            System.out.println("Category Selected " +  categorySelectedSpinner);
+                            callSearch();
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+
+                        }
+                    });*/
+
+                    cSpinner.setAdapter(cAdapter);
 
                     listView = (ListView) findViewById(R.id.listView);
                     listView.setAdapter(adapter);

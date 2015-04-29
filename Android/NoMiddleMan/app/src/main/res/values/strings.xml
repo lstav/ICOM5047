@@ -126,6 +126,7 @@
     <string name="state">State-Province</string>
     <string name="city">City</string>
     <string name="search">Search</string>
+    <string name="title_activity_large_group">LargeGroupActivity</string>
 
 
 </resources>

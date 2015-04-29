@@ -34,6 +34,7 @@ public class TourClass {
     private ArrayList<TourSession> tourSessions;
     private ArrayList<String> tourSessionsDate;
     private ArrayList<String> tourSessionsTime;
+    private ArrayList<Integer> allTourSessionAvailability;
 
     public TourClass(int tourID, String tourName, String tourDescription, String facebook, String youtube, String instagram, String twitter, double tourPrice, double extremeness, ArrayList<Bitmap> tourPictures, String tourAddress, String guideEmail, String guideName, String guideLicense, String company, String telephone, double averageRating, int rateCount, ArrayList<RatingClass> tourRatings, ArrayList<TourSession> tourSessions) {
         this.tourID = tourID;
@@ -60,6 +61,7 @@ public class TourClass {
         this.tourSessions = tourSessions;
         this.tourSessionsDate = new ArrayList<>();
         this.tourSessionsTime = new ArrayList<>();
+        this.allTourSessionAvailability = new ArrayList<>();
     }
 
     public int getTourID() {
@@ -190,6 +192,23 @@ public class TourClass {
             }
         }
         return tourSessionsTime;
+    }
+
+    public ArrayList<Integer> getAllTourSessionAvailability(String date) {
+        allTourSessionAvailability.clear();
+        int availabilityIndex = 0;
+        for (int i=0; i<tourSessions.size(); i++) {
+            if(tourSessions.get(i).getSessionDay().equals(date)) {
+                availabilityIndex = availabilityIndex + tourSessions.get(i).getAvailability();
+                System.out.println("Availability " + availabilityIndex);
+            }
+        }
+
+        for(int i=0; i<availabilityIndex; i++){
+            allTourSessionAvailability.add(i+1);
+            System.out.println("I " + allTourSessionAvailability.get(i));
+        }
+        return allTourSessionAvailability;
     }
 
     public ArrayList<Integer> getTourSessionAvailability(String date, String time) {

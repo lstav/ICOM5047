@@ -9,22 +9,48 @@
 		$order = trim($_POST['order']);
 		$by = trim($_POST['by']);
 		
-		$result = pg_query($conn, "Select T.tour_key as Key, upper(T.\"tour_Name\") as Name, 
+		$inter = "\"Category_Name\"";
+		
+		if(isset($_POST['cat_refine'])) {
+			$cat_refine = $_POST['cat_refine'];
+			
+			if($cat_refine != "All" && $cat_refine != "") {
+			$inter = "'$cat_refine'";
+			}
+		}
+		
+		$result = pg_query($conn, "Select T.tour_key as Key, 
+		upper(T.\"tour_Name\") as Name, 
 		T.\"tour_Desc\" as Description, T.\"Price\" as Price, 
-		T.\"extremeness\" as Extremeness, T.\"tour_photo\" as Photo FROM \"Tour\" as T 
-		Where upper(concat(T.\"tour_Name\",' ',T.\"tour_Desc\")) like upper('%$keyword%')
+		T.\"extremeness\" as Extremeness, T.\"tour_photo\" as Photo 
+		FROM \"Tour Info\" as T 
+		Where upper(concat(T.\"tour_Name\",' ',T.\"tour_Desc\")) like upper('%$keyword%') 	
+		and T.tour_key IN (Select C.tour_key as key	From \"TourAndCategory\" as C Where \"Category_Name\" = $inter)		
 		Order By (T.\"$order\") $by");
 		
 		if(pg_num_rows($result) > 0) {
 			$response['tours'] = array();
+			$response['categories'] = array();
 			
 			while($row = pg_fetch_array($result)) {
 				$tour = array();
 				$tour['key'] = $row['key'];
+				$tour_key = $row['key'];
 				$tour['name'] = $row['name'];
 				$tour['price'] = $row['price'];
 				$tour['extremeness'] = $row['extremeness'];
 				$tour['photo'] = $row['photo'];
+				
+				$getCategories = pg_query($conn, "Select \"Category_Name\"
+				From \"Tour Category\"
+				Natural Join \"isCategory\"
+				Where \"tour_key\" = $tour_key");
+				
+				$category_name_row = pg_fetch_array($getCategories);
+				
+				$category_name['category_name'] = $category_name_row['Category_Name'];
+				
+				array_push($response['categories'], $category_name);
 				
 				array_push($response['tours'], $tour);
 			}

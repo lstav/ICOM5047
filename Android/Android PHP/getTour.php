@@ -71,7 +71,7 @@
 		
 		
 		$result = pg_query($conn, "select \"ts_key\" as tskey, \"s_Time\" as time, \"Availability\" as availability
-		from \"Tour Session\" where \"tour_key\" = $tour_key and \"s_isActive\" = true
+		from \"Tour Session\" where \"tour_key\" = $tour_key and \"s_isActive\" = true and \"s_Time\" > now() and \"Availability\" > 0
 		Order by (\"s_Time\") ASC");
 		
 		if(!empty($result)) {
