@@ -302,7 +302,7 @@ public class ShoppingCartActivity extends ActionBarActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(ShoppingCartActivity.this);
-            pDialog.setMessage("Loading results. Please wait...");
+            pDialog.setMessage(getString(R.string.loading));
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(true);
             pDialog.show();

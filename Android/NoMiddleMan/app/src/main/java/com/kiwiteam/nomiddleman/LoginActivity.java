@@ -53,6 +53,7 @@ public class LoginActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         conn = (DatabaseConnection)getApplicationContext();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
 
@@ -97,7 +98,7 @@ public class LoginActivity extends ActionBarActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(LoginActivity.this);
-            pDialog.setMessage("Login. Please wait...");
+            pDialog.setMessage(getString(R.string.loading));
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(false);
             pDialog.show();

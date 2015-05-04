@@ -67,7 +67,7 @@
                     <Button
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Youtube"
+                        android:text="Video"
                         android:id="@+id/button3"
                         android:background="#8cc538"
                         android:textColor="#fff"
@@ -189,7 +189,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="Tour Sessions not available."
+                    android:text="@string/tour_sessions_not_available"
                     android:id="@+id/textView41"
                     android:textAlignment="center"
                     android:visibility="gone"/>
@@ -209,7 +209,7 @@
                 <Button
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Large Group"
+                    android:text="@string/large_group"
                     android:id="@+id/button10"
                     android:drawableLeft="@drawable/ic_action_cart"
                     android:background="#8cc538"

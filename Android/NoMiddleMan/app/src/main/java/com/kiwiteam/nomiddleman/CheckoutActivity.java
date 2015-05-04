@@ -81,13 +81,15 @@ public class CheckoutActivity extends ActionBarActivity {
     private static final String TAG_TIME = "time";
     private static final String TAG_ACTIVE = "isActive";
     private static final String TAG_SUCCESS = "success";
-    private static PayPalConfiguration config = new PayPalConfiguration()
 
+    private static final String CONFIG_CLIENT_ID = "AdurtY7CcDo9ygeg8Ic1fhVjZuzPvW-nB4lcXGHrEuExkAWfgxaAbUEpmwMMjmALMXi-EPz-zNZJhKBz";
+
+    private static PayPalConfiguration config = new PayPalConfiguration()
             // Start with mock environment.  When ready, switch to sandbox (ENVIRONMENT_SANDBOX)
             // or live (ENVIRONMENT_PRODUCTION)
-            .environment(PayPalConfiguration.ENVIRONMENT_NO_NETWORK)
-
-            .clientId("<YOUR_CLIENT_ID>");
+            .environment(PayPalConfiguration.ENVIRONMENT_SANDBOX)
+            .clientId(CONFIG_CLIENT_ID)
+            .merchantName("No Middle Man");
 
 
     private static String url_get_checkout = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/checkout.php";
@@ -246,10 +248,12 @@ public class CheckoutActivity extends ActionBarActivity {
         //   - PAYMENT_INTENT_ORDER to create a payment for authorization and capture
         //     later via calls from your server.
 
-        PayPalPayment payment = new PayPalPayment(new BigDecimal(totalPrice), "USD", "Tours",
+        PayPalPayment payment = new PayPalPayment(new BigDecimal(totalPrice), "USD", "No Middle Man Tours",
                 PayPalPayment.PAYMENT_INTENT_SALE);
 
         Intent intent = new Intent(this, PaymentActivity.class);
+
+
 
         // send the same configuration for restart resiliency
         intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
@@ -348,7 +352,7 @@ public class CheckoutActivity extends ActionBarActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(CheckoutActivity.this);
-            pDialog.setMessage("Loading results. Please wait...");
+            pDialog.setMessage(getString(R.string.loading));
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(true);
             pDialog.show();

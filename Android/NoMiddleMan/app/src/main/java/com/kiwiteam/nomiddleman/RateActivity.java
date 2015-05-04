@@ -63,6 +63,8 @@ public class RateActivity extends ActionBarActivity {
         ts_ID = intent.getIntExtra("TourSession ID",-1);
         index = conn.getT_key();
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
     }
 
 
@@ -238,7 +240,7 @@ public class RateActivity extends ActionBarActivity {
                         startActivity(intent);
                         finish();
                     } else {
-                        Toast.makeText(getApplicationContext(), "Could not change rate", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), R.string.not_rate, Toast.LENGTH_SHORT).show();
                     }
                 }
             });

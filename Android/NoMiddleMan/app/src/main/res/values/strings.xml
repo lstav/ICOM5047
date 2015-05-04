@@ -127,6 +127,18 @@
     <string name="city">City</string>
     <string name="search">Search</string>
     <string name="title_activity_large_group">LargeGroupActivity</string>
+    <string name="tour_sessions_not_available">Tour Sessions not available.</string>
+    <string name="large_group">Large Group</string>
+    <string name="refine">Refine</string>
+
+    <string name="loading">Loading. Please  Wait...</string>
+    <string name="not_change_password">Could not change password</string>
+    <string name="registering">Registering. Please wait...</string>
+
+    <string name="notification_sent">Email Verification Sent</string>
+    <string name="not_register">Could not register</string>
+
+    <string name="not_rate">Could not rate</string>
 
 
 </resources>

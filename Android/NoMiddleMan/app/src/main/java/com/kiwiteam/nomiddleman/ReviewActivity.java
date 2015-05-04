@@ -30,6 +30,7 @@ public class ReviewActivity extends ActionBarActivity {
     }
 
     private void handleIntent(Intent intent) {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         double ratingValue = intent.getDoubleExtra("Rating", 0.00);
         String reviewValue = intent.getStringExtra("Review");
 

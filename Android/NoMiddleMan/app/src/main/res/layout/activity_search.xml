@@ -50,7 +50,7 @@
                 <Button
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Refine"
+                    android:text="@string/refine"
                     android:id="@+id/button12"
                     android:background="#8cc538"
                     android:textColor="#fff"

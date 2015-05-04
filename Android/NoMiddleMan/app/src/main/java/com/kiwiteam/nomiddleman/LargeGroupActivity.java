@@ -341,7 +341,7 @@ public class LargeGroupActivity extends ActionBarActivity implements AdapterView
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(LargeGroupActivity.this);
-            pDialog.setMessage("Loading results. Please wait...");
+            pDialog.setMessage(getString(R.string.loading));
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(true);
             pDialog.show();
@@ -358,7 +358,7 @@ public class LargeGroupActivity extends ActionBarActivity implements AdapterView
                 List<NameValuePair> categoryName = new ArrayList<>();
                 categoryName.add(new BasicNameValuePair("tour_key", Integer.toString(query)));
 
-                System.out.println("Query " + query);
+                //System.out.println("Query " + query);
 
                 HttpPost httpPost = new HttpPost(url_get_tourpage);
 
@@ -474,7 +474,7 @@ public class LargeGroupActivity extends ActionBarActivity implements AdapterView
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(LargeGroupActivity.this);
-            pDialog.setMessage("Loading results. Please wait...");
+            pDialog.setMessage(getString(R.string.loading));
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(true);
             pDialog.show();
@@ -523,8 +523,8 @@ public class LargeGroupActivity extends ActionBarActivity implements AdapterView
 
                 success = jObj.getInt(TAG_SUCCESS);
 
-                System.out.println("Success = " + success);
-                System.out.println("Message = " + jObj.getString("message"));
+                /*System.out.println("Success = " + success);
+                System.out.println("Message = " + jObj.getString("message"));*/
 
             } catch (JSONException e) {
                 e.printStackTrace();

@@ -54,6 +54,7 @@ public class ResetRequestActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reset_request);
         conn = (DatabaseConnection)getApplicationContext();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
 
@@ -155,7 +156,7 @@ public class ResetRequestActivity extends ActionBarActivity {
                     if(success == 1) {
                         finish();
                     } else {
-                        Toast.makeText(getApplicationContext(), "Could not change", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), R.string.not_change_password, Toast.LENGTH_SHORT).show();
                     }
                 }
             });

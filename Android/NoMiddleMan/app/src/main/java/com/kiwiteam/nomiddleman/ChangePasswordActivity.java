@@ -59,6 +59,7 @@ public class ChangePasswordActivity extends ActionBarActivity {
 
         conn = (DatabaseConnection) getApplicationContext();
         index = conn.getT_key();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
 
@@ -155,14 +156,14 @@ public class ChangePasswordActivity extends ActionBarActivity {
      * Sends new password to database and updates the database
      */
     class PassChange extends AsyncTask<String, String, String> {
-        protected void onPreExecute() {
+        /*rotected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(ChangePasswordActivity.this);
             pDialog.setMessage("Loading results. Please wait...");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(true);
             pDialog.show();
-        }
+        }*/
 
         @Override
         protected String doInBackground(String... params) {
@@ -224,14 +225,14 @@ public class ChangePasswordActivity extends ActionBarActivity {
          * @param file_url
          */
         protected void onPostExecute(String file_url) {
-            pDialog.dismiss();
+            //pDialog.dismiss();
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     if(success == 1) {
                         finish();
                     } else {
-                        Toast.makeText(getApplicationContext(), "Could not change password", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), R.string.not_change_password, Toast.LENGTH_SHORT).show();
                     }
                 }
             });

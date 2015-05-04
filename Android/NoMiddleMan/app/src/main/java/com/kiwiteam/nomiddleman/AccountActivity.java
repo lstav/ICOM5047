@@ -49,11 +49,13 @@ public class AccountActivity extends ActionBarActivity {
     private String email;
     private String fname;
     private String lname;
+    private String address;
     private String telephone;
 
     private static final String TAG_EMAIL = "t_Email";
     private static final String TAG_FNAME = "t_FName";
     private static final String TAG_LNAME = "t_LName";
+    private static final String TAG_ADDRESS = "t_Address";
     private static final String TAG_TELEPHONE = "t_telephone";
 
     private JSONArray tourist;
@@ -76,6 +78,7 @@ public class AccountActivity extends ActionBarActivity {
      * Shows account information to the tourist
      */
     private void fillText() {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         index = conn.getT_key();
         new LoadTouristPage().execute();
     }
@@ -228,6 +231,7 @@ public class AccountActivity extends ActionBarActivity {
                     email = c.getString(TAG_EMAIL);
                     fname = c.getString(TAG_FNAME);
                     lname = c.getString(TAG_LNAME);
+                    address = c.getString(TAG_ADDRESS);
                     telephone = c.getString(TAG_TELEPHONE);
                 }
             } catch (JSONException e) {
@@ -252,6 +256,9 @@ public class AccountActivity extends ActionBarActivity {
 
                     TextView emailT = (TextView) findViewById(R.id.email);
                     emailT.setText(email);
+
+                    TextView addressT = (TextView) findViewById(R.id.address);
+                    addressT.setText(address);
 
                     TextView tel = (TextView) findViewById(R.id.telephone);
                     tel.setText(telephone);

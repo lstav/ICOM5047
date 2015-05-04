@@ -396,14 +396,6 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
 
             picture = (ImageView) itemView.findViewById(R.id.tourPic);
             picture.setImageBitmap(currentTour.getPictures().get(0));
-            //String url = currentTour.getPictures().get(0);
-
-            //new LoadImage().execute(url.trim()+"img1.jpg");
-
-            //System.out.println("Photo " + url.trim() + "img1.jpg" + " Name " + currentTour.getName());
-            //Drawable img = getResources().getDrawable(draw);
-
-            //picture.setImageDrawable(img);
 
             RatingBar eRating = (RatingBar) itemView.findViewById(R.id.tourRating);
             eRating.setRating((float) currentTour.getExtremeness());
@@ -431,7 +423,7 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(SearchActivity.this);
-            pDialog.setMessage("Loading results. Please wait...");
+            pDialog.setMessage(getString(R.string.loading));
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(true);
             pDialog.show();
@@ -519,7 +511,7 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(SearchActivity.this);
-            pDialog.setMessage("Loading results. Please wait...");
+            pDialog.setMessage(getString(R.string.loading));
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(true);
             pDialog.show();
@@ -647,7 +639,7 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(SearchActivity.this);
-            pDialog.setMessage("Loading results. Please wait...");
+            pDialog.setMessage(getString(R.string.loading));
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(true);
             pDialog.show();

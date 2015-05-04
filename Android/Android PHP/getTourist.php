@@ -20,6 +20,7 @@
 				$tourist['t_password'] = $row['t_password'];
 				$tourist['t_FName'] = $row['t_FName'];
 				$tourist['t_LName'] = $row['t_LName'];
+				$tourist['t_Address'] = $row['t_Address'];
 				$tourist['t_telephone'] = $row['t_telephone'];
 				
 				$response['success'] = 1;

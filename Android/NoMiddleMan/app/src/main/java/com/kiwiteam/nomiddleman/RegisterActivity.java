@@ -49,6 +49,7 @@ public class RegisterActivity extends ActionBarActivity {
     private String password;
     private String userName;
     private String userLName;
+    private String userAddress;
     private String telephoneNumber;
 
     public int success;
@@ -77,6 +78,8 @@ public class RegisterActivity extends ActionBarActivity {
                 startActivity(intent);
             }
         });
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
     }
 
@@ -118,20 +121,33 @@ public class RegisterActivity extends ActionBarActivity {
     public void register(View view) {
         EditText uEmail = (EditText) findViewById(R.id.email);
         userEmail = uEmail.getText().toString();
-        EditText uPhone = (EditText) findViewById(R.id.telephone);
-        telephoneNumber = uPhone.getText().toString();
+        EditText pass = (EditText) findViewById(R.id.password);
+        password = pass.getText().toString();
+        EditText uName = (EditText) findViewById(R.id.firstText);
+        userName = uName.getText().toString();
+        EditText uLName = (EditText) findViewById(R.id.lastText);
+        userLName = uLName.getText().toString();
+        EditText uAddress = (EditText) findViewById(R.id.address);
+        userAddress = uAddress.getText().toString();
+        EditText telephone = (EditText) findViewById(R.id.telephone);
+        telephoneNumber = telephone.getText().toString();
 
-        if(validateEmail(userEmail)) {
-
-            if(validatePhone(telephoneNumber)) {
+        if(userEmail != "" && password != "" && userName != ""
+                && userLName != "" && userAddress != "" && telephoneNumber != "") {
+            if (validateEmail(userEmail)) {
                 new Register().execute();
+            /*if(validatePhone(telephoneNumber)) {
+
             } else {
                 Toast.makeText(this, "No valid telephone number", Toast.LENGTH_SHORT).show();
                 return;
-            }
+            }*/
 
+            } else {
+                Toast.makeText(this, "No valid email", Toast.LENGTH_SHORT).show();
+            }
         } else {
-            Toast.makeText(this, "No valid email", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Missing Input", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -151,7 +167,7 @@ public class RegisterActivity extends ActionBarActivity {
     private boolean validatePhone(String phone) {
         String PHONE_REGEX = "\\\\d{10}";
         Pattern pattern = Pattern.compile(PHONE_REGEX);
-        return pattern.matcher(phone).matches();
+        return pattern.matcher(phone.trim()).matches();
     }
 
 
@@ -161,7 +177,7 @@ public class RegisterActivity extends ActionBarActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(RegisterActivity.this);
-            pDialog.setMessage("Registering. Please wait...");
+            pDialog.setMessage(getString(R.string.registering));
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(false);
             pDialog.show();
@@ -181,6 +197,8 @@ public class RegisterActivity extends ActionBarActivity {
                 userName = uName.getText().toString();
                 EditText uLName = (EditText) findViewById(R.id.lastText);
                 userLName = uLName.getText().toString();
+                EditText uAddress = (EditText) findViewById(R.id.address);
+                userAddress = uAddress.getText().toString();
                 EditText telephone = (EditText) findViewById(R.id.telephone);
                 telephoneNumber = telephone.getText().toString();
 
@@ -190,6 +208,7 @@ public class RegisterActivity extends ActionBarActivity {
                 categoryName.add(new BasicNameValuePair("t_password", password));
                 categoryName.add(new BasicNameValuePair("t_FName", userName));
                 categoryName.add(new BasicNameValuePair("t_LName", userLName));
+                categoryName.add(new BasicNameValuePair("t_address", userAddress));
                 categoryName.add(new BasicNameValuePair("t_telephone", telephoneNumber));
 
                 //////////////////////////////////
@@ -236,11 +255,12 @@ public class RegisterActivity extends ActionBarActivity {
                 @Override
                 public void run() {
                     if(success == 1) {
+                        Toast.makeText(getApplicationContext(), R.string.notification_sent, Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                     } else {
-                        Toast.makeText(getApplicationContext(), "Could not register", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), R.string.not_register, Toast.LENGTH_SHORT).show();
                     }
                 }
             });

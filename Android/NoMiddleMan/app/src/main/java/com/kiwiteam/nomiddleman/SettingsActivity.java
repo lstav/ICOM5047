@@ -36,6 +36,8 @@ public class SettingsActivity extends ActionBarActivity {
     }
 
     private void initSettings() {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.language_array, android.R.layout.simple_spinner_item);

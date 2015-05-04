@@ -170,7 +170,8 @@ public class CategoriesActivity extends ActionBarActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(CategoriesActivity.this);
-            pDialog.setMessage("Loading categories. Please wait...");
+            //pDialog.setMessage("Loading categories. Please wait...");
+            pDialog.setMessage(getString(R.string.loading));
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(false);
             pDialog.show();

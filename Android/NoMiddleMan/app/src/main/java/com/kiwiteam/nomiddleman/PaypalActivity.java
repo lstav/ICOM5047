@@ -55,7 +55,7 @@ public class PaypalActivity extends ActionBarActivity {
     }
 
     private void handleIntent(Intent intent) {
-
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
