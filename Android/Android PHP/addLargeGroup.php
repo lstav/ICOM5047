@@ -6,11 +6,11 @@
 	
 	if(isset($_POST['t_key']) && isset($_POST['tour_key']) && isset($_POST['quantity']) && isset($_POST['day'])) {
 		$t_key = $_POST['t_key'];
-		$ts_key = $_POST['tour_key'];
+		$tour_key = $_POST['tour_key'];
 		$quantity = $_POST['quantity'];
 		$day = $_POST['day'];
 		
-		$result = pg_query($conn, "Select BigGroup($t_key, $tour_key, '$day'::date, $quantity)");
+		$result = pg_query($conn, "Select \"BigGroup\"($t_key::bigint, $tour_key::bigint, '$day'::date, $quantity::integer)");
 		
 		if($result) {
 			
