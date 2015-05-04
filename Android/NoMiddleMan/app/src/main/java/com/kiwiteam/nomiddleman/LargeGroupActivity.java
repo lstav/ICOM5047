@@ -86,7 +86,7 @@ public class LargeGroupActivity extends ActionBarActivity implements AdapterView
 
     private ProgressDialog pDialog;
     private static String url_get_tourpage = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/getTour.php";
-    private static String url_add_to_cart = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/addToCart.php";
+    private static String url_add_to_cart = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/addLargeGroup.php";
 
     private static final String TAG_SUCCESS = "success";
 
@@ -114,7 +114,12 @@ public class LargeGroupActivity extends ActionBarActivity implements AdapterView
     private static final String TAG_DATE = "date";
     private static final String TAG_AVAILABILITY = "availability";
 
-    private static final String TAG_TKEY = "tkey";
+    private static final String TAG_TKEY = "t_key";
+    private static final String TAG_TOURKEY = "tour_key";
+    private static final String TAG_QUANTITY = "quantity";
+    private static final String TAG_DAY = "day";
+
+
     private static final String TAG_RATING = "rating";
     private static final String TAG_REVIEW = "review";
 
@@ -232,11 +237,10 @@ public class LargeGroupActivity extends ActionBarActivity implements AdapterView
         startActivity(intent);
     }
 
-    public void addToCart(View view) {
+    public void largeGroup(View view) {
         Spinner qty = (Spinner) findViewById(R.id.quantity);
         this.quantity = Integer.parseInt(qty.getSelectedItem().toString());
         this.date = tDay.getSelectedItem().toString();
-        this.time = tTime.getSelectedItem().toString();
 
         if(conn.isLogged()) {
             new AddToCart().execute();
@@ -490,8 +494,9 @@ public class LargeGroupActivity extends ActionBarActivity implements AdapterView
 
                 List<NameValuePair> categoryName = new ArrayList<>();
                 categoryName.add(new BasicNameValuePair("t_key", Integer.toString(conn.getT_key())));
-                categoryName.add(new BasicNameValuePair("ts_key", Integer.toString(tour.getTourSessionID(tDay.getSelectedItem().toString(),tTime.getSelectedItem().toString()))));
+                categoryName.add(new BasicNameValuePair("tour_key", Integer.toString(tourID)));
                 categoryName.add(new BasicNameValuePair("quantity", tQty.getSelectedItem().toString()));
+                categoryName.add(new BasicNameValuePair("day", tDay.getSelectedItem().toString()));
 
                 HttpPost httpPost = new HttpPost(url_add_to_cart);
 
@@ -539,6 +544,8 @@ public class LargeGroupActivity extends ActionBarActivity implements AdapterView
                 public void run() {
                     if(success == 1) {
                         Toast.makeText(LargeGroupActivity.this, R.string.added_to_cart, Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(LargeGroupActivity.this, "Could not add", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
