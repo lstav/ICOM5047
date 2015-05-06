@@ -1,7 +1,5 @@
 package com.kiwiteam.nomiddleman;
 
-import android.media.Rating;
-
 /**
  * Created by Luis on 4/3/2015.
  */

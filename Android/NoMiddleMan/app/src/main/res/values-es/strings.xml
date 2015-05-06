@@ -140,5 +140,7 @@
 
     <string name="imageview_description">Imagen</string>
 
+    <string name="rate_warning">La evaluacion debe ser de 1 a 5</string>
+
 
 </resources>

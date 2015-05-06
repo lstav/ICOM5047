@@ -141,5 +141,7 @@
 
     <string name="imageview_description">Image Thumbnail</string>
 
+    <string name="rate_warning">Rate must be from 1 to 5</string>
+
 
 </resources>

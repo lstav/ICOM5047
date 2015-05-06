@@ -1,7 +1,5 @@
 package com.kiwiteam.nomiddleman;
 
-import java.util.Date;
-
 /**
  * Created by Luis on 4/1/2015.
  */
@@ -18,6 +16,13 @@ public class TourSession {
         availability = 0;
     }
 
+    /**
+     * Tour session constructor
+     * @param day
+     * @param time
+     * @param id
+     * @param availability
+     */
     public TourSession(String day, String time, int id, int availability) {
         this.day = day;
         this.time = time;
@@ -25,25 +30,36 @@ public class TourSession {
         this.availability = availability;
     }
 
+    /**
+     * Returns the day of the session
+     * @return
+     */
     public String getSessionDay() {
         return day;
     }
 
+    /**
+     * Returns the time of the session
+     * @return
+     */
     public String getSessionTime() {
         return time;
     }
 
+    /**
+     * Returns the session key
+     * @return
+     */
     public int getSessionID() {
         return id;
     }
 
+    /**
+     * Returns the availability of the session
+     * @return
+     */
     public int getAvailability() {
         return availability;
     }
-
-    public void updateAvailability(int qty) {
-        availability = availability - qty;
-    }
-
 
 }

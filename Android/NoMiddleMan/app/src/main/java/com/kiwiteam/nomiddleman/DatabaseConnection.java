@@ -3,11 +3,8 @@ package com.kiwiteam.nomiddleman;
 import android.app.Application;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.widget.EditText;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Created by Luis on 3/13/2015.

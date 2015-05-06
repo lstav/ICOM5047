@@ -1,7 +1,5 @@
 package com.kiwiteam.nomiddleman;
 
-import java.util.List;
-
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -9,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Gallery;
 import android.widget.ImageView;
+
+import java.util.List;
 
 public class GalleryImageAdapter extends BaseAdapter {
 

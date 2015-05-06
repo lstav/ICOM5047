@@ -6,10 +6,9 @@ import android.app.SearchableInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.provider.ContactsContract;
+import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -126,20 +125,24 @@ public class RateActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
-
+    /**
+     * Submit rating and review
+     * @param view
+     */
     public void submit(View view) {
         RatingBar rBar = (RatingBar) findViewById(R.id.ratingBar);
         rating = (double) rBar.getRating();
 
-        EditText rev = (EditText) findViewById(R.id.reviewTour);
-        review = rev.getText().toString();
+        if(rating != 0) {
+            EditText rev = (EditText) findViewById(R.id.reviewTour);
+            review = rev.getText().toString();
 
-        new Rate().execute();
+            new Rate().execute();
+        } else {
+            Toast.makeText(getApplicationContext(), R.string.rate_warning, Toast.LENGTH_SHORT).show();
+        }
 
-        //conn.rate(tourID, rating, review);
-        //conn.getHistory().get(historyID).rated();
 
-        //finish();
     }
 
     /**

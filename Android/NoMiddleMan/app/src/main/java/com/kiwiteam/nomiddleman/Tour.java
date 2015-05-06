@@ -2,11 +2,10 @@ package com.kiwiteam.nomiddleman;
 
 import android.graphics.Bitmap;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
- * Class to save tour values to be presented on the search activity
+ * Class to save tour values to be presented on the search activity, shopping cart, checkout, and purchase history
  */
 public class Tour {
     private String name;
@@ -15,6 +14,14 @@ public class Tour {
     private int id;
     private double extremeness;
 
+    /**
+     * Constructor for Tour class
+     * @param name
+     * @param price
+     * @param picture
+     * @param id
+     * @param extremeness
+     */
     public Tour(String name, double price, ArrayList<Bitmap> picture, int id, double extremeness) {
         super();
 
@@ -25,22 +32,42 @@ public class Tour {
         this.extremeness = extremeness;
     }
 
+    /**
+     * Gets tour name
+     * @return
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Gets tour price
+     * @return
+     */
     public double getPrice() {
         return price;
     }
 
+    /**
+     * Gets pictures
+     * @return
+     */
     public ArrayList<Bitmap> getPictures() {
         return picture;
     }
 
+    /**
+     * Gets tour ID
+     * @return
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * Gets tour extremeness
+     * @return
+     */
     public double getExtremeness() {
         return extremeness;
     }

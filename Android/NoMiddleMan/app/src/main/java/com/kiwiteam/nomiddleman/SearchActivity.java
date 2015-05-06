@@ -7,39 +7,29 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.media.Rating;
 import android.os.AsyncTask;
-import android.provider.ContactsContract;
+import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.SearchView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
@@ -52,10 +42,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.jar.Attributes;
 
 
 public class SearchActivity extends ActionBarActivity implements AdapterView.OnItemSelectedListener {
@@ -115,6 +102,7 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
 
         intent = getIntent();
 
+        // Selects what type of search to do
         String category = intent.getStringExtra("searchCategory");
         String location = intent.getStringExtra("searchLocation");
 
@@ -293,39 +281,52 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
         });
     }
 
+    /**
+     * Selects what type of sorting to do
+     * @param parent
+     * @param view
+     * @param position
+     * @param id
+     */
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         switch (position) {
+            // A-Z
             case 0:
                 tourInfo.clear();
                 order = "tour_Name";
                 by = "ASC";
                 callSearch();
                 break;
+            // Z-A
             case  1:
                 tourInfo.clear();
                 order = "tour_Name";
                 by = "DESC";
                 callSearch();
                 break;
+            // Lowest Price
             case 2:
                 tourInfo.clear();
                 order = "Price";
                 by = "ASC";
                 callSearch();
                 break;
+            // Highest Price
             case 3:
                 tourInfo.clear();
                 order = "Price";
                 by = "DESC";
                 callSearch();
                 break;
+            // Lowest Extremeness
             case 4:
                 tourInfo.clear();
                 order = "extremeness";
                 by = "ASC";
                 callSearch();
                 break;
+            // Highest Extremeness
             case 5:
                 tourInfo.clear();
                 order = "extremeness";
@@ -335,6 +336,9 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
         }
     }
 
+    /**
+     * Starts selected search method
+     */
     private void callSearch() {
         String category = intent.getStringExtra("searchCategory");
         String location = intent.getStringExtra("searchLocation");
@@ -361,6 +365,10 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
         }
     }
 
+    /**
+     * Refines search by category
+     * @param view
+     */
     public void refine(View view) {
         tourInfo.clear();
         categorySelectedSpinner = cSpinner.getSelectedItem().toString();
@@ -403,7 +411,6 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
 
             TextView tName = (TextView) itemView.findViewById(R.id.tourName);
             tName.setText(currentTour.getName());
-            //System.out.println(currentTour.getName());
 
             TextView tPrice = (TextView) itemView.findViewById(R.id.tourPrice);
             tPrice.setText("$" + String.format("%.2f", currentTour.getPrice()));
@@ -411,8 +418,6 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
 
 
             return itemView;
-
-            //return super.getView(position, convertView, parent);
         }
     }
 
@@ -470,7 +475,7 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
 
             try {
                 JSONObject jObj = new JSONObject(result);
-                backup = jObj.getJSONArray("tours");
+                backup = jObj.getJSONArray("tours"); // Get tours
 
                 for (int i=0; i<backup.length(); i++) {
                     JSONObject c = backup.getJSONObject(i);
@@ -489,6 +494,7 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
 
                     success = jObj.getInt("success");
 
+                    // Adds tour information from database to Tour class
                     tourInfo.add(new Tour(c.getString(TAG_NAME), Price.getDouble(c.getString(TAG_PRICE)), new ArrayList<>(Arrays.asList(bitmap)), Integer.parseInt(c.getString(TAG_KEY)), Double.parseDouble(c.getString(TAG_EXTREMENESS))));
                 }
             } catch (JSONException e) {

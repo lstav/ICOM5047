@@ -15,6 +15,14 @@ public class ShoppingCart {
         this.accountID = accountID;
     }
 
+    /**
+     * Puts tour in shopping cart
+     * @param tour
+     * @param sessionID
+     * @param quantity
+     * @param date
+     * @param time
+     */
     public void putTour(Tour tour, int sessionID, int quantity, String date, String time) {
         ShoppingItem sItem = new ShoppingItem(tour, sessionID, quantity, date, time, true);
         boolean same = false;
@@ -34,18 +42,34 @@ public class ShoppingCart {
         }
     }
 
+    /**
+     * Gets tours from shopping cart
+     * @return
+     */
     public ArrayList<ShoppingItem> getTours() {
         return item;
     }
 
+    /**
+     * Removes from shopping cart
+     * @param position
+     */
     public void removeFromShoppingCart(int position) {
         item.remove(position);
     }
 
+    /**
+     * Gets the tourist account
+     * @return
+     */
     public int getAccountID() {
         return accountID;
     }
 
+    /**
+     * Gets total price of shopping cart
+     * @return
+     */
     public double getTotalPrice() {
         double totPrice = 0.00;
         for (int i=0; i<item.size(); i++) {
@@ -55,6 +79,9 @@ public class ShoppingCart {
         return totalPrice;
     }
 
+    /**
+     * Clears the shopping cart
+     */
     public void clearShoppingCart() {
         item.clear();
     }

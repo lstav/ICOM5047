@@ -9,6 +9,9 @@ public class TourLocation {
     private String city;
     private int id;
 
+    /**
+     * Default constructor for tour location
+     */
     public TourLocation() {
         country = "Any";
         state = "Any";
@@ -16,6 +19,13 @@ public class TourLocation {
         id = -1;
     }
 
+    /**
+     * Tour locations contructor
+     * @param id
+     * @param country
+     * @param state
+     * @param city
+     */
     public TourLocation(int id, String country, String state, String city) {
         this.id = id;
         this.country = country;
@@ -23,18 +33,34 @@ public class TourLocation {
         this.city = city;
     }
 
+    /**
+     * Gets country
+     * @return
+     */
     public String getCountry() {
         return country;
     }
 
+    /**
+     * Gets state
+     * @return
+     */
     public String getState() {
         return state;
     }
 
+    /**
+     * Gets city
+     * @return
+     */
     public String getCity() {
         return city;
     }
 
+    /**
+     * Gets ID
+     * @return
+     */
     public int getId() {
         return id;
     }

@@ -5,35 +5,24 @@ import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.media.Rating;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.NavUtils;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.support.v7.widget.SearchView;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -47,9 +36,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
@@ -64,7 +51,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.kiwiteam.nomiddleman.ImageDetailFragment.newInstance;
@@ -150,6 +136,10 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
         initTourPage(intent);
     }
 
+    /**
+     * Calls the class that queries the tour information
+     * @param intent
+     */
     public void initTourPage(Intent intent) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -163,12 +153,14 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
             finish();
         } else {
             query = tourID;
-            System.out.println("Index " + query);
             new GetTourPage().execute();
-            //tour = conn.getTourInformation(tourID);
         }
     }
 
+    /**
+     * Makes listview items fill the list view on page to allow all list items to appear on page
+     * @param listView
+     */
     public static void setListViewHeightBasedOnChildren(ListView listView) {
         ListAdapter listAdapter = listView.getAdapter();
         if (listAdapter == null)
@@ -245,12 +237,20 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Calls account information activity
+     */
     public void account() {
         Intent intent = new Intent(this, AccountActivity.class);
         intent.putExtra("Index", conn.getT_key());
         startActivity(intent);
     }
 
+    /**
+     * Obtains the quantity, day and time of the tour session and checks if user is logged in.
+     * If the user is not logged in, he will be redirected to the login page.
+     * @param view
+     */
     public void addToCart(View view) {
         Spinner qty = (Spinner) findViewById(R.id.quantity);
         this.quantity = Integer.parseInt(qty.getSelectedItem().toString());
@@ -263,26 +263,33 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         }
-        /*if(quantity > 0) {
-            //Toast.makeText(this, R.string.added_to_cart, Toast.LENGTH_SHORT).show();
-            new AddToCart().execute();
-            //conn.putToursToShoppingCart(tourID, quantity, date, time);
-        } else {
-            Toast.makeText(this, R.string.no_quantity, Toast.LENGTH_SHORT).show();
-        }*/
 
     }
 
+    /**
+     * Calls the large group activity.
+     * @param view
+     */
     public void largeGroup(View view) {
         Intent intent = new Intent(this, LargeGroupActivity.class);
         intent.putExtra("tourId", tourID);
         startActivity(intent);
     }
 
+    /**
+     * Adapter to select day, time and quantity of a tour
+     * @param parent
+     * @param view
+     * @param position
+     * @param id
+     */
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         int vId = parent.getId();
         switch (vId) {
+            /*
+             * If day is selected, search for times at current day.
+             */
             case R.id.day:
                 String day = parent.getItemAtPosition(position).toString();
                 ArrayList<String> times = tour.getTourSessionsTime(day);
@@ -296,6 +303,9 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                 tAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 tTime.setAdapter(tAdapter);
                 break;
+            /*
+             * If time is selected, search for quantities on current day and time.
+             */
             case R.id.time:
                 String time = parent.getItemAtPosition(position).toString();
                 ArrayList<Integer> quantities = tour.getTourSessionAvailability(tDay.getSelectedItem().toString(), time);
@@ -316,8 +326,15 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
 
     }
 
+    /**
+     * Opens video link
+     * @param view
+     */
     public void openYoutube(View view) {
         String youtube = tour.getYoutube();
+        /*
+         * Adds http:// is it does not exists
+         */
         if(!youtube.contains("http://")) {
             youtube = "http://" + youtube;
         }
@@ -325,8 +342,15 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
         startActivity(browserIntent);
     }
 
+    /**
+     * Opens Facebook link
+     * @param view
+     */
     public void openFacebook(View view) {
         String facebook = tour.getFacebook();
+        /*
+         * Adds http:// is it does not exists
+         */
         if(!facebook.contains("http://")) {
             facebook = "http://" + facebook;
         }
@@ -334,8 +358,15 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
         startActivity(browserIntent);
     }
 
+    /**
+     * Opens Instagram link
+     * @param view
+     */
     public void openInstagram(View view) {
         String insta = tour.getInstagram();
+        /*
+         * Adds http:// is it does not exists
+         */
         if(!insta.contains("http://")) {
             insta = "http://" + insta;
         }
@@ -343,8 +374,15 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
         startActivity(browserIntent);
     }
 
+    /**
+     * Opens Twitter link
+     * @param view
+     */
     public void openTwitter(View view) {
         String twitter = tour.getTwitter();
+        /*
+         * Adds http:// is it does not exists
+         */
         if(!twitter.contains("http://")) {
             twitter = "http://" + twitter;
         }
@@ -352,6 +390,9 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
         startActivity(browserIntent);
     }
 
+    /**
+     * Adapter to show reviews on page
+     */
     private class MyListAdapter extends ArrayAdapter<RatingClass> {
 
         public MyListAdapter() {
@@ -366,7 +407,7 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
 
             }
 
-            // find the list
+            // find the item in the list
             final RatingClass currentRating = ratings.get(position);
 
             // fill the view
@@ -376,6 +417,7 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
             TextView tReview = (TextView) itemView.findViewById(R.id.review);
             tReview.setText(currentRating.getReview());
 
+            // Adds listener to review item
             itemView.findViewById(R.id.review).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -391,6 +433,13 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
         }
     }
 
+    /**
+     * Checks if link is active
+     * @param urlString
+     * @return
+     * @throws MalformedURLException
+     * @throws IOException
+     */
     public static int getResponseCode(String urlString) throws MalformedURLException, IOException {
         URL u = new URL(urlString);
         HttpURLConnection huc =  (HttpURLConnection)  u.openConnection();
@@ -400,7 +449,9 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
         return huc.getResponseCode();
     }
 
-
+    /**
+     * Class to get tour information from database
+     */
     class GetTourPage extends AsyncTask<String, String, String> {
         protected void onPreExecute() {
             super.onPreExecute();
@@ -417,10 +468,9 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
 
             try {
                 HttpClient httpClient = new DefaultHttpClient();
-                String url;
 
                 List<NameValuePair> categoryName = new ArrayList<>();
-                categoryName.add(new BasicNameValuePair("tour_key", Integer.toString(query)));
+                categoryName.add(new BasicNameValuePair("tour_key", Integer.toString(query))); // Tour key to make query
 
                 System.out.println("Query " + query);
 
@@ -451,15 +501,15 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
 
             try {
                 JSONObject jObj = new JSONObject(result);
-                tourResponse = jObj.getJSONArray("tour");
+                tourResponse = jObj.getJSONArray("tour"); // Gets tour array from database
                 try {
-                    tourSessions = jObj.getJSONArray("sessions");
+                    tourSessions = jObj.getJSONArray("sessions"); // Gets session array from database
                 } catch (Exception e) {
                     tourSessions = null;
                 }
 
                 try {
-                    tourReviews = jObj.getJSONArray("reviews");
+                    tourReviews = jObj.getJSONArray("reviews"); // Gets reviews array from database
                 } catch (Exception e) {
                     tourReviews = null;
                 }
@@ -468,6 +518,9 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                     JSONObject c = tourResponse.getJSONObject(i);
                     try {
                         int j = 1;
+                        /*
+                         * Obtains pictures from server, checks if pictures exist
+                         */
                         while(getResponseCode(c.getString(TAG_PHOTO).trim() + j + ".jpg") != 404) {
                             String url = c.getString(TAG_PHOTO).trim() + j + ".jpg";
 
@@ -486,6 +539,9 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                         e.printStackTrace();
                     }
 
+                    /*
+                     * Gets tour sessions from database
+                     */
                     if(tourSessions != null) {
                         for (int j = 0; j < tourSessions.length(); j++) {
                             JSONObject d = tourSessions.getJSONObject(j);
@@ -496,6 +552,9 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                         tourSessionsA = null;
                     }
 
+                    /*
+                     * Gets tour reviews from database
+                     */
                     if(tourReviews != null) {
                         for (int j = 0; j < tourReviews.length(); j++) {
                             JSONObject d = tourReviews.getJSONObject(j);
@@ -506,6 +565,7 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                         tourRatingsA = null;
                     }
 
+                    // Saves tour information from database in tourClass
                     tour = new TourClass(c.getInt(TAG_KEY), c.getString(TAG_NAME), c.getString(TAG_DESC), c.getString(TAG_FACEBOOK), c.getString(TAG_YOUTUBE),
                             c.getString(TAG_INSTAGRAM), c.getString(TAG_TWITTER), Price.getDouble(c.getString(TAG_PRICE)),
                             c.getDouble(TAG_EXTREMENESS), pictures,
@@ -521,6 +581,9 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
             return null;
         }
 
+        /*
+         * Fills the tour page activity with the database information
+         */
         protected void onPostExecute(String file_url) {
             pDialog.dismiss();
             runOnUiThread(new Runnable() {
@@ -621,16 +684,14 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                         reviewList.setAdapter(rAdapter);
                         setListViewHeightBasedOnChildren(reviewList);
                     }
-                    /*ArrayAdapter<RatingClass> adapter = new MyListAdapter();
-
-                    listView = (ListView) findViewById(R.id.listView);
-                    listView.setAdapter(adapter);*/
                 }
             });
         }
     }
 
-    ///
+    /**
+     * Class to add tour session to cart
+     */
     class AddToCart extends AsyncTask<String, String, String> {
         protected void onPreExecute() {
             super.onPreExecute();
@@ -647,8 +708,10 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
 
             try {
                 HttpClient httpClient = new DefaultHttpClient();
-                String url;
 
+                /*
+                 * Sends tourist key, tour session key, and quantity of tour session
+                 */
                 List<NameValuePair> categoryName = new ArrayList<>();
                 categoryName.add(new BasicNameValuePair("t_key", Integer.toString(conn.getT_key())));
                 categoryName.add(new BasicNameValuePair("ts_key", Integer.toString(tour.getTourSessionID(tDay.getSelectedItem().toString(),tTime.getSelectedItem().toString()))));
@@ -706,6 +769,9 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
         }
     }
 
+    /**
+     * Adapter to put images on tour page
+     */
     public class ImagePagerAdapter extends FragmentStatePagerAdapter {
         private final int mSize;
 

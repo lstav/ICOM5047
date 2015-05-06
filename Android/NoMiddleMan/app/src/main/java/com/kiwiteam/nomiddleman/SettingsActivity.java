@@ -5,15 +5,13 @@ import android.app.SearchableInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.provider.ContactsContract;
+import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -35,6 +33,9 @@ public class SettingsActivity extends ActionBarActivity {
         initSettings();
     }
 
+    /**
+     * Starts settings spinner
+     */
     private void initSettings() {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -104,6 +105,10 @@ public class SettingsActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
+    /**
+     * Confirm language and saves selection on device options
+     * @param view
+     */
     public void confirm(View view) {
         String language = new String();
 

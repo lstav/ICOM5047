@@ -20,6 +20,15 @@ public class HistoryItem {
         isRated = false;
     }
 
+    /**
+     * History Item constructor
+     * @param date
+     * @param time
+     * @param sessionID
+     * @param quantity
+     * @param isRated
+     * @param tour
+     */
     public HistoryItem(String date, String time, int sessionID, int quantity, boolean isRated, Tour tour) {
         this.date = date;
         this.time = time;
@@ -29,34 +38,66 @@ public class HistoryItem {
         this.isRated = isRated;
     }
 
+    /**
+     * Gets date
+     * @return
+     */
     public String getDate() {
         return date;
     }
 
+    /**
+     * Gets time
+     * @return
+     */
     public String getTime() {
         return time;
     }
 
+    /**
+     * Gets tour
+     * @return
+     */
     public Tour getTour() {
         return tour;
     }
 
+    /**
+     * Gets quantity
+     * @return
+     */
     public int getQuantity() {
         return quantity;
     }
 
+    /**
+     * Gets session ID
+     * @return
+     */
     public int getSessionID() {
         return sessionID;
     }
 
+    /**
+     * Gets price
+     * @return
+     */
     public double getPrice() {
         return tour.getPrice() * quantity;
     }
 
+    /**
+     * Gets is rated
+     * @return
+     */
     public boolean isRated() {
         return isRated;
     }
 
+    /**
+     * Sets rated
+     * @return
+     */
     public void rated() {
         isRated = true;
     }

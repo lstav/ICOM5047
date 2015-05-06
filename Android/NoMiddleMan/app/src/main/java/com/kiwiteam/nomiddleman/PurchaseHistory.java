@@ -1,7 +1,6 @@
 package com.kiwiteam.nomiddleman;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Created by Luis on 4/1/2015.

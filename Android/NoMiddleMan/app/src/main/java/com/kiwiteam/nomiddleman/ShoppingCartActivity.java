@@ -1,6 +1,5 @@
 package com.kiwiteam.nomiddleman;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
@@ -8,17 +7,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -109,55 +106,15 @@ public class ShoppingCartActivity extends ActionBarActivity {
 
         adapter.notifyDataSetChanged();
 
-        /*TextView tPrice = (TextView) findViewById(R.id.price);
-        if(!adapter.isEmpty()) {
-            double price = conn.getTotalPrice();
-            tPrice.setText("$" + String.format("%.2f", price));
-
-        } else {
-            TextView fName = (TextView) findViewById(R.id.result);
-            findViewById(R.id.result).setVisibility(View.VISIBLE);
-            fName.setText(R.string.empty_cart);
-
-            findViewById(R.id.items).setVisibility(View.GONE);
-            findViewById(R.id.price).setVisibility(View.GONE);
-            findViewById(R.id.checkout).setVisibility(View.GONE);
-
-            //tPrice.setText("$0.00");
-        }*/
     }
 
+    /**
+     * Calls class to load shopping cart
+     * @param intent
+     */
     private void handleIntent(Intent intent) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         new LoadShoppingCart().execute();
-        /*shoppingCart = conn.getShoppingCart(0);
-
-        if(!shoppingCart.isEmpty()) {
-
-            findViewById(R.id.result).setVisibility(View.GONE);
-
-
-
-            adapter = new MyListAdapter();
-
-            listView = (ListView) findViewById(R.id.listView);
-            listView.setAdapter(adapter);
-
-            TextView tPrice = (TextView) findViewById(R.id.price);
-            double prices = 0;
-            for (int i=0;i<shoppingCart.size();i++) {
-                prices = prices + shoppingCart.get(i).getTourPrice();
-            }
-            tPrice.setText("$" + String.format("%.2f", prices));
-
-        } else {
-            TextView fName = (TextView) findViewById(R.id.result);
-            fName.setText(R.string.empty_cart);
-
-            findViewById(R.id.items).setVisibility(View.GONE);
-            findViewById(R.id.price).setVisibility(View.GONE);
-            findViewById(R.id.checkout).setVisibility(View.GONE);
-        }*/
     }
 
     @Override
@@ -219,6 +176,10 @@ public class ShoppingCartActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
+    /**
+     * Go to checkout activity
+     * @param view
+     */
     public void checkout(View view) {
         if(conn.isLogged()) {
             Intent intent = new Intent(this, CheckoutActivity.class);
@@ -229,6 +190,9 @@ public class ShoppingCartActivity extends ActionBarActivity {
         }
     }
 
+    /**
+     * Adapter to fill list view with items
+     */
     private class MyListAdapter extends ArrayAdapter<ShoppingItem> {
 
         public MyListAdapter() {
@@ -295,7 +259,7 @@ public class ShoppingCartActivity extends ActionBarActivity {
     }
 
     /**
-     * Search database with results by keyword
+     * Loads shopping cart
      */
     class LoadShoppingCart extends AsyncTask<String, String, String> {
 
@@ -365,6 +329,8 @@ public class ShoppingCartActivity extends ActionBarActivity {
                         if(c.getString(TAG_ACTIVE).equals("t")) {
                             isActive = true;
                         }
+
+                        // Adds tours to shopping cart item
                         shoppingCart.add(new ShoppingItem(new Tour(c.getString(TAG_NAME),
                                 Price.getDouble(c.getString(TAG_PRICE)),
                                 new ArrayList<>(Arrays.asList(bitmap)),
@@ -423,6 +389,9 @@ public class ShoppingCartActivity extends ActionBarActivity {
 
     }
 
+    /**
+     * Class to remove shopping cart items from database
+     */
     class RemoveFromShoppingCart extends AsyncTask<String, String, String> {
 
         @Override
