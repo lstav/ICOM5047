@@ -356,7 +356,7 @@ public class ShoppingCartActivity extends ActionBarActivity {
                     for (int i=0; i<backup.length(); i++) {
                         JSONObject c = backup.getJSONObject(i);
                         try {
-                            bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "img1.jpg").getContent());
+                            bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "1.jpg").getContent());
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

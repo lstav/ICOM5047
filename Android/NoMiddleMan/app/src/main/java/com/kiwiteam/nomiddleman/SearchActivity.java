@@ -80,6 +80,7 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
 
     private String categorySelectedSpinner;
 
+    private int success = 0;
 
     private Intent intent;
 
@@ -474,10 +475,19 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
                 for (int i=0; i<backup.length(); i++) {
                     JSONObject c = backup.getJSONObject(i);
                     try {
-                        bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "img1.jpg").getContent());
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inJustDecodeBounds = true;
+                        // Calculate inSampleSize
+                        options.inSampleSize = 3;
+                        // Decode bitmap with inSampleSize set
+                        options.inJustDecodeBounds = false;
+
+                        bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "1.jpg").getContent(), null, options);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+
+                    success = jObj.getInt("success");
 
                     tourInfo.add(new Tour(c.getString(TAG_NAME), Price.getDouble(c.getString(TAG_PRICE)), new ArrayList<>(Arrays.asList(bitmap)), Integer.parseInt(c.getString(TAG_KEY)), Double.parseDouble(c.getString(TAG_EXTREMENESS))));
                 }
@@ -493,6 +503,11 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    if(success == 0) {
+                        findViewById(R.id.result).setVisibility(View.VISIBLE);
+                    } else {
+                        findViewById(R.id.result).setVisibility(View.GONE);
+                    }
                     ArrayAdapter<Tour> adapter = new MyListAdapter();
 
                     listView = (ListView) findViewById(R.id.listView);
@@ -566,13 +581,22 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
                 for (int i=0; i<backup.length(); i++) {
                     JSONObject c = backup.getJSONObject(i);
                     try {
-                        bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "img1.jpg").getContent());
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inJustDecodeBounds = true;
+                        // Calculate inSampleSize
+                        options.inSampleSize = 3;
+                        // Decode bitmap with inSampleSize set
+                        options.inJustDecodeBounds = false;
+
+                        bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "1.jpg").getContent(), null, options);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
 
                     tourInfo.add(new Tour(c.getString(TAG_NAME), Price.getDouble(c.getString(TAG_PRICE)), new ArrayList<>(Arrays.asList(bitmap)), Integer.parseInt(c.getString(TAG_KEY)), Double.parseDouble(c.getString(TAG_EXTREMENESS))));
                 }
+
+                success = jObj.getInt("success");
 
                 backupCat = jObj.getJSONArray("categories");
 
@@ -599,6 +623,11 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    if(success == 0) {
+                        findViewById(R.id.result).setVisibility(View.VISIBLE);
+                    } else {
+                        findViewById(R.id.result).setVisibility(View.GONE);
+                    }
                     ArrayAdapter<Tour> adapter = new MyListAdapter();
 
                     cSpinner = (Spinner) findViewById(R.id.categorySpinner);
@@ -692,13 +721,22 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
                 for (int i=0; i<backup.length(); i++) {
                     JSONObject c = backup.getJSONObject(i);
                     try {
-                        bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "img1.jpg").getContent());
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inJustDecodeBounds = true;
+                        // Calculate inSampleSize
+                        options.inSampleSize = 3;
+                        // Decode bitmap with inSampleSize set
+                        options.inJustDecodeBounds = false;
+
+                        bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "1.jpg").getContent(), null, options);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
 
                     tourInfo.add(new Tour(c.getString(TAG_NAME), Price.getDouble(c.getString(TAG_PRICE)), new ArrayList<>(Arrays.asList(bitmap)), Integer.parseInt(c.getString(TAG_KEY)), Double.parseDouble(c.getString(TAG_EXTREMENESS))));
                 }
+
+                success = jObj.getInt("success");
 
                 backupCat = jObj.getJSONArray("categories");
 
@@ -724,6 +762,11 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    if(success == 0) {
+                        findViewById(R.id.result).setVisibility(View.VISIBLE);
+                    } else {
+                        findViewById(R.id.result).setVisibility(View.GONE);
+                    }
                     ArrayAdapter<Tour> adapter = new MyListAdapter();
 
                     cSpinner = (Spinner) findViewById(R.id.categorySpinner);

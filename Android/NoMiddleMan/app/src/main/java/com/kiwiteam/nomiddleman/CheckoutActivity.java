@@ -406,7 +406,14 @@ public class CheckoutActivity extends ActionBarActivity {
                     for (int i=0; i<backup.length(); i++) {
                         JSONObject c = backup.getJSONObject(i);
                         try {
-                            bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "img1.jpg").getContent());
+                            BitmapFactory.Options options = new BitmapFactory.Options();
+                            options.inJustDecodeBounds = true;
+                            // Calculate inSampleSize
+                            options.inSampleSize = 3;
+                            // Decode bitmap with inSampleSize set
+                            options.inJustDecodeBounds = false;
+
+                            bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "1.jpg").getContent(), null, options);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

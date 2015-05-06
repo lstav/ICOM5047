@@ -115,21 +115,20 @@
     <string name="at_least_18">- I am at least 18 years old</string>
 
     <string name="lost_password">Forgot Password?</string>
-    <string name="title_activity_reset_request">ResetRequestActivity</string>
+    <string name="title_activity_reset_request">Reset Password</string>
 
     <string name="reset_message">Please enter the email you use to buy on No Middle Man.</string>
-    <string name="title_activity_locations">LocationsActivity</string>
 
-    <string name="hello_world">Hello world!</string>
     <string name="browse_locations">Browse Locations</string>
     <string name="country">Country</string>
     <string name="state">State-Province</string>
     <string name="city">City</string>
     <string name="search">Search</string>
-    <string name="title_activity_large_group">LargeGroupActivity</string>
+    <string name="title_activity_large_group">Large Groups</string>
     <string name="tour_sessions_not_available">Tour Sessions not available.</string>
     <string name="large_group">Large Group</string>
     <string name="refine">Refine</string>
+    <string name="title_activity_locations">Locations</string>
 
     <string name="loading">Loading. Please  Wait...</string>
     <string name="not_change_password">Could not change password</string>
@@ -139,6 +138,8 @@
     <string name="not_register">Could not register</string>
 
     <string name="not_rate">Could not rate</string>
+
+    <string name="imageview_description">Image Thumbnail</string>
 
 
 </resources>

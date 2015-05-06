@@ -5,24 +5,35 @@ import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.Rating;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.NavUtils;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -46,12 +57,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static com.kiwiteam.nomiddleman.ImageDetailFragment.newInstance;
 
 
 public class TourPageActivity extends ActionBarActivity implements AdapterView.OnItemSelectedListener {
@@ -74,10 +90,14 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
     private List<RatingClass> ratings = new ArrayList<>();
     private ImageView picture;
 
+    private ImagePagerAdapter imageAdapter;
+    private ViewPager imagePager;
+
     private ArrayList<RatingClass> tourRatingsA = new ArrayList<>();
     private ArrayList<TourSession> tourSessionsA = new ArrayList<>();
 
     private Bitmap bitmap;
+    private ArrayList<Bitmap> pictures = new ArrayList<>();
 
     private JSONArray tourResponse;
     private JSONArray tourSessions;
@@ -297,22 +317,38 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
     }
 
     public void openYoutube(View view) {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(tour.getYoutube()));
+        String youtube = tour.getYoutube();
+        if(!youtube.contains("http://")) {
+            youtube = "http://" + youtube;
+        }
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(youtube));
         startActivity(browserIntent);
     }
 
     public void openFacebook(View view) {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(tour.getFacebook()));
+        String facebook = tour.getFacebook();
+        if(!facebook.contains("http://")) {
+            facebook = "http://" + facebook;
+        }
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(facebook));
         startActivity(browserIntent);
     }
 
     public void openInstagram(View view) {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(tour.getInstagram()));
+        String insta = tour.getInstagram();
+        if(!insta.contains("http://")) {
+            insta = "http://" + insta;
+        }
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(insta));
         startActivity(browserIntent);
     }
 
     public void openTwitter(View view) {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(tour.getTwitter()));
+        String twitter = tour.getTwitter();
+        if(!twitter.contains("http://")) {
+            twitter = "http://" + twitter;
+        }
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(twitter));
         startActivity(browserIntent);
     }
 
@@ -354,6 +390,16 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
 
         }
     }
+
+    public static int getResponseCode(String urlString) throws MalformedURLException, IOException {
+        URL u = new URL(urlString);
+        HttpURLConnection huc =  (HttpURLConnection)  u.openConnection();
+        huc.setRequestMethod("GET");
+        huc.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2 (.NET CLR 3.5.30729)");
+        huc.connect();
+        return huc.getResponseCode();
+    }
+
 
     class GetTourPage extends AsyncTask<String, String, String> {
         protected void onPreExecute() {
@@ -421,7 +467,21 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                 for (int i = 0; i < tourResponse.length(); i++) {
                     JSONObject c = tourResponse.getJSONObject(i);
                     try {
-                        bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "img1.jpg").getContent());
+                        int j = 1;
+                        while(getResponseCode(c.getString(TAG_PHOTO).trim() + j + ".jpg") != 404) {
+                            String url = c.getString(TAG_PHOTO).trim() + j + ".jpg";
+
+                            BitmapFactory.Options options = new BitmapFactory.Options();
+                            options.inJustDecodeBounds = true;
+                            // Calculate inSampleSize
+                            options.inSampleSize = 5;
+                            // Decode bitmap with inSampleSize set
+                            options.inJustDecodeBounds = false;
+
+                            bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + j + ".jpg").getContent(), null, options);
+                            pictures.add(bitmap);
+                            j++;
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -447,7 +507,8 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                     }
 
                     tour = new TourClass(c.getInt(TAG_KEY), c.getString(TAG_NAME), c.getString(TAG_DESC), c.getString(TAG_FACEBOOK), c.getString(TAG_YOUTUBE),
-                            c.getString(TAG_INSTAGRAM), c.getString(TAG_TWITTER), Price.getDouble(c.getString(TAG_PRICE)), c.getDouble(TAG_EXTREMENESS), new ArrayList<>(Arrays.asList(bitmap)),
+                            c.getString(TAG_INSTAGRAM), c.getString(TAG_TWITTER), Price.getDouble(c.getString(TAG_PRICE)),
+                            c.getDouble(TAG_EXTREMENESS), pictures,
                             c.getString(TAG_ADDRESS), c.getString(TAG_EMAIL), c.getString(TAG_GNAME), c.getString(TAG_LICENSE), c.getString(TAG_COMPANY),
                             c.getString(TAG_TELEPHONE), c.getDouble(TAG_AVGRATE), c.getInt(TAG_RATECOUNT), tourRatingsA, tourSessionsA);
 
@@ -467,6 +528,25 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                 public void run() {
                     ratings = tourRatingsA;
 
+                    System.out.println("youtube link " + tour.getYoutube());
+
+                    if(!tour.getFacebook().contains("facebook")) {
+                        findViewById(R.id.facebook).setVisibility(View.GONE);
+                    } else {
+                        findViewById(R.id.facebook).setVisibility(View.VISIBLE);
+                    }
+
+                    if(!tour.getInstagram().contains("instagram")) {
+                        findViewById(R.id.instagram).setVisibility(View.GONE);
+                    } else {
+                        findViewById(R.id.instagram).setVisibility(View.VISIBLE);
+                    }
+
+                    if(!tour.getTwitter().contains("twitter")) {
+                        findViewById(R.id.twitter).setVisibility(View.GONE);
+                    } else {
+                        findViewById(R.id.twitter).setVisibility(View.VISIBLE);
+                    }
                     TextView tName = (TextView) findViewById(R.id.tourName);
                     tName.setText(tour.getTourName());
 
@@ -486,8 +566,13 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                     TextView totalReviews = (TextView) findViewById(R.id.totalReviews);
                     totalReviews.setText(String.format("%.1f", tour.getAverageRating()) + " of 5.0");
 
-                    ImageView tPicture = (ImageView) findViewById(R.id.tourPicture);
-                    tPicture.setImageBitmap(tour.getTourPictures().get(0));
+                    imageAdapter = new ImagePagerAdapter(getSupportFragmentManager(), 1);
+                    imagePager = (ViewPager) findViewById(R.id.viewPager);
+                    imagePager.setAdapter(imageAdapter);
+
+                    // Tour picture
+                    /*ImageView tPicture = (ImageView) findViewById(R.id.tourPicture);
+                    tPicture.setImageBitmap(tour.getTourPictures().get(0));*/
 
                     TextView tPrice = (TextView) findViewById(R.id.tourPrice);
                     tPrice.setText("$" + String.format("%.2f", tour.getTourPrice()));
@@ -620,4 +705,24 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
             });
         }
     }
+
+    public class ImagePagerAdapter extends FragmentStatePagerAdapter {
+        private final int mSize;
+
+        public ImagePagerAdapter(FragmentManager fm, int size) {
+            super(fm);
+            mSize = size;
+        }
+
+        @Override
+        public int getCount() {
+            return mSize;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return newInstance(pictures.get(0));
+        }
+    }
+
 }

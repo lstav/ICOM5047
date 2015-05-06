@@ -114,17 +114,20 @@
     <string name="at_least_18">- Tengo al menos 18 años</string>
 
     <string name="lost_password">¿Olvidó su Contraseña?</string>
-    <string name="title_activity_reset_request">ResetRequestActivity</string>
+    <string name="title_activity_reset_request">Recuperar Contraseña</string>
 
     <string name="reset_message">Por favor escriba el correo electronico que utiliza para comprar en No Middle Man.</string>
+
     <string name="browse_locations">Busca Lugares</string>
     <string name="country">Pais</string>
     <string name="state">Estado-Provincia</string>
     <string name="city">Ciudad</string>
     <string name="search">Busqueda</string>
+    <string name="title_activity_large_group">Grupos Grandes</string>
     <string name="tour_sessions_not_available">Session de Tour no está disponible.</string>
     <string name="large_group">Grupo Grande</string>
     <string name="refine">Refinar</string>
+    <string name="title_activity_locations">Localizaciones</string>
 
     <string name="loading">Cargando. Por favor espera...</string>
     <string name="not_change_password">No se pudo cambiar la contraseña</string>
@@ -134,6 +137,8 @@
     <string name="not_register">No se pudo registrar</string>
 
     <string name="not_rate">No se pudo evaluar</string>
+
+    <string name="imageview_description">Imagen</string>
 
 
 </resources>
