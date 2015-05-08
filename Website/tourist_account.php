@@ -8,7 +8,10 @@ function test_input($data)
    $data = htmlspecialchars($data);
    return $data;
 }
+include_once("dbConnect.php");
 session_start();
+$uorders = '';
+$porders = '';
 if($_SESSION['uemail'])
 {
 	    $uemail = $_SESSION['uemail'];
@@ -19,7 +22,6 @@ if($_SESSION['uemail'])
 		$errorMsg = '';
 		if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POST['new-ulname'])||!empty($_POST['new-upass']))
 		{
-			include_once("dbConnect.php");
 			if(!empty($_POST['new-uemail']))
 			{
 				$newuemail =  test_input(strip_tags($_POST['new-uemail']));
@@ -29,7 +31,7 @@ if($_SESSION['uemail'])
 				}
 				else
 				{
-					$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"tEmail\" = '$newuemail' WHERE \"tEmail\" = '$uemail'");
+					$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"t_Email\" = '$newuemail' WHERE \"t_Email\" = '$uemail'");
 					$uemail = $_SESSION['uemail'] = $newuemail;
 				}
 			}
@@ -43,7 +45,7 @@ if($_SESSION['uemail'])
 				}
 				else
 				{
-					$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"t_FName\" = '$newufname' WHERE \"tEmail\" = '$uemail' AND \"t_FName\" = '$ufname'");
+					$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"t_FName\" = '$newufname' WHERE \"t_Email\" = '$uemail' AND \"t_FName\" = '$ufname'");
 					$ufname = $_SESSION['ufname'] = $newufname;
 				}
 			}
@@ -56,17 +58,17 @@ if($_SESSION['uemail'])
 				}
 				else
 				{
-					$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"t_LName\" = '$newulname' WHERE \"tEmail\" = '$uemail' AND \"t_LName\" = '$ulname'");
+					$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"t_LName\" = '$newulname' WHERE \"t_Email\" = '$uemail' AND \"t_LName\" = '$ulname'");
 					$ulname = $_SESSION['ulname'] = $newulemail;
 				}
 			}
 			if(!empty($_POST['new-upass']))
 			{
-				$oldupass = md5(strip_tags($_POST['old-upass']));
-				$newupass = md5(strip_tags($_POST['new-upass']));
+				$oldupass = strip_tags($_POST['old-upass']);
+				$newupass = strip_tags($_POST['new-upass']);
 				if($oldupass = $upass)
 				{
-					$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"tPassword\" = '$newupass' WHERE \"tEmail\" = '$uemail' AND \"tPassword\" = '$upass'");
+					$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"t_password\" = '$newupass' WHERE \"t_Email\" = '$uemail' AND \"t_password\" = '$upass'");
 				}
 				else
 				{
@@ -100,30 +102,84 @@ if($_SESSION['uemail'])
 										<input id="inputEmail" name = "new-uemail" placeholder="'.$uemail.'" type="text">
 									</div>
 								</div>';
-			$tid = 1;
-			$tcity = 'Arecibo';
-			$tstate = 'PR';
-			$tname = 'Arecibo Skydiving';
-			$tdescription = 'Jump to the skies and marvel at the beautiful Puerto Rican view.';
-			$tprice = '$250.00';
-			$orders .= '<article class="search-result row">
-			<div class="col-xs-12 col-sm-12 col-md-3">
-				<a title="Lorem ipsum" class="thumbnail"><img src="images/'.$tid.'/1.jpg" alt="Lorem ipsum"></a>
-			</div>
-			<div class="col-xs-12 col-sm-12 col-md-2">
-				<ul class="meta-search">
-					<li><span><h7>'.$tcity.'</h7></span></li>
-					<li> <span>'.$tstate.'</span></li>
-				</ul>
-			</div>
-			<div class="col-xs-12 col-sm-12 col-md-7 excerpet">
-				<h3><a title="">'.$tname.'</a></h3>
-				<p>'.$tdescription.'</p>	
-				<h5>'.$tprice.'</h5>
-				<a style="" class="btn btn-default" href="write_review.php?tid='.$tid.'" type="button">Write Review <span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>			
-			</div>
-			<span class="clearfix borda"></span>
-		</article>';
+			$uquery = pg_query($dbconn, "SELECT \"tour_key\", \"City\", \"tour_Desc\", \"State-Province\", \"ts_key\", \"tour_Name\", \"extremeness\" , \"Price\", \"s_Time\",\"Payed\", \"s_isActive\",
+		(\"Price\"*\"Payed\") as total
+		FROM \"Upcoming Tours\" NATURAL JOIN \"Location\"
+		WHERE \"t_key\"=$uid");
+			$ucount = pg_num_rows($uquery);
+			while($row = pg_fetch_array($uquery))
+			{
+			  $tid = $row['tour_key'];;
+			  $tcity = $row['City'];
+			  $tstate = $row['State-Province'];
+			  $tname = $row['tour_Name'];
+			  $tskey = $row['ts_key'];
+			  $rquery = pg_query($dbconn, "SELECT * FROM \"Review\" WHERE \"ts_key\"='$tskey' AND \"t_key\"='$uid'");
+			  $rbutton = '';
+			  if(pg_num_rows($rquery) == 0)
+			  {
+				   $rbutton= '<a style="" class="btn btn-default" href="write_review.php?tid='.$tid.'&tskey='.$tskey.'" type="button">Write Review <span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>';
+			  }
+			  $tdescription = $row['tour_Desc'];
+			  $tprice = $row['total'];
+			  $uorders .= '<article class="search-result row">
+			  <div class="col-xs-12 col-sm-12 col-md-3">
+				  <a title="Lorem ipsum" class="thumbnail" href="tour_page.php?tid='.$tid.'"><img src="images/'.$tid.'/1.jpg" alt="Lorem ipsum"></a>
+			  </div>
+			  <div class="col-xs-12 col-sm-12 col-md-2">
+				  <ul class="meta-search">
+					  <li><span><h7>'.$tcity.'</h7></span></li>
+					  <li> <span>'.$tstate.'</span></li>
+				  </ul>
+			  </div>
+			  <div class="col-xs-12 col-sm-12 col-md-7 excerpet">
+				  <h3><a title="" href="tour_page.php?tid='.$tid.'">'.$tname.'</a></h3>
+				  <p>'.$tdescription.'</p>	
+				  <h5>'.$tprice.'</h5>
+				  '.$rbutton.'		
+			  </div>
+			  <span class="clearfix borda"></span>
+		  </article>';
+			}
+			$pquery = pg_query($dbconn, "SELECT \"tour_key\", \"City\", \"State-Province\", \"tour_Desc\", \"ts_key\", \"tour_Name\", \"extremeness\" , \"Price\", \"s_Time\",\"Payed\", \"s_isActive\",
+		(\"Price\"*\"Payed\") as total
+		FROM \"Past Tour\" NATURAL JOIN \"Location\"
+		Where \"t_key\"=$uid");
+			$pcount = pg_num_rows($pquery);
+			while($row = pg_fetch_array($pquery))
+			{
+			  $rbutton = '';
+			  $tid = $row['tour_key'];
+			  $tskey = $row['ts_key'];
+			  $tcity = $row['City'];
+			  $tstate = $row['State-Province'];
+			  $tname = $row['tour_Name'];
+			  $tdescription = $row['tour_Desc'];
+			  $tprice = $row['Price'];
+			  $rquery = pg_query($dbconn, "SELECT * FROM \"Review\" WHERE \"ts_key\"='$tskey' AND \"t_key\"='$tid'");
+			  if(pg_num_rows($dbconn) == 0)
+			  {
+				   $rbutton= '<a style="" class="btn btn-default" href="write_review.php?tid='.$uid.'&tskey='.$tskey.'" type="button">Write Review <span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>';
+			  }
+			  $porders .= '<article class="search-result row">
+			  <div class="col-xs-12 col-sm-12 col-md-3">
+				  <a title="Lorem ipsum" class="thumbnail"><img src="images/'.$tid.'/1.jpg" alt="Lorem ipsum"></a>
+			  </div>
+			  <div class="col-xs-12 col-sm-12 col-md-2">
+				  <ul class="meta-search">
+					  <li><span><h7>'.$tcity.'</h7></span></li>
+					  <li> <span>'.$tstate.'</span></li>
+				  </ul>
+			  </div>
+			  <div class="col-xs-12 col-sm-12 col-md-7 excerpet">
+				  <h3><a title="">'.$tname.'</a></h3>
+				  <p>'.$tdescription.'</p>	
+				  <h5>'.$tprice.'</h5>
+				  '.$rbutton.'	
+			  </div>
+			  <span class="clearfix borda"></span>
+		  </article>';
+			}
 }
 ?>
 
@@ -148,7 +204,8 @@ $(document).ready(function(){
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
       <li role="presentation" class="active"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" aria-expanded="true">Profile</a></li>
-      <li role="presentation" class=""><a href="#tour-orders" aria-controls="tour-orders" role="tab" data-toggle="tab" aria-expanded="false">Tour Orders</a></li>
+      <li role="presentation" class=""><a href="#upcoming-orders" aria-controls="upcoming-orders" role="tab" data-toggle="tab" aria-expanded="false">Upcoming Tours</a></li>
+      <li role="presentation" class=""><a href="#past-orders" aria-controls="past-orders" role="tab" data-toggle="tab" aria-expanded="false">Past Tours</a></li>
     </ul>
     
     <!-- Tab panes -->
@@ -181,9 +238,14 @@ $(document).ready(function(){
           </form>
         </div>
       </div>
-      <div role="tabpanel" class="tab-pane" id="tour-orders">
+      <div role="tabpanel" class="tab-pane" id="upcoming-orders">
         <div style="margin-top: 10px;" class="area">
-          <?php echo $orders; ?>
+          <?php echo $uorders; ?>
+        </div>
+      </div>
+      <div role="tabpanel" class="tab-pane" id="past-orders">
+        <div style="margin-top: 10px;" class="area">
+          <?php echo $porders; ?>
         </div>
       </div>
     </div>

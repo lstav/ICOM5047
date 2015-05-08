@@ -1,24 +1,39 @@
 <?php
 session_start();
 include_once("dbConnect.php");
+$item = '';
 if(!isset($_SESSION['uid']))
 {
 	header("Location: login.php");
 }
-if(isset($_GET['tid']) && isset($_GET['tdatetime']))
+if(isset($_POST['tid']) && isset($_POST['tdatetime']))
 {
-	$tid = (int)$_GET['tid'];
-	$datetime = $_GET['tdatetime'];
+	$tid = (int)$_POST['tid'];
+	$tskey = (int)$_POST['tskey'];
+	$datetime = $_POST['tdatetime'];
+	$quantity = $_POST['quantity'];
 	$uid = $_SESSION['uid'];
-	$query = pg_query($dbconn, "INSERT INTO \"Cart\" (tour_key, t_key, reserved_time) VALUES($tid, $uid, '$datetime')");
-	$tquery = pg_query($dbconn, "SELECT * FROM \"Tour\" WHERE \"tour_key\"= '$tid'");
+	$equery = pg_query($dbconn, "SELECT * FROM \"Participants\" WHERE \"t_key\" = '$uid' AND \"ts_key\"='$tskey'");
+	$ecount = pg_num_rows($equery);
+	if($ecount>0)
+	{
+		$row = pg_fetch_array($equery);
+			$quantity = $quantity + $row['p_quantity'];
+			$query = pg_query($dbconn, "UPDATE \"Participants\" SET \"p_quantity\" = $quantity, \"p_isActive\" = True WHERE \"t_key\" = $uid and \"ts_key\" = $tskey");
+	}
+	else
+	{
+		$result = pg_query($dbconn, "INSERT INTO \"Participants\" (\"t_key\",\"ts_key\",\"p_quantity\") Values($uid,$tskey,$quantity)");
+	}
+
+	$tquery = pg_query($dbconn, "SELECT * FROM \"Tour\" NATURAL JOIN \"Location\" WHERE \"tour_key\"= '$tid'");
 	$row = pg_fetch_array($tquery);
 	$tname = $row['tour_Name'];
 	$tdescription = $row['tour_Desc'];
 	$tid = $row['tour_key'];
 	$tprice = $row['Price'];
-	$tcity = $row['city'];
-	$tstate = $row['stateprovidence'];
+	$tcity = $row['City'];
+	$tstate = $row['State-Province'];
 	$item = '<article class="search-result row">
 			<div class="col-xs-12 col-sm-12 col-md-3">
 				<a title="Lorem ipsum" class="thumbnail" href="tour_page.php?tid='.$tid.'"><img src="images/'.$tid.'/1.jpg" alt="Lorem ipsum"></a>
@@ -34,6 +49,7 @@ if(isset($_GET['tid']) && isset($_GET['tdatetime']))
 				<p>'.$tdescription.'</p>	
 				<h4><strong>Reserved time: '.$datetime.'</strong></h4>					
                 <h4>Price: '.$tprice.'</h4>
+				<h4>Party of: '.$quantity.'</h4>
 			</div>
 			<span class="clearfix borda"></span>
 		</article>';

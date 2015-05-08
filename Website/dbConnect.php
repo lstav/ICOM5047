@@ -1,1 +1,1 @@
-<?php $dbconn = pg_connect("host=ec2-54-163-228-58.compute-1.amazonaws.com port=5432 dbname=d1euoqskdhvaef user=ujpdfamgiytpnl password=LMYPpiuM4-WEFYqYRPYvEeFmpg") or die('Could not connect'); ?>
+<?php $dbconn = pg_connect("host=136.145.59.187 port=5432 dbname=postgres user=postgres password=iDahb5E sslmode=require") or die('Could not connect'); ?>

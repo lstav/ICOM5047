@@ -9,21 +9,23 @@
 session_start();
 include_once("dbConnect.php");
 $errorMsg = "";
-if($_POST['uemail'])
+$lerrorMsg = "";
+$uemail = '';
+if(!empty($_POST['uemail'])&&!empty($_POST['password']))
 {
 	$uemail = strip_tags($_POST["uemail"]);
-	$paswd = md5(strip_tags($_POST["password"]));
-	$query = pg_query($dbconn, "SELECT * FROM \"Tourist\" WHERE \"tEmail\" = '$uemail' AND \"tPassword\" = '$paswd'");
+	$paswd = strip_tags($_POST["password"]);
+	$query = pg_query($dbconn, "SELECT * FROM \"Tourist\" WHERE \"t_Email\" = '$uemail' AND \"t_password\" = '$paswd'");
 	$count = pg_num_rows($query);
 	
 	if($count > 0)
 	{
 		$row = pg_fetch_array($query);
-		$_SESSION['uemail'] = $row['tEmail'];
+		$_SESSION['uemail'] = $row['t_Email'];
 		$_SESSION['uid'] = $row['t_key'];
 		$_SESSION['ufname'] = $row['t_FName'];
 		$_SESSION['ulname'] = $row['t_LName'];
-		$_SESSION['upass'] = $row['tPassword'];
+		$_SESSION['upass'] = $row['t_password'];
 		$_SESSION['isadmin'] = $row['isAdmin'];
 		header("Location: index.php");
 	}
@@ -33,14 +35,16 @@ if($_POST['uemail'])
 		<br /> Please try again. </h2>";
 	}
 }
-else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POST['new-ulname'])||!empty($_POST['new-upass']))
+else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POST['new-ulname'])||!empty($_POST['new-upass'])||isset($_POST['terms']))
 {
-	if(!empty($_POST['new-uemail'])&&!empty($_POST['new-ufname'])&&!empty($_POST['new-ulname'])&&!empty($_POST['new-upass']))
+	if(!empty($_POST['new-uemail'])&&!empty($_POST['new-ufname'])&&!empty($_POST['new-ulname'])&&!empty($_POST['new-upass'])&&isset($_POST['terms'])&&isset($_POST['address'])&&isset($_POST['phone']))
 	{
 				$newuemail =  $_POST['new-uemail'];
 				$newufname = $_POST["new-ufname"];
 				$newulname = $_POST["new-ulname"];
-				$newupass = md5($_POST['new-upass']);
+				$newupass = $_POST['new-upass'];
+				$address = $_POST['address'];
+				$phone = $_POST['phone'];
 				if (!filter_var($newuemail, FILTER_VALIDATE_EMAIL)) 
 				{
   					$errorMsg .= "<a style=\"color:red\">Invalid email format</a><br>"; 
@@ -49,18 +53,33 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
 				{
 				  $errorMsg .= "<a style=\"color:red\">Only letters and white space in name are allowed</a>"; 
 				}
+				else if (!preg_match("/[0-9]/",$phone)) 
+				{
+				  $errorMsg .= "<a style=\"color:red\">Only numbers in phone are allowed</a>"; 
+				}
 				else
 				{
 					$uemail = $_SESSION['uemail'] = $newuemail;
 					$ufname = $_SESSION['ufname'] = $newufname;
 					$ulname = $_SESSION['ulname'] = $newulname;
 					$upass = $_SESSION['upass'] = $newupass;
-					$query = pg_query($dbconn, "INSERT INTO \"Tourist\" (\"tEmail\", \"t_FName\", \"t_LName\", \"isAdmin\", \"isActive\", \"isSuspended\", \"tPassword\") VALUES('$uemail', '$ufname', '$ulname', FALSE, TRUE, FALSE, '$upass')");
-					$query = pg_query($dbconn, "SELECT 't_key' FROM \"Tourist\"");
-					$_SESSION['uid'] = pg_num_rows($query);
-					header("Location: index.php");
+					$query = pg_query($dbconn, "INSERT INTO \"Tourist\" (\"t_Email\", \"t_FName\", \"t_LName\", \"isAdmin\", \"t_isActive\", \"t_isSuspended\", \"t_password\", \"t_telephone\", \"t_Address\") VALUES('$uemail', '$ufname', '$ulname', FALSE, TRUE, FALSE, '$upass', '$phone', '$address') RETURNING \"t_key\"");
+					if($query)
+					{
+						$row = pg_fetch_array($query);
+						$_SESSION['uid'] = $row['t_key'];
+						header("Location: index.php");
+					}
+					else
+					{
+						$errorMsg = "Could not create account!";
+					}
 					
 				}
+	}
+	else if(!isset($_POST['terms']))
+	{
+		$errorMsg = "Please agree to Terms and Services";
 	}
 	else
 	{
@@ -81,6 +100,7 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
                     <form action = "login.php" method = "post" enctype ="multipart/form-data" class="form-horizontal">
                         <div class="heading">
                             <h4 class="form-heading">Sign In</h4>
+                           <div><font color="red"><?php echo $lerrorMsg; ?></font></div>
                         </div>
 
                         <div class="control-group">
@@ -119,7 +139,7 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
                     <form class="form-horizontal" method = "post" action = "login.php">
                         <div class="heading">
                             <h4 class="form-heading">Sign Up</h4>
-                            <?php echo $errorMsg;?>
+                            <div><font color="red"><?php echo $errorMsg; ?></font></div>
                         </div>
 
                         <div class="control-group">
@@ -155,11 +175,24 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
                                 <input id="inputPassword" name = "new-upass" placeholder="Min. 8 Characters" type="password">
                             </div>
                         </div>
+						<div class="control-group">
+                            <label class="control-label" for="inputEmail">Address</label>
 
+                            <div class="controls">
+                                <input id="inputEmail" name = "address" placeholder="Carr 2.3" type="text">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="inputEmail">Phone </label>
+
+                            <div class="controls">
+                                <input id="inputEmail" maxlength="10" name = "phone" placeholder="787123456" type="text">
+                            </div>
+                        </div>
                         <div class="control-group">
                             <div class="controls">
-                                <label class="checkbox"><input type="checkbox">
-                                I agree all your <a href="#">Terms of
+                                <label class="checkbox"><input type="checkbox" name = "terms" value = 'value1'>
+                                I agree all your <a href="http://kiwiteam.ece.uprm.edu/NoMiddleMan/Terms%20and%20Conditions">Terms of
                                 Services</a></label> <button class="btn btn-success" type="submit">Sign
                                 Up</button> <!--<button class="btn" type="button">Help</button>-->
                             </div>

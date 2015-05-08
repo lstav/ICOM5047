@@ -1,4 +1,5 @@
 <meta name  = "viewport" content = "width=device-width, initial-scale = 1.0">
+<meta name="google-translate-customization" content="993752749e2de01b-7d6f33bf9857e970-gbcfdd1755745f9dd-2a"></meta>
 <title>My site</title>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 <link href="css/nmmstyles.css" rel="stylesheet">

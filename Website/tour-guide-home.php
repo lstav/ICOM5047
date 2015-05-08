@@ -1,6 +1,8 @@
 <?php
 session_start();
 include_once("dbConnect.php");
+$schedule = '';
+$tours = '';
 if($_SESSION['tgemail'])
 {
 	    $uemail = $_SESSION['tgemail'];
@@ -9,62 +11,55 @@ if($_SESSION['tgemail'])
 		$ulname = $_SESSION['tglname'];
 		$upass = $_SESSION['tgpass'];
 		$tgcompany = $_SESSION['tgcompany'];
+		$tgdesc = $_SESSION['tgdesc'];
 		$errorMsg = '';
 		
-		$squery = pg_query($dbconn, "SELECT * FROM \"Tour Availability\" NATURAL INNER JOIN \"Tour\" WHERE \"Company\"='$tgcompany'");
+		$squery = pg_query($dbconn, "SELECT \"tour_key\", \"t_FName\",\"t_LName\",\"p_quantity\",\"City\", \"tour_Desc\", \"State-Province\", \"ts_key\", \"tour_Name\", \"extremeness\" , \"Price\", \"s_Time\",\"Payed\", \"s_isActive\",
+		(\"Price\"*\"Payed\") as total
+		FROM \"Upcoming Tours\" NATURAL JOIN \"Location\" NATURAL JOIN \"Tourist\"
+		WHERE \"g_key\"=$uid ORDER BY \"s_Time\" ASC");
 	while($row = pg_fetch_array($squery))
 	{
 		$tname = $row['tour_Name'];
 		$tdescription = $row['tour_Desc'];
 		$tid = $row['tour_key'];
-		$tcity = $row['city'];
-		$tstate = $row['stateprovidence'];
-		$reserved_time = $row['reserved_time'];
-		$tavailable = $row['available'];
-		if($tavailable == "f")
-		{
-			$schedule .= '<article class="search-result row">
+		$quantity = $row['Payed'];
+		$name = $row['t_FName'].' '.$row['t_LName'];
+		$tcity = $row['City'];
+		$tstate = $row['State-Province'];
+		$reserved_time = date("F/d/Y g:i a" , strtotime(substr($row['s_Time'], 0, -3)));
+	    $schedule .= '<article class="search-result row">
 			<div class="col-xs-12 col-sm-12 col-md-3">
 				<a title="Lorem ipsum" class="thumbnail"><img src="images/'.$tid.'/1.jpg" alt="Lorem ipsum"></a>
 			</div>
-			<div class="col-xs-12 col-sm-12 col-md-2">
-				<ul class="meta-search">
-					<li><span><h7>'.$tcity.'</h7></span></li>
-					<li> <span>'.$tstate.'</span></li>
-				</ul>
-			</div>
 			<div class="col-xs-12 col-sm-12 col-md-7 excerpet">
 				<h3><a title="">'.$tname.'</a></h3>
-				<h4><strong>Reserved time: '.$reserved_time.'</strong></h4>					
+				<h5><strong>Reserved time: '.$reserved_time.'</strong></h5>	
+				<h5>'.$name.'\'s party of: '.$quantity.'</h5>				
 			</div>
 			<span class="clearfix borda"></span>
 		</article>';
-		}
 	}
 	
-	$tquery = pg_query($dbconn, "SELECT * FROM \"Tour\" WHERE \"Company\"='$tgcompany'");
+	$tquery = pg_query($dbconn, "SELECT * FROM \"Tour\" NATURAL JOIN \"Location\" WHERE \"g_key\"='$uid'");
 	while($row = pg_fetch_array($tquery))
 	{
 		$tname = $row['tour_Name'];
 		$tdescription = $row['tour_Desc'];
 		$tid = $row['tour_key'];
-		$tcity = $row['city'];
-		$tstate = $row['stateprovidence'];
+		$tcity = $row['City'];
+		$tstate = $row['State-Province'];
 		$tprice = $row['Price'];
 		
 		$tours .= '<article class="search-result row">
 			<div class="col-xs-12 col-sm-12 col-md-3">
-				<a title="Lorem ipsum" class="thumbnail"><img src="images/'.$tid.'/1.jpg" alt="Lorem ipsum"></a>
-			</div>
-			<div class="col-xs-12 col-sm-12 col-md-2">
-				<ul class="meta-search">
-					<li><span><h7>'.$tcity.'</h7></span></li>
-					<li> <span>'.$tstate.'</span></li>
-				</ul>
+				<a title="Lorem ipsum" class="thumbnail" href="guide_tour_page.php?tid='.$tid.'"><img src="images/'.$tid.'/1.jpg" alt="Lorem ipsum"></a>
 			</div>
 			<div class="col-xs-12 col-sm-12 col-md-7 excerpet">
-				<h3><a title="">'.$tname.'</a></h3>
+				<h3><a href="guide_tour_page.php?tid='.$tid.'">'.$tname.'</a></h3>
 				<p>'.$tdescription.'</p>	
+				<h7>'.$tcity.'</h7>
+				<h7>'.$tstate.'</h7>
 				<h5>'.$tprice.'</h5>
 				<a style="" class="btn btn-default" href="edit_tour.php?tid='.$tid.'" type="button">Edit <span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>			
 			</div>
@@ -101,12 +96,12 @@ if($_SESSION['tgemail'])
 <div class="container">
         <div class ="row">
           <div class="col-md-6">
-         	<img id="item-display" src="images/business/1.jpg" alt="" style="max-width:100%">   
+         	<img id="item-display" src="images/business/<?php echo $uid?>/1.jpg" alt="" style="max-width:100%">   
           </div>
           <div class="col-md-6">
             <div><h3><strong><?php echo $tgcompany;?></strong></h3></div>
             <br />
-            <div class="product-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pharetra congue commodo. Proin lacinia est at nulla scelerisque, commodo volutpat arcu egestas. Cras facilisis lectus ornare turpis varius, posuere ullamcorper felis sodales. Sed blandit magna nisl. Lorem ipsum dolor sit amet, consectetur adipisicing elit. <br /> <br />Voluptatem, exercitationem, suscipit, distinctio, qui sapiente aspernatur molestiae non corporis magni sit sequi iusto debitis delectus doloremque. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatem, exercitationem, suscipit, distinctio, qui sapiente aspernatur molestiae non corporis magni sit sequi iusto debitis delectus doloremque.</div>
+            <div class="product-desc"><?php echo $tgdesc;?></div>
           </div>
         </div>
       </div>
@@ -123,13 +118,12 @@ if($_SESSION['tgemail'])
 		<?php echo $schedule; ?>	
 	</section>
     <section class="col-xs-6 col-sm-3 col-md-6">
-    <hgroup class="mb20">
-    <a style="float:right" class="btn btn-success" href="add_tour.php" type="button">Add Tour <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a>	
+    <hgroup class="mb20">	
 		<h1>Available Tours</h1>   							
 	</hgroup>
 		<?php echo $tours;?>
 	</section>
+    <a style="float:right" class="btn btn-success" href="add_tour.php" type="button">Add Tour <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a>
 </div>
-
 </body>
 </html>

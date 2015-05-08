@@ -1,18 +1,16 @@
 <?php
-session_start();
-function test_input($data)
+if(!isset($_SESSION))
 {
-   $data = trim($data);
-   $data = stripslashes($data);
-   $data = htmlspecialchars($data);
-   return $data;
+	session_start();
 }
 include_once("dbConnect.php");
-if($_POST['tgemail'])
+$schedule = '';
+$errorMsg = '';
+if(isset($_POST['tgemail']))
 {
-	$tgemail = strip_tags($_POST["tgemail"]);
-	$tgpaswd = md5(strip_tags($_POST["tgpass"]));
-	$query = pg_query($dbconn, "SELECT * FROM \"Tour Guide\" WHERE \"g_Email\" = '$tgemail' AND \"g_Password\" = '$tgpaswd'");
+	$tgemail = $_POST["tgemail"];
+	$tgpaswd = $_POST["tgpass"];
+	$query = pg_query($dbconn, "SELECT * FROM \"Tour Guide\" WHERE \"g_Email\" = '$tgemail' AND \"g_password\" = '$tgpaswd'");
 	$count = pg_num_rows($query);
 	
 	if($count > 0)
@@ -22,14 +20,85 @@ if($_POST['tgemail'])
 		$_SESSION['tgid'] = $row['g_key'];
 		$_SESSION['tgfname'] = $row['g_FName'];
 		$_SESSION['tglname'] = $row['g_LName'];
-		$_SESSION['tgpass'] = $row['g_Password'];
+		$_SESSION['tgpass'] = $row['g_password'];
 		$_SESSION['tgcompany'] = $row['Company'];
+		$_SESSION['tgdesc'] = $row['g_desc'];
 		header("Location: tour-guide-home.php");
 	}
 	else
 	{
 		echo "<h2> Oops that email or password combination was incorrect.
 		<br /> Please try again. </h2>";
+	}
+}
+else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POST['new-ulname'])||!empty($_POST['new-upass'])||isset($_POST['terms']))
+{
+	if(!empty($_POST['new-uemail'])&&!empty($_POST['new-ufname'])&&!empty($_POST['new-ulname'])&&!empty($_POST['new-upass'])&&isset($_POST['terms']))
+	{
+				$newuemail =  $_POST['new-uemail'];
+				$newufname = $_POST["new-ufname"];
+				$newulname = $_POST["new-ulname"];
+				$newupass = $_POST['new-upass'];
+				$desc = $_POST['desc'];
+				$phone = $_POST['phone'];
+				$company = $_POST['company'];
+				$license = $_POST['license'];
+				if (!filter_var($newuemail, FILTER_VALIDATE_EMAIL)) 
+				{
+  					$errorMsg .= "<a style=\"color:red\">Invalid email format</a><br>"; 
+				}
+				else if (!preg_match("/^[a-zA-Z ]*$/",$newufname)&&!preg_match("/^[a-zA-Z ]*$/",$newulname)) 
+				{
+				  $errorMsg .= "<a style=\"color:red\">Only letters and white space in name are allowed</a>"; 
+				}
+				else if (!preg_match("/[0-9]/",$phone)) 
+				{
+				  $errorMsg .= "<a style=\"color:red\">Only numbers in phone are allowed</a>"; 
+				}
+				else
+				{
+					$uemail = $newuemail;
+					$ufname = $newufname;
+					$ulname = $newulname;
+					$upass = $newupass;
+					$query = pg_query($dbconn, "INSERT INTO \"Tour Guide\" (\"g_Email\", \"g_FName\", \"g_LName\", \"g_License\", \"Company\", \"g_isActive\", \"g_isSuspended\", \"g_password\", \"g_telephone\", \"g_desc\", \"g_BDate\") VALUES('$uemail', '$ufname', '$ulname', '$license','$company', FALSE, FALSE, '$upass', '$phone', '$desc', '1991-01-01') RETURNING \"g_key\"");
+					$row = ''; //This was weird scope thing you should investigate
+					if($query)
+					{
+						$row = pg_fetch_array($query);
+						$_SESSION['tgemail'] = $newuemail;
+						$_SESSION['tgid'] = $row['g_key'];
+						$_SESSION['tgfname'] = $newufname;
+						$_SESSION['tglname'] = $newulname;
+						$_SESSION['tgpass'] = $newupass;
+						$_SESSION['tgcompany'] = $company;
+						$_SESSION['tgdesc'] = $desc;
+						$uid = $row['g_key'];
+						if (!file_exists("images/business/".$uid)) {
+   							 mkdir("images/business/".$uid, 0777, true);
+						}
+					     $target_file = "images/business/".$uid."/1.jpg";
+						 $image_name = $_FILES["image"]["name"];
+				         $image_type = $_FILES["image"]["type"];
+				         $image_size = $_FILES["image"]["size"];
+				         $image_tmp_name = $_FILES['image']['tmp_name'];
+				         move_uploaded_file($_FILES["image"]["tmp_name"], $target_file);
+						 header("Location: tour-guide-home.php");
+					}
+					else
+					{
+						$errorMsg = "Could not create account!";
+					}
+					
+				}
+	}
+	else if(!isset($_POST['terms']))
+	{
+		$errorMsg = "Please agree to Terms and Services";
+	}
+	else
+	{
+		$errorMsg = "<a style=\"color:red\">Missing fields</a>";
 	}
 }
 
@@ -41,7 +110,10 @@ if($_POST['tgemail'])
 <?php include 'header.php';?>
 </head>
 <body>
-<div style="margin-left: 50px;" class="area">
+<div class="container">
+    <div class="row-fluid">
+<div class = "col-md-6">
+<div class="area">
   <form action = "guide_login.php" method = "post" enctype ="multipart/form-data" class="form-horizontal">
     <div class="heading">
       <h4 class="form-heading">Tour Guide Sign In</h4>
@@ -69,5 +141,92 @@ if($_POST['tgemail'])
     </div>
   </form>
 </div>
+</div>
+<div class="col-md-6">
+                <div class="area">
+                    <form class="form-horizontal" method = "post" action = "guide_login.php" enctype="multipart/form-data">
+                        <div class="heading">
+                            <h4 class="form-heading">Tour Guide Sign Up</h4>
+                            <div><font color="red"><?php echo $errorMsg; ?></font></div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="inputFirst">First
+                            Name</label>
+
+                            <div class="controls">
+                                <input id="inputFirst" name = "new-ufname" placeholder="E.g. Ashwin" type="text">
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="inputLast">Last
+                            Name</label>
+
+                            <div class="controls">
+                                <input id="inputLast" name = "new-ulname"placeholder="E.g. Hegde" type="text">
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="inputEmail">Email</label>
+
+                            <div class="controls">
+                                <input id="inputEmail" name = "new-uemail" placeholder="E.g. ashwinh@cybage.com" type="text">
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="inputPassword">Password</label>
+
+                            <div class="controls">
+                                <input id="inputPassword" name = "new-upass" placeholder="Min. 8 Characters" type="password">
+                            </div>
+                        </div>
+						<div class="control-group">
+            <label class="control-label" for="inputLast">Company
+              Description: </label>
+            <textarea id="inputLast" class="form-control" rows="5" name = "desc" placeholder="E.g. Fly away with us..." type="text"></textarea>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="inputEmail">Image:</label>
+            <div class="controls">
+              <input type="file" name= "image">
+            </div>
+          </div>
+                        <div class="control-group">
+                            <label class="control-label" for="inputEmail">Phone</label>
+
+                            <div class="controls">
+                                <input id="inputEmail" maxlength="10" name = "phone" placeholder="787123456" type="text">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="inputEmail">Company name:</label>
+
+                            <div class="controls">
+                                <input id="inputEmail" name = "company" placeholder="E.g. Surf School" type="text">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="inputEmail">License Number</label>
+
+                            <div class="controls">
+                                <input id="inputEmail" maxlength="10" name = "license" placeholder="123456789" type="text">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <div class="controls">
+                                <label class="checkbox"><input type="checkbox" name = "terms" value = 'value1'>
+                                I agree all your <a href="http://kiwiteam.ece.uprm.edu/NoMiddleMan/Terms%20and%20Conditions">Terms of
+                                Services</a></label> <button class="btn btn-success" type="submit">Sign
+                                Up</button> <!--<button class="btn" type="button">Help</button>-->
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            </div>
+            </div>
 </body>
 </html>
