@@ -62,17 +62,27 @@ if($_SESSION['uemail'])
 					$ulname = $_SESSION['ulname'] = $newulemail;
 				}
 			}
-			if(!empty($_POST['new-upass']))
+			if(!empty($_POST['new-upass']) && !empty($_POST['old-upass']))
 			{
 				$oldupass = strip_tags($_POST['old-upass']);
+				$salt = '6e663cc2478ebdc49cbce5609ba0305b60d10844';
+				$oldupass = $oldupass.$salt; //.$t_Email;
+				$oldupass = sha1($oldupass);
+				
 				$newupass = strip_tags($_POST['new-upass']);
-				if($oldupass = $upass)
+				$salt = '6e663cc2478ebdc49cbce5609ba0305b60d10844';
+				$newupass = $newupass.$salt; //.$t_Email;
+				$newupass = sha1($newupass);
+				if($oldupass == $newupass)
 				{
+					
 					$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"t_password\" = '$newupass' WHERE \"t_Email\" = '$uemail' AND \"t_password\" = '$upass'");
 				}
 				else
 				{
 					$errorMsg = "Invalid password";
+					echo "<h2> Oops that email or password combination was incorrect.
+								<br /> Please try again. </h2>";
 					$upass = $_SESSION['upass'] = $newupass;
 				}
 			}
@@ -218,13 +228,13 @@ $(document).ready(function(){
             <button type = "button" id = "pass-btn" class="btn btn-default btn-sm" style="margin-top: 5px;">Change Password</button>
             <div id = "password-field" style="display: none;">
               <div class="control-group">
-                <label class="control-label" for="inputPassword"> Old Password</label>
+                <label class="control-label" for="inputPassword"> New Password</label>
                 <div class="controls">
                   <input id="inputPassword" name="old-upass" placeholder="" type="password">
                 </div>
               </div>
               <div class="control-group">
-                <label class="control-label" for="inputPassword"> New Password</label>
+                <label class="control-label" for="inputPassword"> Confirm New Password</label>
                 <div class="controls">
                   <input id="inputPassword" name = "new-upass" placeholder="" type="password">
                 </div>

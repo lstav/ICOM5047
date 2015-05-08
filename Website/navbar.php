@@ -16,9 +16,14 @@ if(isset($_SESSION['uid']))
 	$navLink = "tourist_account.php";
 	$loginOuput = '<li class = "dropdown"><a class = "dropdown-toggle" data-toggle = "dropdown"> Hello  '.$ufname.'! <b class = "caret"></b></a>
           <ul class = "dropdown-menu">
-            <li><a href = "'.$navLink.'">My Account</a></li>
-            <li><a href = "sign_out.php">Sign Out</a></li>
+            <li><a href = "'.$navLink.'">My Account</a></li>';
+            
+	if($isadmin=="t") {
+		$loginOuput = $loginOuput.'<li><a href = "reports.php">Reports</a></li>';
+	}
+	$loginOuput = $loginOuput.'<li><a href = "sign_out.php">Sign Out</a></li>
           </ul></li>';
+	
 	$cquery = pg_query($dbconn, "SELECT * FROM \"Shopping Cart\" WHERE \"t_key\" = '$uid' and \"p_quantity\" > 0;");
 	if(pg_num_rows($cquery) > 0)
 	{

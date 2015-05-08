@@ -15,19 +15,30 @@ if(!empty($_POST['uemail'])&&!empty($_POST['password']))
 {
 	$uemail = strip_tags($_POST["uemail"]);
 	$paswd = strip_tags($_POST["password"]);
-	$query = pg_query($dbconn, "SELECT * FROM \"Tourist\" WHERE \"t_Email\" = '$uemail' AND \"t_password\" = '$paswd'");
+	$salt = '6e663cc2478ebdc49cbce5609ba0305b60d10844';
+	$paswd = $paswd.$salt; //.$t_Email;
+	$paswd = sha1($paswd);
+	$query = pg_query($dbconn, "SELECT * FROM \"Tourist\" WHERE \"t_Email\" = '$uemail'");
 	$count = pg_num_rows($query);
 	
 	if($count > 0)
 	{
 		$row = pg_fetch_array($query);
-		$_SESSION['uemail'] = $row['t_Email'];
-		$_SESSION['uid'] = $row['t_key'];
-		$_SESSION['ufname'] = $row['t_FName'];
-		$_SESSION['ulname'] = $row['t_LName'];
-		$_SESSION['upass'] = $row['t_password'];
-		$_SESSION['isadmin'] = $row['isAdmin'];
-		header("Location: index.php");
+		$pass = $row['t_password'];
+		if($paswd == $pass) {
+			$_SESSION['uemail'] = $row['t_Email'];
+			$_SESSION['uid'] = $row['t_key'];
+			$_SESSION['ufname'] = $row['t_FName'];
+			$_SESSION['ulname'] = $row['t_LName'];
+			$_SESSION['upass'] = $row['t_password'];
+			$_SESSION['isadmin'] = $row['isAdmin'];
+			header("Location: index.php");
+		} else {
+			echo "<h2> Oops that email or password combination was incorrect.
+				<br /> Please try again. </h2>";
+		}
+		
+
 	}
 	else
 	{
@@ -45,6 +56,9 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
 				$newupass = $_POST['new-upass'];
 				$address = $_POST['address'];
 				$phone = $_POST['phone'];
+				$salt = '6e663cc2478ebdc49cbce5609ba0305b60d10844';
+				$newupass = $newupass.$salt;//.$t_Email;
+				$newupass = sha1($newupass);
 				if (!filter_var($newuemail, FILTER_VALIDATE_EMAIL)) 
 				{
   					$errorMsg .= "<a style=\"color:red\">Invalid email format</a><br>"; 
@@ -59,15 +73,27 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
 				}
 				else
 				{
-					$uemail = $_SESSION['uemail'] = $newuemail;
+					/*$uemail = $_SESSION['uemail'] = $newuemail;
 					$ufname = $_SESSION['ufname'] = $newufname;
 					$ulname = $_SESSION['ulname'] = $newulname;
-					$upass = $_SESSION['upass'] = $newupass;
-					$query = pg_query($dbconn, "INSERT INTO \"Tourist\" (\"t_Email\", \"t_FName\", \"t_LName\", \"isAdmin\", \"t_isActive\", \"t_isSuspended\", \"t_password\", \"t_telephone\", \"t_Address\") VALUES('$uemail', '$ufname', '$ulname', FALSE, TRUE, FALSE, '$upass', '$phone', '$address') RETURNING \"t_key\"");
+					$upass = $_SESSION['upass'] = $newupass;*/
+					$query = pg_query($dbconn, "INSERT INTO \"Tourist\" 
+					(\"t_Email\", \"t_FName\", \"t_LName\", \"isAdmin\",
+					\"t_isActive\", \"t_isSuspended\", \"t_password\", \"t_telephone\", 
+					\"t_Address\") VALUES('$newuemail', '$newufname', '$newulname', FALSE, FALSE, 
+					FALSE, '$newupass', '$phone', '$address') RETURNING \"t_key\"");
 					if($query)
 					{
-						$row = pg_fetch_array($query);
-						$_SESSION['uid'] = $row['t_key'];
+						$to      = $newuemail;
+						$subject = 'Verify Email';
+						$message = 'Please follow this link to verify your account
+						"http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/verifyForm.html"';
+						$headers = 'From: luis.tavarez@outlook.com' . "\r\n" .
+						'Reply-To: luis.tavarez@outlook.com' . "\r\n" .
+						'X-Mailer: PHP/' . phpversion();
+						mail($to, $subject, $message, $headers);
+						/*$row = pg_fetch_array($query);
+						$_SESSION['uid'] = $row['t_key'];*/
 						header("Location: index.php");
 					}
 					else
@@ -118,7 +144,7 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
                                 <input name = "password" id="inputPassword" placeholder="Min. 8 Characters" type="password">
                             </div>
                         </div>
-
+						<a href="http://kiwiteam.ece.uprm.edu/NoMiddleMan/website/requestPasswordPage.php">Lost password?</a>
                         <div class="control-group">
                             <div class="controls">
                                 <!--<label class="checkbox"><input type="checkbox">

@@ -30,7 +30,6 @@
 					} else {
 						$response['success'] = 0;
 						$response['message'] = "Wrong Login";
-						$response['passwords'] = "P1 ".$tour['password']." P2 ".$t_password;
 					
 						echo json_encode($response);
 					}
