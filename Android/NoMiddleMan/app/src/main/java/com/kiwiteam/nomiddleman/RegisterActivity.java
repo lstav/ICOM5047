@@ -130,7 +130,7 @@ public class RegisterActivity extends ActionBarActivity {
         EditText telephone = (EditText) findViewById(R.id.telephone);
         telephoneNumber = telephone.getText().toString();
 
-        if(userEmail != "" && password != "" && userName != ""
+        if(userEmail != "" && password.trim().length() >= 8 && userName != ""
                 && userLName != "" && userAddress != "" && telephoneNumber != "") {
             if (validateEmail(userEmail)) {
                 new Register().execute();

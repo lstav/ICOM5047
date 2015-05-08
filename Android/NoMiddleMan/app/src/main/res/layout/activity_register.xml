@@ -46,7 +46,9 @@
                     android:layout_height="wrap_content"
                     android:inputType="textPassword"
                     android:ems="10"
-                    android:id="@+id/password" />
+                    android:id="@+id/password"
+                    android:maxLength="16"
+                    android:hint="8-16 chars" />
 
                 <TextView
                     android:layout_width="wrap_content"

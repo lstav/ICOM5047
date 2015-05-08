@@ -18,7 +18,8 @@
 		T.\"s_isActive\" as isactive,
 		(T.\"Price\"*T.\"Payed\") as total
 		FROM \"Upcoming Tours\" as T 
-		Where \"t_key\"=$keyword");
+		Where \"t_key\"=$keyword
+		Order By T.\"s_Time\" ASC");
 		
 		if(pg_num_rows($result) > 0) {
 			$response['tours'] = array();

@@ -131,7 +131,8 @@ public class ChangePasswordActivity extends ActionBarActivity {
         EditText nPass = (EditText) findViewById(R.id.newPass);
         EditText cNPass = (EditText) findViewById(R.id.cNewPass);
 
-        if(nPass.getText().toString().equals(cNPass.getText().toString())) {
+        if(nPass.getText().toString().equals(cNPass.getText().toString()) && nPass.getText().toString().trim().length() >= 8
+                && nPass.getText().toString().trim().length() >= 8) {
             newPass = nPass.getText().toString();
             confirmPass = cNPass.getText().toString();
 
