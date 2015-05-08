@@ -147,4 +147,12 @@
     <string name="payment_failed">El pago falló</string>
     <string name="report">Reporta</string>
     <string name="report_error">Error de reporte</string>
+
+    <string name="email_req">Correo Electrónico *</string>
+    <string name="pass_req">Contraseña *</string>
+    <string name="first_req">Nombre *</string>
+    <string name="last_req">Apellido *</string>
+    <string name="addr_req">Dirección *</string>
+    <string name="tele_req">Teléfono *</string>
+
 </resources>

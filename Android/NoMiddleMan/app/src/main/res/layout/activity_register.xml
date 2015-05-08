@@ -23,7 +23,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="@string/email"
+                    android:text="@string/email_req"
                     android:id="@+id/textView6"
                     android:layout_gravity="left|top" />
 
@@ -38,7 +38,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="@string/password"
+                    android:text="@string/pass_req"
                     android:id="@+id/textView7" />
 
                 <EditText
@@ -54,7 +54,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="@string/first_name"
+                    android:text="@string/first_req"
                     android:id="@+id/textView8" />
 
                 <EditText
@@ -68,7 +68,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="@string/last_name"
+                    android:text="@string/last_req"
                     android:id="@+id/textView9" />
 
                 <EditText
@@ -82,7 +82,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="@string/address"
+                    android:text="@string/addr_req"
                     android:id="@+id/textView42" />
 
                 <EditText
@@ -96,7 +96,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="@string/telephone"
+                    android:text="@string/tele_req"
                     android:id="@+id/textView14" />
 
                 <EditText

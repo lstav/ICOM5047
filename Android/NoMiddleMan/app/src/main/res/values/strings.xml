@@ -149,4 +149,13 @@
     <string name="report">Report</string>
 
     <string name="report_error">Error Report</string>
+
+    <string name="email_req">Email *</string>
+    <string name="pass_req">Password *</string>
+    <string name="first_req">First Name *</string>
+    <string name="last_req">Last Name *</string>
+    <string name="addr_req">Address *</string>
+    <string name="tele_req">Telephone *</string>
+
+
 </resources>
