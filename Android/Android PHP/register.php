@@ -11,6 +11,9 @@
 		$t_LName = $_POST['t_LName'];
 		$t_address = $_POST['t_address'];
 		$t_telephone = $_POST['t_telephone'];
+		$salt = '6e663cc2478ebdc49cbce5609ba0305b60d10844';
+		$password = $password.$salt;//.$t_Email;
+		$password = sha1($password);
 		
 		
 		$result = pg_query($conn, "Insert into \"Tourist\" (\"t_Email\",\"t_password\",\"t_FName\",\"t_LName\",\"t_telephone\",\"t_Address\") 

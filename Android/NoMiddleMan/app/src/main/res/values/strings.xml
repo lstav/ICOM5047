@@ -143,5 +143,10 @@
 
     <string name="rate_warning">Rate must be from 1 to 5</string>
 
+    <string name="language_message">To maintain selected language after exiting No Middle Man /nplease change your phone language.</string>
 
+    <string name="payment_failed">Payment failed</string>
+    <string name="report">Report</string>
+
+    <string name="report_error">Error Report</string>
 </resources>

@@ -63,6 +63,8 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
     private ProgressDialog pDialog;
     private ImageView picture;
 
+    private String message = new String();
+
     private JSONArray backup;
 
     private static final String TAG_KEY = "key";
@@ -78,8 +80,6 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
     private static final String TAG_SUCCESS = "success";
     private static final String TAG_RATED = "isRated";
 
-
-    private static String url_get_upcoming_tours = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/getUpcomingTours.php";
     private static String url_get_past_tours = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/getPastTours.php";
 
 
@@ -124,7 +124,6 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
 
     private void handleIntent(Intent intent) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        new LoadUpcomingTours().execute();
         new LoadPastTours().execute();
 
         /*if(pDialog.isShowing()) {
@@ -228,71 +227,6 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
         intent.putExtra("History ID", position);
         startActivity(intent);
         finish();
-    }
-
-    private class MyListAdapter extends ArrayAdapter<HistoryItem> {
-        //private List<HistoryItem> pHistory;
-
-        //public MyListAdapter(ArrayList<HistoryItem> purchaseHistory) {
-        public MyListAdapter() {
-            super(PurchaseHistoryActivity.this, R.layout.shopping_cart_item, activeHistory);
-            //pHistory = purchaseHistory;
-        }
-
-        public View getView(final int position, View convertView, ViewGroup parent) {
-            View itemView = convertView;
-
-            if (itemView == null) {
-                itemView = getLayoutInflater().inflate(R.layout.shopping_cart_item, parent, false);
-
-            }
-
-            itemView.findViewById(R.id.remove).setVisibility(View.GONE);
-
-            // find the list
-            HistoryItem currentTour = activeHistory.get(position);
-
-            picture = (ImageView) itemView.findViewById(R.id.tourPic);
-            picture.setImageBitmap(currentTour.getTour().getPictures().get(0));
-
-            TextView tName = (TextView) itemView.findViewById(R.id.tourName);
-            tName.setText(currentTour.getTour().getName());
-
-            TextView tPrice = (TextView) itemView.findViewById(R.id.tourPrice);
-            double price = currentTour.getPrice();
-            tPrice.setText("$"+ String.format("%.2f", price));
-
-            TextView tQuantity = (TextView) itemView.findViewById(R.id.quantity);
-            tQuantity.setText(Integer.toString(currentTour.getQuantity()));
-
-            TextView tDate = (TextView) itemView.findViewById(R.id.date);
-            tDate.setText(currentTour.getDate());
-
-            TextView tTime = (TextView) itemView.findViewById(R.id.time);
-            tTime.setText(currentTour.getTime());
-
-            if(!activeHistory.get(position).isRated()) {
-                itemView.findViewById(R.id.rate).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        rateItem(activeHistory.get(position).getSessionID(), position);
-                    }
-                });
-            } else {
-                itemView.findViewById(R.id.rate).setVisibility(View.GONE);
-            }
-
-            itemView.findViewById(R.id.tourPic).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(getApplicationContext(), TourPageActivity.class);
-                    intent.putExtra("tourId",activeHistory.get(position).getTour().getId());
-                    startActivity(intent);
-                }
-            });
-
-            return itemView;
-        }
     }
 
     private class MyListAdapterPast extends ArrayAdapter<HistoryItem> {
@@ -423,7 +357,14 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
                     for (int i=0; i<backup.length(); i++) {
                         JSONObject c = backup.getJSONObject(i);
                         try {
-                            bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "img1.jpg").getContent());
+                            BitmapFactory.Options options = new BitmapFactory.Options();
+                            options.inJustDecodeBounds = true;
+                            // Calculate inSampleSize
+                            options.inSampleSize = 3;
+                            // Decode bitmap with inSampleSize set
+                            options.inJustDecodeBounds = false;
+
+                            bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "1.jpg").getContent(), null, options);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -480,130 +421,5 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
 
     }
 
-    /**
-     * Search database with results by keyword
-     */
-    class LoadUpcomingTours extends AsyncTask<String, String, String> {
 
-        /*protected void onPreExecute() {
-            super.onPreExecute();
-            pDialog = new ProgressDialog(PurchaseHistoryActivity.this);
-            pDialog.setMessage("Loading results. Please wait...");
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(true);
-            pDialog.show();
-        }*/
-
-        @Override
-        protected String doInBackground(String... params) {
-            String result = "";
-
-            try {
-                HttpClient httpClient = new DefaultHttpClient();
-                String url;
-
-                List<NameValuePair> categoryName = new ArrayList<>();
-                categoryName.add(new BasicNameValuePair("t_key", Integer.toString(conn.getT_key())));
-
-                HttpPost httppost = new HttpPost(url_get_upcoming_tours);
-
-                httppost.setEntity(new UrlEncodedFormEntity(categoryName));
-
-                HttpResponse response = httpClient.execute(httppost);
-
-                HttpEntity entity = response.getEntity();
-                InputStream webs = entity.getContent();
-
-                try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(webs,"iso-8859-1"),8);
-                    StringBuilder sb = new StringBuilder();
-                    String line = null;
-                    while ((line = reader.readLine()) != null) {
-                        sb.append(line);
-                    }
-                    webs.close();
-                    result=sb.toString();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            try {
-                JSONObject jObj = new JSONObject(result);
-
-                success = jObj.getInt(TAG_SUCCESS);
-
-                if(success == 1) {
-
-                    activeHistory.clear();
-                    backup = jObj.getJSONArray("tours");
-
-                    for (int i=0; i<backup.length(); i++) {
-                        JSONObject c = backup.getJSONObject(i);
-                        try {
-                            BitmapFactory.Options options = new BitmapFactory.Options();
-                            options.inJustDecodeBounds = true;
-                            // Calculate inSampleSize
-                            options.inSampleSize = 3;
-                            // Decode bitmap with inSampleSize set
-                            options.inJustDecodeBounds = false;
-
-                            bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "1.jpg").getContent(), null, options);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
-                        boolean isActive = false;
-                        if(c.getString(TAG_ACTIVE).equals("t")) {
-                            isActive = true;
-                        }
-
-                        boolean isRated = false;
-                        if(c.getString(TAG_RATED).equals("t")) {
-                            isRated = true;
-                        }
-                        activeHistory.add(new HistoryItem(c.getString(TAG_DATE),
-                                c.getString(TAG_TIME),c.getInt(TAG_TSKEY),c.getInt(TAG_QUANTITY),
-                                isRated, new Tour(c.getString(TAG_NAME),
-                                        Price.getDouble(c.getString(TAG_PRICE)),
-                                        new ArrayList<>(Arrays.asList(bitmap)),c.getInt(TAG_KEY),
-                                        c.getDouble(TAG_EXTREMENESS))));
-
-                        if(isActive) {
-                            totalPrice = totalPrice + Price.getDouble(c.getString(TAG_PRICE));
-                        }
-                    }
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        protected void onPostExecute(String file_url) {
-            //pDialog.dismiss();
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if(success == 1) {
-                        findViewById(R.id.noUpcomingTours).setVisibility(View.GONE);
-
-                        //activeAdapter = new MyListAdapter(activeHistory);
-                        activeAdapter = new MyListAdapter();
-
-                        upcomingListView = (ListView) findViewById(R.id.upcommingListView);
-                        upcomingListView.setAdapter(activeAdapter);
-
-                        setListViewHeightBasedOnChildren(upcomingListView);
-
-                        activeAdapter.notifyDataSetChanged();
-                    }
-                }
-            });
-        }
-
-    }
 }

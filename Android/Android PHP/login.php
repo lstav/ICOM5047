@@ -7,6 +7,9 @@
 	if(isset($_POST['t_Email']) && isset($_POST['t_password'])) {
 		$t_Email = $_POST['t_Email'];
 		$t_password = trim($_POST['t_password']);
+		$salt = '6e663cc2478ebdc49cbce5609ba0305b60d10844';
+		$t_password = $t_password.$salt; //.$t_Email;
+		$t_password = sha1($t_password);
 		
 		$result = pg_query($conn, "SELECT T.\"t_key\" as key, T.\"t_password\" as password FROM \"Active Tourist\" as T WHERE T.\"t_Email\" = '$t_Email'");
 		

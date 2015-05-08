@@ -6,14 +6,16 @@ import android.app.SearchableInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.EditText;
+import android.widget.RatingBar;
+import android.widget.Toast;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -34,63 +36,47 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class AccountActivity extends ActionBarActivity {
+public class ReportActivity extends ActionBarActivity {
 
     private DatabaseConnection conn;
-    private int index;
-    private Intent intent;
+    private int ts_ID;
     private ProgressDialog pDialog;
+    private int index;
+    private int success;
+    String report;
 
-    private String email;
-    private String fname;
-    private String lname;
-    private String address;
-    private String telephone;
+    private static final String TAG_SUCCESS = "success";
 
-    private static final String TAG_EMAIL = "t_Email";
-    private static final String TAG_FNAME = "t_FName";
-    private static final String TAG_LNAME = "t_LName";
-    private static final String TAG_ADDRESS = "t_Address";
-    private static final String TAG_TELEPHONE = "t_telephone";
+    private JSONArray response;
 
-    private JSONArray tourist;
-
-    private static String url_get_tourist = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/getTourist.php";
+    private static String url_rate = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/report.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_account);
+        setContentView(R.layout.activity_report);
 
-        intent = getIntent();
-
-        conn = (DatabaseConnection)getApplicationContext();
-        fillText();
-
-    }
-
-    /**
-     * Shows account information to the tourist
-     */
-    private void fillText() {
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        conn = (DatabaseConnection) getApplicationContext();
+        Intent intent = getIntent();
+        ts_ID = intent.getIntExtra("TourSession ID", -1);
         index = conn.getT_key();
-        new LoadTouristPage().execute();
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.global, menu);
-        if (conn.isLogged())
-        {
+        if (conn.isLogged()) {
             menu.findItem(R.id.account).setVisible(true);
             menu.findItem(R.id.signout).setVisible(true);
         } else {
             menu.findItem(R.id.account).setVisible(false);
             menu.findItem(R.id.signout).setVisible(false);
         }
-
+        //initSearchView(menu);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
@@ -126,80 +112,74 @@ public class AccountActivity extends ActionBarActivity {
                 recreate();
                 return true;
         }
+
+
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * Access account activity
-     */
     public void account() {
         Intent intent = new Intent(this, AccountActivity.class);
+        intent.putExtra("Index", conn.getT_key());
         startActivity(intent);
     }
 
     /**
-     * Opens the purchase history activity
+     * Submit rating and review
+     *
      * @param view
      */
-    public void purchaseHistory(View view) {
-        Intent intent = new Intent(this, PurchaseHistoryActivity.class);
-        startActivity(intent);
-    }
+    public void submit(View view) {
+        EditText rep = (EditText) findViewById(R.id.report);
+        report = rep.getText().toString();
 
-    public void upcomingHistory(View view) {
-        Intent intent = new Intent(this, UpcomingPurchaseHistoryActivity.class);
-        startActivity(intent);
+        if (!report.trim().equals("")) {
+            new Report().execute();
+        } else {
+            Toast.makeText(getApplicationContext(), R.string.report_error, Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**
-     * Open the change password activity
+     * Returns to previous activity
+     *
      * @param view
      */
-    public void changePassword(View view) {
-        Intent intent = new Intent(this, ChangePasswordActivity.class);
+    public void cancel(View view) {
+        Intent intent = new Intent(ReportActivity.this, PurchaseHistoryActivity.class);
         startActivity(intent);
+        finish();
     }
 
     /**
-     * Open the report activity
-     * @param view
+     * Sends new password to database and updates the database
      */
-    public void report(View view) {
-        Intent intent = new Intent(this, ReportActivity.class);
-        startActivity(intent);
-    }
-
-    /**
-     * Gets tourist information from the database
-     */
-    class LoadTouristPage extends AsyncTask<String, String, String> {
-        protected void onPreExecute() {
+    class Report extends AsyncTask<String, String, String> {
+        /*protected void onPreExecute() {
             super.onPreExecute();
-            pDialog = new ProgressDialog(AccountActivity.this);
+            pDialog = new ProgressDialog(RateActivity.this);
             pDialog.setMessage("Loading results. Please wait...");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(true);
             pDialog.show();
-        }
+        }*/
 
         @Override
         protected String doInBackground(String... params) {
             String result = "";
+            index = conn.getT_key();
 
             /**
-             * Connects to PHP files to access database
+             * Sends parameters to php file to change password
              */
             try {
                 HttpClient httpClient = new DefaultHttpClient();
                 String url;
 
-                /**
-                 * Parameters for php file
-                 */
                 List<NameValuePair> categoryName = new ArrayList<>();
                 categoryName.add(new BasicNameValuePair("t_key", Integer.toString(index)));
+                categoryName.add(new BasicNameValuePair("message", report));
 
-                HttpPost httppost = new HttpPost(url_get_tourist);
+                HttpPost httppost = new HttpPost(url_rate);
 
                 httppost.setEntity(new UrlEncodedFormEntity(categoryName));
 
@@ -208,18 +188,15 @@ public class AccountActivity extends ActionBarActivity {
                 HttpEntity entity = response.getEntity();
                 InputStream webs = entity.getContent();
 
-                /**
-                 * Saves JSON response from php file
-                 */
                 try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(webs,"iso-8859-1"),8);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(webs, "iso-8859-1"), 8);
                     StringBuilder sb = new StringBuilder();
                     String line = null;
                     while ((line = reader.readLine()) != null) {
                         sb.append(line);
                     }
                     webs.close();
-                    result=sb.toString();
+                    result = sb.toString();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -228,21 +205,13 @@ public class AccountActivity extends ActionBarActivity {
             }
 
             /**
-             * Gets tourist array from JSON and saves values in java objects
+             * Gets success in changing password
              */
             try {
                 JSONObject jObj = new JSONObject(result);
-                tourist = jObj.getJSONArray("tourist");
 
-                for (int i=0; i<tourist.length(); i++) {
-                    JSONObject c = tourist.getJSONObject(i);
+                success = jObj.getInt(TAG_SUCCESS);
 
-                    email = c.getString(TAG_EMAIL);
-                    fname = c.getString(TAG_FNAME);
-                    lname = c.getString(TAG_LNAME);
-                    address = c.getString(TAG_ADDRESS);
-                    telephone = c.getString(TAG_TELEPHONE);
-                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -251,31 +220,27 @@ public class AccountActivity extends ActionBarActivity {
         }
 
         /**
-         * Shows account information on activity
+         * If password change was successful, go back to previous activity, else, give feedback to user
+         * @param file_url
          */
         protected void onPostExecute(String file_url) {
+            /*if(pDialog.isShowing()) {
+                pDialog.dismiss();
+            }*/
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    TextView fName = (TextView) findViewById(R.id.userName);
-                    fName.setText(fname);
-
-                    TextView lName = (TextView) findViewById(R.id.userLName);
-                    lName.setText(lname);
-
-                    TextView emailT = (TextView) findViewById(R.id.email);
-                    emailT.setText(email);
-
-                    TextView addressT = (TextView) findViewById(R.id.address);
-                    addressT.setText(address);
-
-                    TextView tel = (TextView) findViewById(R.id.telephone);
-                    tel.setText(telephone);
-
+                    if(success == 1) {
+                        Intent intent = new Intent(ReportActivity.this, AccountActivity.class);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Toast.makeText(getApplicationContext(), R.string.not_rate, Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
-            pDialog.dismiss();
         }
 
     }
+
 }

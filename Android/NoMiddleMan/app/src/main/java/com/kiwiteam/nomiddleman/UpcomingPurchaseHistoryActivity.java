@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -42,12 +43,16 @@ import java.util.Arrays;
 import java.util.List;
 
 
-public class ShoppingCartActivity extends ActionBarActivity {
+public class UpcomingPurchaseHistoryActivity extends ActionBarActivity {
 
     private DatabaseConnection conn;
-    private ArrayAdapter<ShoppingItem> adapter;
-    private ListView listView;
-    private List<ShoppingItem> shoppingCart = new ArrayList<>();
+
+    private ArrayAdapter<HistoryItem> activeAdapter;
+    private ArrayAdapter<HistoryItem> pastAdapter;
+    private ListView upcomingListView;
+    private ListView pastListView;
+    private List<HistoryItem> activeHistory = new ArrayList<>();
+    private List<HistoryItem> pastHistory = new ArrayList<>();
 
     private double totalPrice = 0.0;
     private int ts_key = -1;
@@ -57,6 +62,8 @@ public class ShoppingCartActivity extends ActionBarActivity {
     private Bitmap bitmap;
     private ProgressDialog pDialog;
     private ImageView picture;
+
+    private String message = new String();
 
     private JSONArray backup;
 
@@ -71,53 +78,90 @@ public class ShoppingCartActivity extends ActionBarActivity {
     private static final String TAG_TIME = "time";
     private static final String TAG_ACTIVE = "isActive";
     private static final String TAG_SUCCESS = "success";
-    private static final String TAG_GEMAIL = "gEmail";
+    private static final String TAG_RATED = "isRated";
 
 
-    private static String url_get_shopping_cart = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/getShoppingCart.php";
-    private static String url_remove_from_cart = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/removeFromShoppingCart.php";
+    private static String url_get_upcoming_tours = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/getUpcomingTours.php";
+    //private static String url_get_past_tours = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/getPastTours.php";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_shopping_cart);
+        setContentView(R.layout.activity_upcoming_purchase_history);
 
-        conn = (DatabaseConnection)getApplicationContext();
+        conn = (DatabaseConnection) getApplicationContext();
         Intent intent = getIntent();
         handleIntent(intent);
     }
 
-    protected void onNewIntent(Intent intent) {
-        setIntent(intent);
-        shoppingCart.clear();
-        conn = (DatabaseConnection)getApplicationContext();
+    /*public void onResume() {
+        super.onResume();
+        Intent intent = getIntent();
         handleIntent(intent);
+    }*/
+
+    public static void setListViewHeightBasedOnChildren(ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null)
+            return;
+
+        int desiredWidth = View.MeasureSpec.makeMeasureSpec(listView.getWidth(), View.MeasureSpec.UNSPECIFIED);
+        int totalHeight = 0;
+        View view = null;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            view = listAdapter.getView(i, view, listView);
+            if (i == 0)
+                view.setLayoutParams(new ViewGroup.LayoutParams(desiredWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+            view.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
+            totalHeight += view.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
+        listView.requestLayout();
     }
 
-    /**
-     * Removes item from shopping cart
-     * @param position
-     */
-    public void removeItem(int position) {
-        //conn.removeFromShoppingCart(position);
-        ts_key = shoppingCart.get(position).getSessionID();
-
-        totalPrice = totalPrice - shoppingCart.get(position).getTourPrice();
-
-        new RemoveFromShoppingCart().execute();
-
-        adapter.notifyDataSetChanged();
-
-    }
-
-    /**
-     * Calls class to load shopping cart
-     * @param intent
-     */
     private void handleIntent(Intent intent) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        new LoadShoppingCart().execute();
+        new LoadUpcomingTours().execute();
+        //new LoadPastTours().execute();
+
+        /*if(pDialog.isShowing()) {
+            pDialog.dismiss();
+        }*/
+
+       /* purchaseHistory = conn.getHistory();
+        ArrayList<PurchaseHistory.HistoryItem> activeHistory = new ArrayList<>();
+        ArrayList<PurchaseHistory.HistoryItem> pastHistory = new ArrayList<>();
+
+        for(int i=0; i<purchaseHistory.size(); i++) {
+            if(purchaseHistory.get(i).getTour().sessionIsActive(purchaseHistory.get(i).getSessionID())) {
+                activeHistory.add(purchaseHistory.get(i));
+                findViewById(R.id.noUpcomingTours).setVisibility(View.GONE);
+                System.out.println("Active Index " + i);
+            } else {
+                findViewById(R.id.pastTours).setVisibility(View.GONE);
+                pastHistory.add(purchaseHistory.get(i));
+            }
+        }
+
+        activeAdapter = new MyListAdapter(activeHistory);
+
+        pastAdapter = new MyListAdapter(pastHistory);
+
+        upcomingListView = (ListView) findViewById(R.id.upcommingListView);
+        pastListView = (ListView) findViewById(R.id.pastListView);
+
+        upcomingListView.setAdapter(activeAdapter);
+        pastListView.setAdapter(pastAdapter);
+
+        setListViewHeightBasedOnChildren(upcomingListView);
+        setListViewHeightBasedOnChildren(pastListView);*/
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -132,7 +176,7 @@ public class ShoppingCartActivity extends ActionBarActivity {
             menu.findItem(R.id.account).setVisible(false);
             menu.findItem(R.id.signout).setVisible(false);
         }
-
+        //initSearchView(menu);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
@@ -172,70 +216,42 @@ public class ShoppingCartActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void account() {
+    public void account() {
         Intent intent = new Intent(this, AccountActivity.class);
         intent.putExtra("Index", conn.getT_key());
         startActivity(intent);
     }
 
-    /**
-     * Go to checkout activity
-     * @param view
-     */
-    public void checkout(View view) {
-        if(conn.isLogged()) {
-            Intent intent = new Intent(this, CheckoutActivity.class);
-            startActivity(intent);
-        } else {
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-        }
-    }
+    private class MyListAdapter extends ArrayAdapter<HistoryItem> {
+        //private List<HistoryItem> pHistory;
 
-    /**
-     * Adapter to fill list view with items
-     */
-    private class MyListAdapter extends ArrayAdapter<ShoppingItem> {
-
+        //public MyListAdapter(ArrayList<HistoryItem> purchaseHistory) {
         public MyListAdapter() {
-            super(ShoppingCartActivity.this, R.layout.shopping_cart_item, shoppingCart);
-
+            super(UpcomingPurchaseHistoryActivity.this, R.layout.shopping_cart_item, activeHistory);
+            //pHistory = purchaseHistory;
         }
 
         public View getView(final int position, View convertView, ViewGroup parent) {
             View itemView = convertView;
+
             if (itemView == null) {
                 itemView = getLayoutInflater().inflate(R.layout.shopping_cart_item, parent, false);
 
             }
 
-            itemView.findViewById(R.id.remove).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    removeItem(position);
-                }
-            });
-
-            itemView.findViewById(R.id.rate).setVisibility(View.GONE);
+            itemView.findViewById(R.id.remove).setVisibility(View.GONE);
 
             // find the list
-            ShoppingItem currentTour = shoppingCart.get(position);
-
-            if(!currentTour.isActive()) {
-                TextView isAct = (TextView) itemView.findViewById(R.id.active);
-                isAct.setVisibility(View.VISIBLE);
-                /*TextView message = (TextView) findViewById(R.id.message);
-                message.setVisibility(View.VISIBLE);*/
-            }
+            HistoryItem currentTour = activeHistory.get(position);
 
             picture = (ImageView) itemView.findViewById(R.id.tourPic);
-            picture.setImageBitmap(currentTour.getTourPicture().get(0));
+            picture.setImageBitmap(currentTour.getTour().getPictures().get(0));
 
             TextView tName = (TextView) itemView.findViewById(R.id.tourName);
-            tName.setText(currentTour.getTourName());
+            tName.setText(currentTour.getTour().getName());
 
             TextView tPrice = (TextView) itemView.findViewById(R.id.tourPrice);
-            double price = currentTour.getTourPrice();
+            double price = currentTour.getPrice();
             tPrice.setText("$"+ String.format("%.2f", price));
 
             TextView tQuantity = (TextView) itemView.findViewById(R.id.quantity);
@@ -247,11 +263,15 @@ public class ShoppingCartActivity extends ActionBarActivity {
             TextView tTime = (TextView) itemView.findViewById(R.id.time);
             tTime.setText(currentTour.getTime());
 
+
+            itemView.findViewById(R.id.rate).setVisibility(View.GONE);
+
+
             itemView.findViewById(R.id.tourPic).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getApplicationContext(), TourPageActivity.class);
-                    intent.putExtra("tourId",shoppingCart.get(position).getTourID());
+                    intent.putExtra("tourId",activeHistory.get(position).getTour().getId());
                     startActivity(intent);
                 }
             });
@@ -261,14 +281,14 @@ public class ShoppingCartActivity extends ActionBarActivity {
     }
 
     /**
-     * Loads shopping cart
+     * Search database with results by keyword
      */
-    class LoadShoppingCart extends AsyncTask<String, String, String> {
+    class LoadUpcomingTours extends AsyncTask<String, String, String> {
 
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog = new ProgressDialog(ShoppingCartActivity.this);
-            pDialog.setMessage(getString(R.string.loading));
+            pDialog = new ProgressDialog(UpcomingPurchaseHistoryActivity.this);
+            pDialog.setMessage("Loading results. Please wait...");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(true);
             pDialog.show();
@@ -285,7 +305,7 @@ public class ShoppingCartActivity extends ActionBarActivity {
                 List<NameValuePair> categoryName = new ArrayList<>();
                 categoryName.add(new BasicNameValuePair("t_key", Integer.toString(conn.getT_key())));
 
-                HttpPost httppost = new HttpPost(url_get_shopping_cart);
+                HttpPost httppost = new HttpPost(url_get_upcoming_tours);
 
                 httppost.setEntity(new UrlEncodedFormEntity(categoryName));
 
@@ -317,6 +337,7 @@ public class ShoppingCartActivity extends ActionBarActivity {
 
                 if(success == 1) {
 
+                    activeHistory.clear();
                     backup = jObj.getJSONArray("tours");
 
                     for (int i=0; i<backup.length(); i++) {
@@ -325,7 +346,7 @@ public class ShoppingCartActivity extends ActionBarActivity {
                             BitmapFactory.Options options = new BitmapFactory.Options();
                             options.inJustDecodeBounds = true;
                             // Calculate inSampleSize
-                            options.inSampleSize = 5;
+                            options.inSampleSize = 3;
                             // Decode bitmap with inSampleSize set
                             options.inJustDecodeBounds = false;
 
@@ -339,20 +360,20 @@ public class ShoppingCartActivity extends ActionBarActivity {
                             isActive = true;
                         }
 
-                        System.out.println("Is Active " + c.getString(TAG_ACTIVE));
-
-                        // Adds tours to shopping cart item
-                        shoppingCart.add(new ShoppingItem(new Tour(c.getString(TAG_NAME),
+                        boolean isRated = false;
+                        if(c.getString(TAG_RATED).equals("t")) {
+                            isRated = true;
+                        }
+                        activeHistory.add(new HistoryItem(c.getString(TAG_DATE),
+                                c.getString(TAG_TIME),c.getInt(TAG_TSKEY),c.getInt(TAG_QUANTITY),
+                                isRated, new Tour(c.getString(TAG_NAME),
                                 Price.getDouble(c.getString(TAG_PRICE)),
-                                new ArrayList<>(Arrays.asList(bitmap)),
-                                c.getInt(TAG_KEY),c.getDouble(TAG_EXTREMENESS)),c.getInt(TAG_TSKEY),
-                                c.getInt(TAG_QUANTITY),c.getString(TAG_DATE), c.getString(TAG_TIME),
-                                isActive, c.getString(TAG_GEMAIL)));
+                                new ArrayList<>(Arrays.asList(bitmap)),c.getInt(TAG_KEY),
+                                c.getDouble(TAG_EXTREMENESS))));
 
                         if(isActive) {
-                            totalPrice = totalPrice + shoppingCart.get(i).getTourPrice();
+                            totalPrice = totalPrice + Price.getDouble(c.getString(TAG_PRICE));
                         }
-
                     }
                 }
             } catch (JSONException e) {
@@ -368,100 +389,18 @@ public class ShoppingCartActivity extends ActionBarActivity {
                 @Override
                 public void run() {
                     if(success == 1) {
-                        adapter = new MyListAdapter();
+                        findViewById(R.id.noUpcomingTours).setVisibility(View.GONE);
 
-                        listView = (ListView) findViewById(R.id.listView);
-                        listView.setAdapter(adapter);
+                        //activeAdapter = new MyListAdapter(activeHistory);
+                        activeAdapter = new MyListAdapter();
 
-                        adapter.notifyDataSetChanged();
+                        upcomingListView = (ListView) findViewById(R.id.upcommingListView);
+                        upcomingListView.setAdapter(activeAdapter);
 
-                        if(!active) {
-                            TextView message = (TextView) findViewById(R.id.message);
-                            message.setVisibility(View.VISIBLE);
-                        } else {
-                            TextView message = (TextView) findViewById(R.id.message);
-                            message.setVisibility(View.GONE);
-                        }
+                        setListViewHeightBasedOnChildren(upcomingListView);
 
-                        TextView tPrice = (TextView) findViewById(R.id.price);
-                        tPrice.setText("$" + String.format("%.2f", totalPrice));
-                    } else {
-                        TextView fName = (TextView) findViewById(R.id.result);
-                        findViewById(R.id.result).setVisibility(View.VISIBLE);
-                        fName.setText(R.string.empty_cart);
-
-                        findViewById(R.id.items).setVisibility(View.GONE);
-                        findViewById(R.id.price).setVisibility(View.GONE);
-                        findViewById(R.id.checkout).setVisibility(View.GONE);
+                        activeAdapter.notifyDataSetChanged();
                     }
-                }
-            });
-        }
-
-    }
-
-    /**
-     * Class to remove shopping cart items from database
-     */
-    class RemoveFromShoppingCart extends AsyncTask<String, String, String> {
-
-        @Override
-        protected String doInBackground(String... params) {
-            String result = "";
-
-            try {
-                HttpClient httpClient = new DefaultHttpClient();
-                String url;
-
-                List<NameValuePair> categoryName = new ArrayList<>();
-                categoryName.add(new BasicNameValuePair("t_key", Integer.toString(conn.getT_key())));
-                categoryName.add(new BasicNameValuePair("ts_key", Integer.toString(ts_key)));
-
-                HttpPost httppost = new HttpPost(url_remove_from_cart);
-
-                httppost.setEntity(new UrlEncodedFormEntity(categoryName));
-
-                HttpResponse response = httpClient.execute(httppost);
-
-                HttpEntity entity = response.getEntity();
-                InputStream webs = entity.getContent();
-
-                try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(webs,"iso-8859-1"),8);
-                    StringBuilder sb = new StringBuilder();
-                    String line = null;
-                    while ((line = reader.readLine()) != null) {
-                        sb.append(line);
-                    }
-                    webs.close();
-                    result=sb.toString();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            try {
-                JSONObject jObj = new JSONObject(result);
-
-                success = jObj.getInt(TAG_SUCCESS);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        protected void onPostExecute(String file_url) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    adapter.clear();
-                    totalPrice = 0;
-
-                    new LoadShoppingCart().execute();
                 }
             });
         }

@@ -17,7 +17,7 @@
 		T.\"Payed\" as Qty, 
 		T.\"s_isActive\" as isactive,
 		(T.\"Price\"*T.\"Payed\") as total
-		FROM \"Past Tours\" as T 
+		FROM \"Past Tour\" as T 
 		Where \"t_key\"=$keyword");
 		
 		if(pg_num_rows($result) > 0) {

@@ -75,7 +75,7 @@
     <string name="description">Descripción</string>
     <string name="items">Artículos</string>
     <string name="proceed_checkout">Proceder a la comprobación</string>
-    <string name="locations">Ubicaciones</string>
+    <string name="locations">Localizaciones</string>
     <string name="extremeness">Extremo</string>
     <string name="price">Precio</string>
 
@@ -142,5 +142,9 @@
 
     <string name="rate_warning">La evaluacion debe ser de 1 a 5</string>
 
+    <string name="language_message">Para mantener el idioma seleccionado después de salir No Middle Man/npor favor cambie el idioma del teléfono.</string>
 
+    <string name="payment_failed">El pago falló</string>
+    <string name="report">Reporta</string>
+    <string name="report_error">Error de reporte</string>
 </resources>

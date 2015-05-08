@@ -12,6 +12,8 @@ public class Price {
     public static double getDouble(String price) {
         String substring = price.substring(1);
 
+        substring = substring.replace(",","");
+
         double Price = Double.parseDouble(substring);
         return Price;
     }

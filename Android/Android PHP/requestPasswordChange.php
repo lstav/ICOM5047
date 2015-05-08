@@ -7,7 +7,10 @@
 	if($_POST['t_Email']) {
 		$email = $_POST['t_Email'];
 		//$password = 123;
-		$password = substr( md5(rand()), 0, 7);
+		$pass = substr( md5(rand()), 0, 7);
+		$salt = '6e663cc2478ebdc49cbce5609ba0305b60d10844';
+		$password = $pass.$salt;//.$email;
+		$password = sha1($password);
 			
 		$result = pg_query($conn, "UPDATE \"Tourist\" as t SET \"t_password\" = '$password' 
 		WHERE t.\"t_Email\" = '$email'");
@@ -19,7 +22,7 @@
 			
 			$to      = $email;
 			$subject = 'Password Change Request';
-			$message = 'This is your new password '.$password;
+			$message = 'This is your new password '.$pass;
 			$headers = 'From: luis.tavarez@outlook.com' . "\r\n" .
 				'Reply-To: luis.tavarez@outlook.com' . "\r\n" .
 				'X-Mailer: PHP/' . phpversion();

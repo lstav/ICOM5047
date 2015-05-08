@@ -12,6 +12,7 @@ public class ShoppingItem {
     private String date;
     private String time;
     private boolean isActive;
+    private String gEmail;
 
     public ShoppingItem() {
         //this.tour = new TourClass();
@@ -29,7 +30,7 @@ public class ShoppingItem {
      * @param time
      * @param isActive
      */
-    public ShoppingItem(Tour tour, int sessionID, int quantity, String date, String time, boolean isActive) {
+    public ShoppingItem(Tour tour, int sessionID, int quantity, String date, String time, boolean isActive, String gEmail) {
         this.tourID = tour.getId();
         this.tour = tour;
         this.sessionID = sessionID;
@@ -37,6 +38,7 @@ public class ShoppingItem {
         this.date = date;
         this.time = time;
         this.isActive = isActive;
+        this.gEmail = gEmail;
     }
 
     /**
@@ -120,12 +122,20 @@ public class ShoppingItem {
     }
 
     /**
+     * Tour guide email
+     * @return
+     */
+    public String getGEmail() {
+        return gEmail;
+    }
+    /**
      * Overrides equals method to check equality of two shopping cart items
      * @param sItem
      * @return
      */
     public boolean equals(ShoppingItem sItem) {
-        if(this.getTime().equals(sItem.getTime()) && this.getDate().equals(sItem.getDate()) && this.getTourID() == sItem.getTourID()) {
+        if(this.getTime().equals(sItem.getTime()) && this.getDate().equals(sItem.getDate()) && this.getTourID() == sItem.getTourID()
+                && this.getGEmail().equals(sItem.getGEmail())) {
             return true;
         }
         return false;

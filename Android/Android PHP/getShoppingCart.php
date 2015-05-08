@@ -10,7 +10,7 @@
 		$result = pg_query($conn, "Select T.tour_key as Key, T.ts_key as ts_key, upper(T.\"tour_Name\") as Name, 
 		T.\"tour_Desc\" as Description, T.\"total\" as Price, T.\"extremeness\" as Extremeness, 
 		T.\"tour_photo\" as Photo, T.\"s_Time\" as Time, T.\"p_quantity\" as Qty, T.\"s_isActive\" as isactive, 
-		T.\"passed\" as passed, T.\"isfull\" as full
+		T.\"passed\" as passed, T.\"isfull\" as full, T.\"g_Email\" as gEmail
 		FROM \"Shopping Cart\" as T 
 		Where \"t_key\"=$keyword");
 		
@@ -36,6 +36,7 @@
 				$tour['time'] = date("g:i:s A" , strtotime($row['time']));
 				$tour['date'] = date("M-d-Y", strtotime($row['time']));
 				$tour['quantity'] = $row['qty'];
+				$tour['gEmail'] = $row['gEmail'];
 				
 				array_push($response['tours'], $tour);
 			}

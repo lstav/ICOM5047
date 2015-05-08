@@ -6,7 +6,14 @@
 	
 	if(isset($_POST['key']) && isset($_POST['password'])) {
 		$key = $_POST['key'];
+		//$res_email = "Select \"GetEmail\"(t_key::bigint)";
+		
+		//$email = $res_email['t_Email'];
+		
 		$password = $_POST['password'];
+		$salt = '6e663cc2478ebdc49cbce5609ba0305b60d10844';
+		$password = $password.$salt; //.$email;
+		$password = sha1($password);
 			
 		$result = pg_query($conn, "UPDATE \"Tourist\" as t SET \"t_password\" = '$password' WHERE t.\"t_key\" = $key");
 		

@@ -14,20 +14,27 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.paypal.android.sdk.payments.PayPalConfiguration;
+import com.paypal.android.MEP.CheckoutButton;
+import com.paypal.android.MEP.PayPal;
+/*import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalPayment;
 import com.paypal.android.sdk.payments.PayPalService;
 import com.paypal.android.sdk.payments.PaymentActivity;
-import com.paypal.android.sdk.payments.PaymentConfirmation;
+import com.paypal.android.sdk.payments.PaymentConfirmation;*/
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -50,6 +57,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.paypal.android.MEP.PayPalActivity;
+import com.paypal.android.MEP.PayPalAdvancedPayment;
+import com.paypal.android.MEP.PayPalInvoiceData;
+import com.paypal.android.MEP.PayPalPayment;
+import com.paypal.android.MEP.PayPalReceiverDetails;
+import com.paypal.android.a.*;
+import com.paypal.android.*;
+
 
 public class CheckoutActivity extends ActionBarActivity {
 
@@ -57,6 +72,7 @@ public class CheckoutActivity extends ActionBarActivity {
     private ArrayAdapter<ShoppingItem> adapter;
     private ListView listView;
     private List<ShoppingItem> shoppingCart = new ArrayList<>();
+    private List<PayPalItem> paypalitem = new ArrayList<>();
 
     private double totalPrice = 0.0;
     private int ts_key = -1;
@@ -80,20 +96,22 @@ public class CheckoutActivity extends ActionBarActivity {
     private static final String TAG_TIME = "time";
     private static final String TAG_ACTIVE = "isActive";
     private static final String TAG_SUCCESS = "success";
+    private static final String TAG_GEMAIL = "gEmail";
 
     private static final String CONFIG_CLIENT_ID = "AdurtY7CcDo9ygeg8Ic1fhVjZuzPvW-nB4lcXGHrEuExkAWfgxaAbUEpmwMMjmALMXi-EPz-zNZJhKBz";
 
-    private static PayPalConfiguration config = new PayPalConfiguration()
+    /*private static PayPalConfiguration config = new PayPalConfiguration()
             // Start with mock environment.  When ready, switch to sandbox (ENVIRONMENT_SANDBOX)
             // or live (ENVIRONMENT_PRODUCTION)
             .environment(PayPalConfiguration.ENVIRONMENT_SANDBOX)
             .clientId(CONFIG_CLIENT_ID)
-            .merchantName("No Middle Man");
+            .merchantName("No Middle Man");*/
 
 
     private static String url_get_checkout = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/checkout.php";
     private static String url_remove_from_cart = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/removeFromShoppingCart.php";
     private static String url_pay = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/pay.php";
+    private CheckoutButton launchPayPalButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,14 +122,127 @@ public class CheckoutActivity extends ActionBarActivity {
         Intent intent = getIntent();
 
 
-        Intent intent2 = new Intent(this, PayPalService.class);
+        /*Intent intent2 = new Intent(this, PayPalService.class);
 
         intent2.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
 
-        startService(intent2);
+        startService(intent2);*/
 
+        initLibrary();
         handleIntent(intent);
     }
+
+    public void initLibrary() {
+        PayPal pp = PayPal.getInstance();
+        if(pp == null) {
+            pp = PayPal.initWithAppID(this.getBaseContext(), "APP-80W284485P519543T", PayPal.ENV_SANDBOX);
+
+            // Required settings:
+
+            // Set the language for the library
+            pp.setLanguage("en_US");
+
+            // Some Optional settings:
+
+            // Sets who pays any transaction fees. Possible values are:
+            // FEEPAYER_SENDER, FEEPAYER_PRIMARYRECEIVER, FEEPAYER_EACHRECEIVER, and FEEPAYER_SECONDARYONLY
+            pp.setFeesPayer(PayPal.FEEPAYER_EACHRECEIVER);
+
+            // true = transaction requires shipping
+            pp.setShippingEnabled(false);
+
+            pp.setLibraryInitialized(true);
+
+            //PayPal.
+            //_paypalLibraryInit = true;
+        }
+    }
+
+    public void addToPayPalItem(String gEmail, Double price) {
+        boolean isInList = false;
+        for(int i = 0; i < paypalitem.size(); i++) {
+            if(paypalitem.get(i).getgEmail().equals(gEmail)) {
+                paypalitem.get(i).setPrice(price);
+                isInList = true;
+                break;
+            }
+        }
+
+        if(!isInList) {
+            paypalitem.add(new PayPalItem(gEmail, price));
+        }
+    }
+
+    /**
+     * Listener for PayPal button
+     * @param arg0
+     */
+    public void PayPalButtonClick(View arg0) {
+    // Create a basic PayPal payment
+        ArrayList<PayPalReceiverDetails> paymentList = new ArrayList<>();
+        Double nomipart = 0.0;
+        Double total = 0.0;
+
+        for(int i = 0; i < paypalitem.size(); i++) {
+            // Uncomment following section to run PayPal recepients for every tour guide
+            /*
+            PayPalReceiverDetails pay = new PayPalReceiverDetails();
+            pay.setRecipient(paypalitem.get(i).getgEmail());
+            pay.setMerchantName("No Middle Man");
+            pay.setSubtotal(new BigDecimal(paypalitem.get(i).getPrice() - paypalitem.get(i).getPrice()*.10));
+            pay.setPaymentType(PayPal.PAYMENT_TYPE_SERVICE);
+            */
+
+            total = total + paypalitem.get(i).getPrice()*.90;
+
+            nomipart = nomipart + paypalitem.get(i).getPrice()*.10;
+
+
+            //paymentList.add(pay);
+
+        }
+
+        PayPalReceiverDetails payment1 = new PayPalReceiverDetails();
+        PayPalReceiverDetails payment2 = new PayPalReceiverDetails();
+
+    // Set the recipient for the payment (can be a phone number)
+
+        payment1.setRecipient("skydiving-biz@test.com");
+        payment1.setMerchantName("No Middle Man");
+
+        payment2.setRecipient("nomiddlemantest@yahoo.com");
+        payment2.setMerchantName("No Middle Man");
+
+    // Set the payment amount, excluding tax and shipping costs
+        payment1.setSubtotal(new BigDecimal(total));
+        payment2.setSubtotal(new BigDecimal(nomipart));
+
+    // Set the payment type--his can be PAYMENT_TYPE_GOODS,
+    // PAYMENT_TYPE_SERVICE, PAYMENT_TYPE_PERSONAL, or PAYMENT_TYPE_NONE
+
+        payment1.setPaymentType(PayPal.PAYMENT_TYPE_SERVICE);
+        payment2.setPaymentType(PayPal.PAYMENT_TYPE_SERVICE);
+
+    // PayPalInvoiceData can contain tax and shipping amounts, and an
+    // ArrayList of PayPalInvoiceItem that you can fill out.
+    // These are not required for any transaction.
+        //PayPalInvoiceData invoice = new PayPalInvoiceData();
+        paymentList.add(payment1);
+        paymentList.add(payment2);
+
+        PayPalAdvancedPayment adv = new PayPalAdvancedPayment();
+        adv.setCurrencyType("USD");
+
+        adv.setReceivers(paymentList);
+    // Set the tax amount
+        //invoice.setTax(new BigDecimal(0));
+
+        Intent checkoutIntent = PayPal.getInstance().checkout(adv, this);
+                /*new Intent(this, PayPalActivity.class);
+        checkoutIntent.putExtra(PayPalActivity.EXTRA_PAYMENT_INFO, payment);*/
+        this.startActivityForResult(checkoutIntent,1);
+    }
+
 
     protected void onNewIntent(Intent intent) {
         setIntent(intent);
@@ -239,55 +370,6 @@ public class CheckoutActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
-
-    public void checkout(View view) {
-        // PAYMENT_INTENT_SALE will cause the payment to complete immediately.
-        // Change PAYMENT_INTENT_SALE to
-        //   - PAYMENT_INTENT_AUTHORIZE to only authorize payment and capture funds later.
-        //   - PAYMENT_INTENT_ORDER to create a payment for authorization and capture
-        //     later via calls from your server.
-
-        PayPalPayment payment = new PayPalPayment(new BigDecimal(totalPrice), "USD", "No Middle Man Tours",
-                PayPalPayment.PAYMENT_INTENT_SALE);
-
-        Intent intent = new Intent(this, PaymentActivity.class);
-
-
-
-        // send the same configuration for restart resiliency
-        intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
-
-        intent.putExtra(PaymentActivity.EXTRA_PAYMENT, payment);
-
-        startActivityForResult(intent, 0);
-    }
-
-    @Override
-    protected void onActivityResult (int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
-            PaymentConfirmation confirm = data.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
-            if (confirm != null) {
-                try {
-                    Log.i("paymentExample", confirm.toJSONObject().toString(4));
-
-                    // TODO: send 'confirm' to your server for verification.
-                    // see https://developer.paypal.com/webapps/developer/docs/integration/mobile/verify-mobile-payment/
-                    // for more details.
-                    new Paying().execute();
-
-                } catch (JSONException e) {
-                    Log.e("paymentExample", "an extremely unlikely failure occurred: ", e);
-                }
-            }
-        }
-        else if (resultCode == Activity.RESULT_CANCELED) {
-            Log.i("paymentExample", "The user canceled.");
-        }
-        else if (resultCode == PaymentActivity.RESULT_EXTRAS_INVALID) {
-            Log.i("paymentExample", "An invalid Payment or PayPalConfiguration was submitted. Please see the docs.");
-        }
-    }
-
     public void cancel(View view) {
         finish();
     }
@@ -343,9 +425,31 @@ public class CheckoutActivity extends ActionBarActivity {
         }
     }
 
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        switch (resultCode) {
+            // The payment succeeded
+            case Activity.RESULT_OK:
+                String payKey = intent.getStringExtra(PayPalActivity.EXTRA_PAY_KEY);
+                new Paying().execute();
+                break;
+
+            // The payment was canceled
+            case Activity.RESULT_CANCELED:
+                Log.i("paymentExample", "The user canceled.");
+                break;
+
+            // The payment failed, get the error from the EXTRA_ERROR_ID and EXTRA_ERROR_MESSAGE
+            case PayPalActivity.RESULT_FAILURE:
+                String errorID = intent.getStringExtra(PayPalActivity.EXTRA_ERROR_ID);
+                String errorMessage = intent.getStringExtra(PayPalActivity.EXTRA_ERROR_MESSAGE);
+                Toast.makeText(getApplicationContext(), R.string.payment_failed, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
     /**
-    * Search database with results by keyword
-    */
+     * Search database with results by keyword
+     */
     class LoadCheckout extends AsyncTask<String, String, String> {
 
         protected void onPreExecute() {
@@ -408,7 +512,7 @@ public class CheckoutActivity extends ActionBarActivity {
                             BitmapFactory.Options options = new BitmapFactory.Options();
                             options.inJustDecodeBounds = true;
                             // Calculate inSampleSize
-                            options.inSampleSize = 3;
+                            options.inSampleSize = 5;
                             // Decode bitmap with inSampleSize set
                             options.inJustDecodeBounds = false;
 
@@ -426,10 +530,11 @@ public class CheckoutActivity extends ActionBarActivity {
                                 new ArrayList<>(Arrays.asList(bitmap)),
                                 c.getInt(TAG_KEY),c.getDouble(TAG_EXTREMENESS)),c.getInt(TAG_TSKEY),
                                 c.getInt(TAG_QUANTITY),c.getString(TAG_DATE), c.getString(TAG_TIME),
-                                isActive));
+                                isActive, c.getString(TAG_GEMAIL)));
 
                         if(isActive) {
-                            totalPrice = totalPrice + Price.getDouble(c.getString(TAG_PRICE));
+                            totalPrice = totalPrice + shoppingCart.get(i).getTourPrice();
+                            addToPayPalItem(c.getString(TAG_GEMAIL), Price.getDouble(c.getString(TAG_PRICE)));
                         }
 
                     }
@@ -601,7 +706,7 @@ public class CheckoutActivity extends ActionBarActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Intent intent = new Intent(CheckoutActivity.this, PurchaseHistoryActivity.class);
+                    Intent intent = new Intent(CheckoutActivity.this, UpcomingPurchaseHistoryActivity.class);
                     startActivity(intent);
                     finish();
                 }
@@ -612,7 +717,7 @@ public class CheckoutActivity extends ActionBarActivity {
 
     @Override
     public void onDestroy() {
-        stopService(new Intent(this, PayPalService.class));
+        /*stopService(new Intent(this, PayPalService.class));*/
         super.onDestroy();
     }
 }
