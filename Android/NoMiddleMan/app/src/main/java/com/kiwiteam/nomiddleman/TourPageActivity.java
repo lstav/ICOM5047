@@ -629,9 +629,11 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                     TextView totalReviews = (TextView) findViewById(R.id.totalReviews);
                     totalReviews.setText(String.format("%.1f", tour.getAverageRating()) + " of 5.0");
 
-                    imageAdapter = new ImagePagerAdapter(getSupportFragmentManager(), 1);
-                    imagePager = (ViewPager) findViewById(R.id.viewPager);
-                    imagePager.setAdapter(imageAdapter);
+                    if(pictures != null) {
+                        imageAdapter = new ImagePagerAdapter(getSupportFragmentManager(), 1);
+                        imagePager = (ViewPager) findViewById(R.id.viewPager);
+                        imagePager.setAdapter(imageAdapter);
+                    }
 
                     // Tour picture
                     /*ImageView tPicture = (ImageView) findViewById(R.id.tourPicture);

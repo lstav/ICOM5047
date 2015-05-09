@@ -7,7 +7,7 @@
 	if($_POST['t_Email']) {
 		$email = $_POST['t_Email'];
 		//$password = 123;
-		$pass = substr( md5(rand()), 0, 7);
+		$pass = substr( md5(rand()), 0, 8);
 		$salt = '6e663cc2478ebdc49cbce5609ba0305b60d10844';
 		$password = $pass.$salt;//.$email;
 		$password = sha1($password);
