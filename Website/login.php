@@ -86,8 +86,9 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
 					{
 						$to      = $newuemail;
 						$subject = 'Verify Email';
-						$message = 'Please follow this link to verify your account
-						"http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/verifyForm.html"';
+						$message = "Please follow this link to verify your account
+						<a href='http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/verifyForm.html'>Verify Acount</a>
+						If you are unable to click on the link, copy and paste it on the address bar.";
 						$headers = 'From: luis.tavarez@outlook.com' . "\r\n" .
 						'Reply-To: luis.tavarez@outlook.com' . "\r\n" .
 						'X-Mailer: PHP/' . phpversion();

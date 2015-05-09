@@ -21,16 +21,16 @@ $(document).ready(function(){
 	
 	include_once("dbConnect.php");
 	
-	if($_POST['t_Email']) {
-		$email = $_POST['t_Email'];
+	if($_POST['g_Email']) {
+		$email = $_POST['g_Email'];
 		//$password = 123;
 		$pass = substr( md5(rand()), 0, 8);
 		$salt = '6e663cc2478ebdc49cbce5609ba0305b60d10844';
 		$password = $pass.$salt;//.$email;
 		$password = sha1($password);
 			
-		$result = pg_query($dbconn, "UPDATE \"Tourist\" as t SET \"t_password\" = '$password' 
-		WHERE t.\"t_Email\" = '$email'");
+		$result = pg_query($dbconn, "UPDATE \"Tour Guide\" as g SET \"g_password\" = '$password' 
+		WHERE g.\"g_Email\" = '$email'");
 		
 		if($result) {
 			

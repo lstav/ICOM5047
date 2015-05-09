@@ -26,8 +26,9 @@
 			
 			$to      = $t_Email;
 			$subject = 'Verify Email';
-			$message = 'Please follow this link to verify your account
-						"http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/verifyForm.html"';
+			$message = "Please follow this link to verify your account
+			'http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/verifyForm.html'
+			If you are unable to click on the link, copy and paste it on the address bar.";
 			$headers = 'From: luis.tavarez@outlook.com' . "\r\n" .
 				'Reply-To: luis.tavarez@outlook.com' . "\r\n" .
 				'X-Mailer: PHP/' . phpversion();

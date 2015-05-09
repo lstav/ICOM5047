@@ -130,6 +130,7 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
         <input name = "tgpass" id="inputPassword" placeholder="Min. 8 Characters" type="password">
       </div>
     </div>
+	<a href="http://kiwiteam.ece.uprm.edu/NoMiddleMan/website/requestPasswordPageGuide.php">Lost password?</a>
     <div class="control-group">
       <div class="controls">
         <!--<label class="checkbox">
