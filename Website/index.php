@@ -1,4 +1,13 @@
-<?php session_start(); ?>
+<?php 
+include_once("dbConnect.php");
+$query = pg_query($dbconn, "SELECT * FROM \"Tour Category\"");
+while($row = pg_fetch_array($query))
+{
+	$category = $row['Category_Name'];
+	$categoryList .= ' <li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$category.'">'.$category.'</a></li>';
+}
+
+?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head><?php include 'header.php';?></head>
@@ -10,12 +19,23 @@
     <form action="search_results.php" enctype="multipart/form-data" method="get"> 
     <div class="input-group">
       
-      <input type="text" name="search" class="form-control" placeholder="Extreme search by destination, tour category or keyword . . .">
+      <input type="text" name="search" class="form-control" placeholder="Extreme search by destination, tour category. . .">
       <span class="input-group-btn">
         <button name="submit" class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
       </span>
       
     </div><!-- /input-group -->
+    <div class="dropdown" style="
+    margin-top: 10px;
+">
+                <button class="btn btn-default dropdown-toggle" type="button" id="year" data-toggle="dropdown" aria-expanded="false" style="
+    margin-left: 0px;
+    margin-top: 0px;
+">Or Choose Category<span class="caret"></span> </button>
+                <ul class="dropdown-menu" id="yearList" role="menu" aria-labelledby="dropdownMenu1">
+                 <?php echo $categoryList; ?>
+                </ul>
+              </div>
     </form>
   </div><!-- /.col-lg-6 -->
   <ol class="carousel-indicators">

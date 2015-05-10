@@ -7,6 +7,11 @@ if(isset($_GET['tid']))
   $query = pg_query($dbconn, "SELECT * FROM \"Tour\" NATURAL JOIN \"Location\" NATURAL JOIN \"Tour Guide\" WHERE \"tour_key\" = '$tid'");
   $rquery = pg_query($dbconn, "SELECT AVG(\"Rate\"), COUNT(*) FROM \"Review\" NATURAL JOIN \"Tour Session\" WHERE \"tour_key\" = $tid");
   $count = pg_num_rows($query);
+  $ratingRow = pg_fetch_array($rquery);
+  $trating = $ratingRow['avg'];
+			$rcount = $ratingRow['count'];
+			$trating = round($trating, 1);
+			$tourRating = '$("#rating'.$tid.'").raty({ readOnly: true, score:'.$trating.' });';
   $sessionList = array();
   $reviewList = '';
   $ratingList = '';
@@ -20,6 +25,8 @@ if(isset($_GET['tid']))
 	  $row = pg_fetch_array($query);
 	  $tourName = $row['tour_Name'];
 	  $tdescription = $row['tour_Desc'];
+	  $youtube = $row['Youtube'];
+	  $facebook = $row['Facebook'];
 	  $ratingRow = pg_fetch_array($rquery);
 	  $trating = $ratingRow['avg'];
 	  $tid = $row['tour_key'];
@@ -128,11 +135,14 @@ $(document).ready(function(){
           <div class="col-md-6"> <img id="item-display" src="images/<?php echo $tid?>/1.jpg" alt="" style="max-width:100%"> </div>
           <div class="col-md-6">
             <div class="product-title"><?php echo $tourName;?></div>
-            <div class="product-desc"><?php echo $tdescription.'<br><strong>Estimated Duration: '.$tduration.' minutes </strong><br>'.$taddress .'<br>'.$tcity.', '. $tstate?></div>
-            <div class="product-rating"><i class="fa fa-star gold"></i> <i class="fa fa-star gold"></i> <i class="fa fa-star gold"></i> <i class="fa fa-star gold"></i> <i class="fa fa-star-o"></i> </div>
-            <hr>
-            <div class="product-price"><?php echo $tprice; ?></div>
-            <div class="product-stock"></div>
+             <div style = "float:left" id="rating<?php echo $tid?>"></div><a href = "#">(<?php echo $rcount?>)</a>
+            <div class="product-desc"><?php echo $tdescription.'<br><strong>Estimated Duration: '.$tduration.' minutes </strong><br>'.$taddress .'<br>'.$tcity.', '. $tstate?> <div class="product-price"><?php echo $tprice; ?></div><hr></div>
+           
+            
+            
+            
+           <a title="Lorem ipsum" href="<?php echo $youtube;?>"><img src="images/YouTube-social-squircle_red_48px.png" alt="Lorem ipsum"></a>
+           <a title="Lorem ipsum" href="<?php echo $facebook;?>"><img src="images/fb-48px.png" alt="Lorem ipsum"></a>
             <hr>
             
             <h4>Pick a date:</h4>
@@ -169,8 +179,9 @@ $(document).ready(function(){
               </div>
             </div>
             <br>
-             <h4>How many in your party?:</h4>
+             
 	     <div style="display:inline-block">
+         <h4>How many in your party?:</h4>
               <div class="dropdown">
                 <button class="btn btn-default dropdown-toggle" type="button" id="av" data-toggle="dropdown" aria-expanded="true"> 1<span class="caret"></span> </button>
                 <ul class="dropdown-menu" id="avList" role="menu" aria-labelledby="dropdownMenu1">
@@ -466,5 +477,6 @@ $('#cartButton').click(function(){
 */
 $.fn.raty.defaults.path = 'images'; 
 <?php echo $ratingList;?>
+<?php echo $tourRating;?>
 </script>
 </html>

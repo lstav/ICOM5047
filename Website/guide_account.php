@@ -1,5 +1,6 @@
 <?php 
 // Moved here
+
 function test_input($data)
 {
    $data = trim($data);
@@ -10,14 +11,18 @@ function test_input($data)
 include_once("dbConnect.php");
 session_start();
 $uorders = '';
+$uid = '';
+$uid = '';
 $porders = '';
-if($_SESSION['uemail'])
+if($_SESSION['tgid'])
 {
-	    $uemail = $_SESSION['uemail'];
-		$uid = $_SESSION['uid'];
-		$ufname = $_SESSION['ufname'];
-		$ulname = $_SESSION['ulname'];
-		$upass = $_SESSION['upass'];
+	   $uemail =  $_SESSION['tgemail'];
+		$uid = $_SESSION['tgid'];
+		$ufname = $_SESSION['tgfname'];
+		$ulname = $_SESSION['tglname'];
+		$upass = $_SESSION['tgpass'];
+		//$_SESSION['tgcompany'] = $row['Company'];
+		//$_SESSION['tgdesc'] = $row['g_desc'];
 		$errorMsg = '';
 		if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POST['new-ulname'])||!empty($_POST['new-upass']))
 		{
@@ -30,8 +35,8 @@ if($_SESSION['uemail'])
 				}
 				else
 				{
-					$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"t_Email\" = '$newuemail' WHERE \"t_Email\" = '$uemail'");
-					$uemail = $_SESSION['uemail'] = $newuemail;
+					$query = pg_query($dbconn, "UPDATE \"Tour Guide\" SET \"g_Email\" = '$newuemail' WHERE \"g_Email\" = '$uemail'");
+					$uemail = $_SESSION['tgemail'] = $newuemail;
 				}
 			}
 			if(!empty($_POST['new-ufname']))
@@ -44,8 +49,8 @@ if($_SESSION['uemail'])
 				}
 				else
 				{
-					$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"t_FName\" = '$newufname' WHERE \"t_Email\" = '$uemail' AND \"t_FName\" = '$ufname'");
-					$ufname = $_SESSION['ufname'] = $newufname;
+					$query = pg_query($dbconn, "UPDATE \"Tour Guide\" SET \"g_FName\" = '$newufname' WHERE \"g_Email\" = '$uemail' AND \"g_FName\" = '$ufname'");
+					$ufname = $_SESSION['tgfname'] = $newufname;
 				}
 			}
 			if(!empty($_POST['new-ulname']))
@@ -57,7 +62,7 @@ if($_SESSION['uemail'])
 				}
 				else
 				{
-					$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"t_LName\" = '$newulname' WHERE \"t_Email\" = '$uemail' AND \"t_LName\" = '$ulname'");
+					$query = pg_query($dbconn, "UPDATE \"Tour Guide\" SET \"g_LName\" = '$newulname' WHERE \"g_Email\" = '$uemail' AND \"g_LName\" = '$ulname'");
 					$ulname = $_SESSION['ulname'] = $newulemail;
 				}
 			}
@@ -75,7 +80,7 @@ if($_SESSION['uemail'])
 				if($oldupass == $newupass)
 				{
 					
-					$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"t_password\" = '$newupass' WHERE \"t_Email\" = '$uemail' AND \"t_password\" = '$upass'");
+					$query = pg_query($dbconn, "UPDATE \"Tour Guide\" SET \"g_password\" = '$newupass' WHERE \"g_Email\" = '$uemail' AND \"g_password\" = '$upass'");
 				}
 				else
 				{
@@ -118,15 +123,11 @@ if($_SESSION['uemail'])
 			$ucount = pg_num_rows($uquery);
 			while($row = pg_fetch_array($uquery))
 			{
-			  $tid = $row['tour_key'];
+			  $tid = $row['tour_key'];;
 			  $tcity = $row['City'];
 			  $tstate = $row['State-Province'];
 			  $tname = $row['tour_Name'];
 			  $tskey = $row['ts_key'];
-			  $total = $row['total'];
-			 // $tstime = $row['s_Time'];
-			  $reserved_time = date("F/d/Y g:i a" , strtotime(substr($row['s_Time'], 0, -3)));
-			  $payed = $row['Payed'];
 			  $rquery = pg_query($dbconn, "SELECT * FROM \"Review\" WHERE \"ts_key\"='$tskey' AND \"t_key\"='$uid'");
 			  $rbutton = '';
 			  if(pg_num_rows($rquery) == 0)
@@ -134,7 +135,7 @@ if($_SESSION['uemail'])
 				   $rbutton= '<a style="" class="btn btn-default" href="write_review.php?tid='.$tid.'&tskey='.$tskey.'" type="button">Write Review <span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>';
 			  }
 			  $tdescription = $row['tour_Desc'];
-			  $tprice = $row['Price'];
+			  $tprice = $row['total'];
 			  $uorders .= '<article class="search-result row">
 			  <div class="col-xs-12 col-sm-12 col-md-3">
 				  <a title="Lorem ipsum" class="thumbnail" href="tour_page.php?tid='.$tid.'"><img src="images/'.$tid.'/1.jpg" alt="Lorem ipsum"></a>
@@ -148,10 +149,7 @@ if($_SESSION['uemail'])
 			  <div class="col-xs-12 col-sm-12 col-md-7 excerpet">
 				  <h3><a title="" href="tour_page.php?tid='.$tid.'">'.$tname.'</a></h3>
 				  <p>'.$tdescription.'</p>	
-				  <h5>Price per tourist: '.$tprice.'</h5>
-				  <h5>Total amount paid: '.$total.'</h5>	
-				  <h5>Party of: '.$payed.'</h5>
-				  <h5>Reserved time: '.$reserved_time.'</h5>
+				  <h5>'.$tprice.'</h5>	
 			  </div>
 			  <span class="clearfix borda"></span>
 		  </article>';
@@ -171,12 +169,8 @@ if($_SESSION['uemail'])
 			  $tname = $row['tour_Name'];
 			  $tdescription = $row['tour_Desc'];
 			  $tprice = $row['Price'];
-			  $total = $row['total'];
-			 // $tstime = $row['s_Time'];
-			  $reserved_time = date("F/d/Y g:i a" , strtotime(substr($row['s_Time'], 0, -3)));
-			  $payed = $row['Payed'];
-			  $rpquery = pg_query($dbconn, "SELECT * FROM \"Review\" WHERE \"ts_key\"='$tskey' AND \"t_key\"='$uid'");
-			  if(pg_num_rows($rpquery) == 0)
+			  $rquery = pg_query($dbconn, "SELECT * FROM \"Review\" WHERE \"ts_key\"='$tskey' AND \"t_key\"='$tid'");
+			  if(pg_num_rows($dbconn) == 0)
 			  {
 				   $rbutton= '<a style="" class="btn btn-default" href="write_review.php?tid='.$uid.'&tskey='.$tskey.'" type="button">Write Review <span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>';
 			  }
@@ -193,10 +187,7 @@ if($_SESSION['uemail'])
 			  <div class="col-xs-12 col-sm-12 col-md-7 excerpet">
 				  <h3><a title="">'.$tname.'</a></h3>
 				  <p>'.$tdescription.'</p>	
-				  <h5>Price per tourist: '.$tprice.'</h5>
-				  <h5>Total amount paid: '.$total.'</h5>	
-				  <h5>Party of: '.$payed.'</h5>
-				  <h5>Reserved time: '.$reserved_time.'</h5>
+				  <h5>'.$tprice.'</h5>
 				  '.$rbutton.'	
 			  </div>
 			  <span class="clearfix borda"></span>
@@ -218,7 +209,7 @@ $(document).ready(function(){
 </script>
 </head>
 <body>
-<?php include 'navbar.php';?>
+<?php include 'guide_navbar.php';?>
 <div class="container-fluid" style="margin-top: 10px;">
 <h1>My Account</h1>
   <div role="tabpanel"> 
@@ -226,15 +217,15 @@ $(document).ready(function(){
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
       <li role="presentation" class="active"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" aria-expanded="true">Profile</a></li>
-      <li role="presentation" class=""><a href="#upcoming-orders" aria-controls="upcoming-orders" role="tab" data-toggle="tab" aria-expanded="false">Upcoming Tours</a></li>
-      <li role="presentation" class=""><a href="#past-orders" aria-controls="past-orders" role="tab" data-toggle="tab" aria-expanded="false">Past Tours</a></li>
+      <li role="presentation" class=""><a href="#upcoming-orders" aria-controls="upcoming-orders" role="tab" data-toggle="tab" aria-expanded="false">Reports</a></li>
+      
     </ul>
     
     <!-- Tab panes -->
     <div class="tab-content">
       <div role="tabpanel" class="tab-pane active" id="profile">
         <div class="area">
-          <form class="form-horizontal" accept-charset="utf-8" method = "post" action="tourist_account.php">
+          <form class="form-horizontal" method = "post" action="guide_account.php">
             <div><font color="red"><?php echo $errorMsg; ?></font></div>
             <?php echo $output;?>
             <button type = "button" id = "pass-btn" class="btn btn-default btn-sm" style="margin-top: 5px;">Change Password</button>
@@ -262,14 +253,23 @@ $(document).ready(function(){
       </div>
       <div role="tabpanel" class="tab-pane" id="upcoming-orders">
         <div style="margin-top: 10px;" class="area">
-          <?php echo $uorders; ?>
+          <h1>Report:</h1>
+<div><font color="red"></font></div>
+<form method = "post" action = "write_report.php">
+<input type="hidden" name="g_key" value="<?php echo $uid;?>">
+<div class="control-group">
+                            
+							<textarea id="inputLast" class="form-control" rows="5" name = "report" type="text"></textarea>
+                        </div>  
+                        <div style = "margin-top:10px" class="control-group">
+                            <div class="controls">
+                               </label> <button class="btn btn-success" type="submit">Submit Report</button> <!--<button class="btn" type="button">Help</button>-->
+                            </div>
+                        </div>
+</form>
         </div>
       </div>
-      <div role="tabpanel" class="tab-pane" id="past-orders">
-        <div style="margin-top: 10px;" class="area">
-          <?php echo $porders; ?>
-        </div>
-      </div>
+      
     </div>
   </div>
 </div>

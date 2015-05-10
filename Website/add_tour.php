@@ -1,7 +1,14 @@
 <?php
+include_once("dbConnect.php");
 if (session_status() == PHP_SESSION_NONE) 
 {
 	session_start();
+}
+$query = pg_query($dbconn, "SELECT * FROM \"Tour Category\"");
+while($row = pg_fetch_array($query))
+{
+	$category = $row['Category_Name'];
+	$categoryList .= '<option>'.$category.'</option>';
 }
 $hourList= '';
 $i = (int)0;
@@ -32,7 +39,6 @@ for($j = 0; $j < 24; $j++)
 		$dList .= '<option>'.$i*(15).' minutes</option>';
 	}
 }
-include_once("dbConnect.php");
 if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!empty($_POST['duration'])||!empty($_POST['price'])||!empty($_POST['address'])||!empty($_POST['city'])||!empty($_POST['state'])||!empty($_POST['country'])||!empty($_POST['facebook'])||!empty($_POST['youtube'])||!empty($_POST['instagram'])||!empty($_POST['twitter'])||!empty($_POST['extreme'])||!empty($_POST['quantity']))
 {
 	//var_dump("Here!");
@@ -110,7 +116,8 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
 				$query = pg_query($dbconn, "INSERT INTO \"Tour\" (\"tour_Name\", \"tour_Desc\", \"Duration\", \"Price\", \"Facebook\", \"Youtube\", \"Instagram\", \"Twitter\", \"g_key\", \"tour_isActive\", \"tour_isSuspended\", \"L_key\", \"tour_quantity\", \"extremeness\", \"tour_address\", \"autoGen\") VALUES('$tourName', '$tdescription', '$tduration', '$tprice', '$facebook', '$youtube', '$instagram', '$twitter', '$uid', TRUE, FALSE, $lKey, $quantity, $extreme, '$taddress', TRUE) RETURNING \"tour_key\"");
 				$row = pg_fetch_array($query);
 				$tour_key = $row['tour_key'];
-				$query = pg_query($dbconn, "UPDATE \"Tour\" SET \"tour_photo\" = 'http://kiwiteam.ece.uprm.edu/NoMiddleMan/website/images/$tour_key/' WHERE 'tour_key' = $tour_key"); 
+				
+				$query = pg_query($dbconn, "UPDATE \"Tour\" SET \"tour_photo\" = 'http://kiwiteam.ece.uprm.edu/NoMiddleMan/website/images/$tour_key/' WHERE \"tour_key\" = $tour_key"); 
 				$cquery = pg_query($dbconn, "SELECT * FROM \"Tour Category\" WHERE upper(\"Category_Name\") = upper('$category')");
 				$cKey = '';
 				if(pg_num_rows($cquery) > 0)
@@ -201,8 +208,12 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
           </div>
           <div class="control-group">
             <label class="control-label" for="inputFirst">Category</label>
-            <div class="controls">
-              <input id="inputFirst" name = "category" placeholder="E.g. Ziplining" type="text">
+            <div class="controls" style="width:100%">
+              <select name = "category" style = "width:20%;display:inline" class="form-control">
+                <?php echo $categoryList;?>
+              </select>
+              <span style = "width:20%">Or add your own: </span>
+              <input style = "width:20%" id="inputFirst" name="name" placeholder="E.g. Bungie Jumping" type="text">
             </div>
           </div>
           <div class="control-group">

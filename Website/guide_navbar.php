@@ -11,12 +11,16 @@ if(isset($_SESSION['tgid']))
 	$tgid = $_SESSION['tgid'];
 	$tgemail = $_SESSION['tgemail'];
 	$tgfname = $_SESSION['tgfname'];
-	$navLink = "tour-guide-home.php";
+	$navLink = "guide_account.php";
 	$loginOuput = '<li class = "dropdown"><a class = "dropdown-toggle" data-toggle = "dropdown"> Hello  '.$tgfname.'! <b class = "caret"></b></a>
           <ul class = "dropdown-menu">
             <li><a href = "'.$navLink.'">My Account</a></li>
             <li><a href = "sign_out.php">Sign Out</a></li>
           </ul></li>';
+}
+else
+{
+	$loginOuput = "";
 }
 ?>
 
@@ -26,9 +30,9 @@ if(isset($_SESSION['tgid']))
     <div class = "collapse navbar-collapse navHeaderCollapse">
       <ul class = "nav navbar-nav navbar-right">
         <?php echo $loginOuput?>
-        <li> <div id="google_translate_element" style="padding-top: 12px;"></div><script type="text/javascript">
+        <li> <div id="google_translate_element" style="padding-top: 12px; margin-left: 10px;"></div><script type="text/javascript">
 function googleTranslateElementInit() {
-  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,es,zh-CN', layout: google.translate.TranslateElement.InlineLayout.SIMPLE, autoDisplay: false}, 'google_translate_element');
+  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,es', layout: google.translate.TranslateElement.InlineLayout.SIMPLE, autoDisplay: false}, 'google_translate_element');
 }
 </script><script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script></li>
       </ul>

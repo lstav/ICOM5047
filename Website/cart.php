@@ -35,7 +35,6 @@ $receiver = array(array());
 			$tgkey = $row['g_key'];
 			$tgemail = $row['g_Email'];
 			$reserved_time = date("F/d/Y g:i a" , strtotime(substr($row['s_Time'], 0, -3)));
-			
 			$receiver[$tgkey]['email'] = $tgemail;
 			$receiver[$tgkey]['tskey']  = $ts_key;
 			$rprice = $quantity*(float)preg_replace("/([^0-9\\.])/i", "", $tprice);
@@ -64,12 +63,18 @@ $receiver = array(array());
 			</div>
 			<span class="clearfix borda"></span>
 		</article>';
+			$_SESSION['trankey'] = $ts_key;
 		}
+		
 		$_SESSION['receiver'] = $receiver;
+		$_SESSION['defaultreceiver'] = 'skydiving@test.com';
+		$_SESSION['receivertotal'] = $totalPrice * 0.9;
+		$_SESSION['nmmfee'] = $totalPrice *0.1;
+		
 		//setlocale(LC_MONETARY, 'en_US');
 		//$totalPrice =  money_format('%(#10n', $totalPrice);
 		
-		$checkOut = '<div style = "float: right"> <h3> Total price: $'.$totalPrice.'</h3><form action="parallel_payment.php" method="post">
+		$checkOut = '<div style = "float: right"> <h3> Total price: $'.$totalPrice.'</h3><form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
 <!-- Saved buttons use the "secure click" command -->
 <input type="hidden" name="cmd" value="_xclick">
 <!-- Saved buttons are identified by their button IDs -->

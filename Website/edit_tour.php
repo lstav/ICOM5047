@@ -5,7 +5,8 @@ if (session_status() == PHP_SESSION_NONE)
 {
 	session_start();
 }
-if($_GET['tid'])
+//var_dump($_GET);
+if(isset($_GET["tid"]))
 {
 	$tour_key = $_GET['tid'];
 	$query = pg_query($dbconn, "SELECT * FROM \"Tour\" NATURAL JOIN \"Location\" NATURAL JOIN \"Tour Category\" NATURAL JOIN \"isCategory\" WHERE \"tour_key\"= '$tour_key'");
@@ -62,6 +63,7 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
 	//if(!empty($_POST['name'])&&!empty($_POST['desc'])&&!empty($_POST['image'])&&!empty($_POST['duration'])&&!empty($_POST['price'])&&!empty($_POST['address'])&&!empty($_POST['city'])&&!empty($_POST['state'])&&!empty($_POST['country'])&&!empty($_POST['facebook'])&&!empty($_POST['youtube'])&&!empty($_POST['instagram'])&&!empty($_POST['twitter'])&&!empty($_POST['extreme'])&&!empty($_POST['quantity']))
 	//{
 				//$row = pg_fetch_array($query);
+				$tour_key = $_POST['tour_key'];
 				$tourName = $_POST['name'];
 				$tdescription = $_POST['desc'];
 				//$tid = $row['tour_key'];
@@ -130,30 +132,24 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
 					$lKey = $row['L_key'];
 				}
 				$tdescription = str_replace(array("'", "\"", "&quot;"), "", $tdescription);
-				$query = pg_query($dbconn, "UPDATE \"Tour\" SET (\"tour_Name\", \"tour_Desc\", \"Duration\", \"Price\", \"Facebook\", \"Youtube\", \"Instagram\", \"Twitter\", \"g_key\", \"tour_isActive\", \"tour_isSuspended\", \"L_key\", \"tour_quantity\", \"extremeness\", \"tour_address\", \"autoGen\") = ('$tourName', '$tdescription', '$tduration', '$tprice', '$facebook', '$youtube', '$instagram', '$twitter', '$uid', TRUE, FALSE, $lKey, $quantity, $extreme, '$taddress', TRUE) RETURNING \"tour_key\"");
-				$row = pg_fetch_array($query);
-				$tour_key = $row['tour_key'];
-				$query = pg_query($dbconn, "UPDATE \"Tour\" SET \"tour_photo\" = 'http://kiwiteam.ece.uprm.edu/NoMiddleMan/website/images/$tour_key/' WHERE 'tour_key' = $tour_key"); 
-				$cquery = pg_query($dbconn, "SELECT * FROM \"Tour Category\" WHERE upper(\"Category_Name\") = upper('$category')");
+				$query = pg_query($dbconn, "UPDATE \"Tour\" SET (\"tour_Name\", \"tour_Desc\", \"Duration\", \"Price\", \"Facebook\", \"Youtube\", \"Instagram\", \"Twitter\", \"g_key\", \"tour_isActive\", \"tour_isSuspended\", \"L_key\", \"tour_quantity\", \"extremeness\", \"tour_address\", \"autoGen\") = ('$tourName', '$tdescription', '$tduration', '$tprice', '$facebook', '$youtube', '$instagram', '$twitter', '$uid', TRUE, FALSE, $lKey, $quantity, $extreme, '$taddress', TRUE) WHERE \"tour_key\"='$tour_key'");
+				//$row = pg_fetch_array($query);
+				//$tour_key = $row['tour_key'];
+				$query = pg_query($dbconn, "UPDATE \"Tour\" SET \"tour_photo\" = 'http://kiwiteam.ece.uprm.edu/NoMiddleMan/website/images/$tour_key/' WHERE \"tour_key\" = $tour_key"); 
+				$cquery = pg_query($dbconn, "SELECT * FROM \"Tour Category\" NATURAL JOIN \"isCategory\" WHERE upper(\"Category_Name\") = upper('$category') AND \"tour_key\" = '$tour_key'");
 				$cKey = '';
-				if(pg_num_rows($cquery) > 0)
-				{
-					$row = pg_fetch_array($cquery);
-					$cKey = $row['cat_key'];
-					$cquery = pg_query($dbconn, "INSERT INTO \"isCategory\" (\"cat_key\", \"tour_key\") VALUES ($cKey, $tour_key)");
-				}
-				else
+				if(pg_num_rows($cquery) == 0)
 				{
 					$cquery = pg_query($dbconn, "SELECT \"Create_Category\"('$category')");
 					$cquery = pg_query($dbconn, "SELECT \"Join_Category\"('$category', $tour_key)");
 				}
-				$wquery = pg_query($dbconn, "INSERT INTO \"Workdays\" (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") VALUES('Monday', '$tour_key', '$mondayf', '$mondayl')");
-				$wquery = pg_query($dbconn, "INSERT INTO \"Workdays\" (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") VALUES('Tuesday', '$tour_key', '$tuesdayf', '$tuesdayl')");
-				$wquery = pg_query($dbconn, "INSERT INTO \"Workdays\" (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") VALUES('Wednesday', '$tour_key', '$wednesdayf', '$wednesdayl')");
-				$wquery = pg_query($dbconn, "INSERT INTO \"Workdays\" (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") VALUES('Thursday', '$tour_key', '$thursdayf', '$thursdayl')");
-				$wquery = pg_query($dbconn, "INSERT INTO \"Workdays\" (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") VALUES('Friday', '$tour_key', '$fridayf', '$fridayl')");
-				$wquery = pg_query($dbconn, "INSERT INTO \"Workdays\" (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") VALUES('Saturday', '$tour_key', '$saturdayf', '$saturdayl')");
-				$wquery = pg_query($dbconn, "INSERT INTO \"Workdays\" (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") VALUES('Sunday', '$tour_key', '$sundayf', '$sundayl')");
+				$wquery = pg_query($dbconn, "UPDATE \"Workdays\" SET (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") = ('Monday', '$tour_key', '$mondayf', '$mondayl') WHERE \"tour_key\" = '$tour_key' AND \"dayname\" = 'Monday'");
+				$wquery = pg_query($dbconn, "UPDATE \"Workdays\" SET (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") = ('Tuesday', '$tour_key', '$tuesdayf', '$tuesdayl') WHERE \"tour_key\" = '$tour_key' AND \"dayname\" = 'Tuesday'");
+				$wquery = pg_query($dbconn, "UPDATE \"Workdays\" SET (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") = ('Wednesday', '$tour_key', '$wednesdayf', '$wednesdayl') WHERE \"tour_key\" = '$tour_key' AND \"dayname\" = 'Wednesday'");
+				$wquery = pg_query($dbconn, "UPDATE \"Workdays\" SET (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") = ('Thursday', '$tour_key', '$thursdayf', '$thursdayl') WHERE \"tour_key\" = '$tour_key' AND \"dayname\" = 'Thursday'");
+				$wquery = pg_query($dbconn, "UPDATE \"Workdays\" SET (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") = ('Friday', '$tour_key', '$fridayf', '$fridayl') WHERE \"tour_key\" = '$tour_key' AND \"dayname\" = 'Friday'");
+				$wquery = pg_query($dbconn, "UPDATE \"Workdays\" SET (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") = ('Saturday', '$tour_key', '$saturdayf', '$saturdayl') WHERE \"tour_key\" = '$tour_key' AND \"dayname\" = 'Saturday'");
+				$wquery = pg_query($dbconn, "UPDATE \"Workdays\" SET (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") = ('Sunday', '$tour_key', '$sundayf', '$sundayl') WHERE \"tour_key\" = '$tour_key' AND \"dayname\" = 'Sunday'");
 				
 				$wquery = pg_query($dbconn, "SELECT \"TS_Generate\"($tour_key)");
 				//$uploadOk = 1;
@@ -237,24 +233,24 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
               <input type="file" name= "image">
             </div>
           </div>
-          <div class="control-group">
+          <!--<div class="control-group">
             <label class="control-label" for="inputEmail">Activity duration:</label>
             <div class="controls">
               <select name = "duration" style = "width:20%" class="form-control">
-                <?php echo $dList;?>
+                <?php //echo $dList;?>
               </select>
             </div>
-          </div>
+          </div>-->
           <div class="control-group">
             <label class="control-label" for="inputPassword">Schedule:</label>
             <div class="controls">
-            <p>*Sessions will be generated automatically between first and last tour session of the day</p> 
+            <p>*Sessions will be generated automatically between first and last tour session of the day. If a tourist is already scheduled in a session the tour will not be canceled when you change </p> 
               <table class="table">
                 <thead>
                   <tr>
                     <th>Day</th>
-                    <th>First Session</th>
-                    <th>Last Session</th>
+                    <th>First Session Start Time</th>
+                    <th>Last Session End Time</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -405,10 +401,12 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
           <div style = "margin-top:10px" class="control-group">
             <div class="controls">
               </label>
-              <button class="btn btn-success" type="submit">Add Tour</button>
+              <button class="btn btn-success" type="submit">Edit Tour</button>
               <!--<button class="btn" type="button">Help</button>--> 
             </div>
           </div>
+          <input type="hidden" name="tour_key" value="<?php echo $tour_key?>">
+           <input type="hidden" name="duration" value="<?php echo $form['duration'];?>">
         </form>
       </div>
     </div>

@@ -3,17 +3,26 @@
 require_once('includes/config.php');
 require_once('autoload.php');
 // Create PayPal object.
+
 if(!isset($_SESSION))
-{
-	session_start();
-}
-$receiver = $_SESSION["receiver"];
+   session_start();
+//var_dump($_SESSION);
+$receivers = $_SESSION["receiver"];
+
+$total = $_SESSION["receivertotal"];
+$defaultreceiver = $_SESSION["defaultreceiver"];
+$nmmfee = $_SESSION['nmmfee'];
+$_SESSION['trankey'] = (int)$_SESSION['trankey'] + 100;
+$sessionID = time();
+
+/*
 //var_dump($_SESSION["receiver"]);
 $receiverEmailArray = array();
 $receiverAmountArray = array();
 $receiverInvoiceIdArray = array();
+$sessionID = '';
 $i = 0;
-foreach($receiver as $value)
+foreach($receivers as $value)
 {
 	if(isset($value['email']))
 	{
@@ -22,6 +31,7 @@ foreach($receiver as $value)
 	}
 	$i++;
 }
+*/
 //var_dump($receiverEmailArray);
 //var_dump($receiverAmountArray);
 //var_dump($receiverInvoiceIdArray);
@@ -54,7 +64,7 @@ $PayRequestFields = array(
 						'ReturnURL' => "http://kiwiteam.ece.uprm.edu/NoMiddleMan/website/paypal_success.php", 									// Required.  The URL to which the sener's browser is redirected after approvaing a payment on paypal.com.  1024 char max.
 						'ReverseAllParallelPaymentsOnError' => '', 			// Whether to reverse paralel payments if an error occurs with a payment.  Values are:  TRUE, FALSE
 						'SenderEmail' => '', 								// Sender's email address.  127 char max.
-						'TrackingID' => '5'									// Unique ID that you specify to track the payment.  127 char max.
+						'TrackingID' => ''.$sessionID								// Unique ID that you specify to track the payment.  127 char max.
 						);
 						
 $ClientDetailsFields = array(
@@ -67,29 +77,51 @@ $ClientDetailsFields = array(
 
 						
 $FundingTypes = array('ECHECK', 'BALANCE', 'CREDITCARD');
+
+
 $Receivers = array();
-$Receiver = array(
-    'Amount' => '100.00', 											// Required.  Amount to be paid to the receiver.
-    'Email' => 'joe_a_virella-facilitator@live.com', 												// Receiver's email address. 127 char max.
+
+/*
+foreach($receiver as $value)
+{
+	$Receiver = array(
+    'Amount' => $receiver['total'], 											// Required.  Amount to be paid to the receiver.
+    'Email' => $receiver['email'], 												// Receiver's email address. 127 char max.
     'AccountID' => '',                                          // Receiver's PayPal account ID.
     'InvoiceID' => '', 											// The invoice number for the payment.  127 char max.
     'PaymentType' => '', 										// Transaction type.  Values are:  GOODS, SERVICE, PERSONAL, CASHADVANCE, DIGITALGOODS
     'PaymentSubType' => '', 									// The transaction subtype for the payment.
     'Phone' => array('CountryCode' => '', 'PhoneNumber' => '', 'Extension' => ''), // Receiver's phone number.   Numbers only.
     'Primary' => ''												// Whether this receiver is the primary receiver.  Values are boolean:  TRUE, FALSE
-);
+	);
 array_push($Receivers,$Receiver);
+}
+*/
+
 $Receiver = array(
-    'Amount' => '50.00', 											// Required.  Amount to be paid to the receiver.
+    'Amount' => ''.$total, 											// Required.  Amount to be paid to the receiver.
     'Email' => 'skydiving@test.com', 												// Receiver's email address. 127 char max.
     'AccountID' => '',                                          // Receiver's PayPal account ID.
-    'InvoiceID' => '123-ABCDEF', 											// The invoice number for the payment.  127 char max.
+    'InvoiceID' => ''.$sessionID, 											// The invoice number for the payment.  127 char max.
     'PaymentType' => '', 										// Transaction type.  Values are:  GOODS, SERVICE, PERSONAL, CASHADVANCE, DIGITALGOODS
     'PaymentSubType' => '', 									// The transaction subtype for the payment.
     'Phone' => array('CountryCode' => '', 'PhoneNumber' => '', 'Extension' => ''), // Receiver's phone number.   Numbers only.
     'Primary' => ''												// Whether this receiver is the primary receiver.  Values are boolean:  TRUE, FALSE
 );
 array_push($Receivers,$Receiver);
+
+$Receiver = array(
+    'Amount' => ''.$nmmfee, 											// Required.  Amount to be paid to the receiver.
+    'Email' => 'joe_a_virella-facilitator@live.com', 												// Receiver's email address. 127 char max.
+    'AccountID' => '',                                          // Receiver's PayPal account ID.
+    'InvoiceID' => ''.$sessionID, 											// The invoice number for the payment.  127 char max.
+    'PaymentType' => '', 										// Transaction type.  Values are:  GOODS, SERVICE, PERSONAL, CASHADVANCE, DIGITALGOODS
+    'PaymentSubType' => '', 									// The transaction subtype for the payment.
+    'Phone' => array('CountryCode' => '', 'PhoneNumber' => '', 'Extension' => ''), // Receiver's phone number.   Numbers only.
+    'Primary' => ''												// Whether this receiver is the primary receiver.  Values are boolean:  TRUE, FALSE
+);
+array_push($Receivers,$Receiver);
+
 $SenderIdentifierFields = array(
 								'UseCredentials' => ''						// If TRUE, use credentials to identify the sender.  Default is false.
 								);

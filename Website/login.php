@@ -18,7 +18,15 @@ if(!empty($_POST['uemail'])&&!empty($_POST['password']))
 	$salt = '6e663cc2478ebdc49cbce5609ba0305b60d10844';
 	$paswd = $paswd.$salt; //.$t_Email;
 	$paswd = sha1($paswd);
+<<<<<<< Updated upstream
 	$query = pg_query($dbconn, "SELECT * FROM \"Tourist\" WHERE \"t_Email\" = '$uemail'");
+=======
+<<<<<<< HEAD
+	$query = pg_query($dbconn, "SELECT * FROM \"Tourist\" WHERE \"t_Email\" = '$uemail' AND \"t_isActive\" = TRUE");
+=======
+	$query = pg_query($dbconn, "SELECT * FROM \"Tourist\" WHERE \"t_Email\" = '$uemail'");
+>>>>>>> origin/master
+>>>>>>> Stashed changes
 	$count = pg_num_rows($query);
 	
 	if($count > 0)
@@ -86,9 +94,20 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
 					{
 						$to      = $newuemail;
 						$subject = 'Verify Email';
+<<<<<<< Updated upstream
 						$message = "Please follow this link to verify your account
 						<a href='http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/verifyForm.html'>Verify Acount</a>
 						If you are unable to click on the link, copy and paste it on the address bar.";
+=======
+<<<<<<< HEAD
+						$message = 'Please follow this link to verify your account
+						"http://kiwiteam.ece.uprm.edu/NoMiddleMan/website/verifyForm.html"';
+=======
+						$message = "Please follow this link to verify your account
+						<a href='http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/verifyForm.html'>Verify Acount</a>
+						If you are unable to click on the link, copy and paste it on the address bar.";
+>>>>>>> origin/master
+>>>>>>> Stashed changes
 						$headers = 'From: luis.tavarez@outlook.com' . "\r\n" .
 						'Reply-To: luis.tavarez@outlook.com' . "\r\n" .
 						'X-Mailer: PHP/' . phpversion();
@@ -120,6 +139,7 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head><?php include 'header.php';?></head>
 <body>
+<?php include 'navbar.php';?>
 <div class="container">
     <div class="row-fluid">
             <div class="col-md-6">
@@ -145,7 +165,14 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
                                 <input name = "password" id="inputPassword" placeholder="Min. 8 Characters" type="password">
                             </div>
                         </div>
+<<<<<<< Updated upstream
 						<a href="http://kiwiteam.ece.uprm.edu/NoMiddleMan/website/requestPasswordPage.php">Lost password?</a>
+=======
+<<<<<<< HEAD
+=======
+						<a href="http://kiwiteam.ece.uprm.edu/NoMiddleMan/website/requestPasswordPage.php">Lost password?</a>
+>>>>>>> origin/master
+>>>>>>> Stashed changes
                         <div class="control-group">
                             <div class="controls">
                                 <!--<label class="checkbox"><input type="checkbox">
@@ -156,9 +183,14 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
 
                         
                     </form>
+                    <a href="http://kiwiteam.ece.uprm.edu/NoMiddleMan/website/requestPasswordPage.php">Lost password?</a>
                 </div>
                 <br />
                 <a href = "guide_login.php"> Tour guide? Sign in here.</a>
+                <img src="images/NOMITransparentGIMP.png" width="25%" height="25%" style="
+    width: 25%;
+    height: 25%;
+">
             </div>
 
             <div class="col-md-6">
@@ -166,7 +198,9 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
                     <form class="form-horizontal" method = "post" action = "login.php">
                         <div class="heading">
                             <h4 class="form-heading">Sign Up</h4>
+                            <div><font color="blue">*Please fill out all fields</font></div>
                             <div><font color="red"><?php echo $errorMsg; ?></font></div>
+                            <div><font color="blue">*A verification email will be sent to you on Sign Up. Please follow link to verify account.</font></div>
                         </div>
 
                         <div class="control-group">

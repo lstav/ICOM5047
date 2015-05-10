@@ -52,12 +52,25 @@ table, th, td {
 					echo '<tr><td><a href="mailto:'.$tourist['email'].'">'.$tourist['email'].'</a></td><td>'.$tourist['text'].'</td><td>'.$tourist['date'].'</td>';
 					
 					if($tourist['type'] == "Tourist") {
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+						echo '<td><form action="readTourist.php" method="get"><input type="hidden" value="'.$tourist['key'].'" name="key">
+						<input  type="submit" value="Mark as read"></form></td></tr>';
+					} else {
+						echo '<td><form action="readGuide.php" method="get"><input type="hidden" value="'.$tourist['key'].'" name="key">
+=======
+>>>>>>> Stashed changes
 						$key = $tourist['key'];
 						echo '<td><form action="readTourist.php" method="get"><input type="text" value="" name="key">
 						<input  type="submit" value="Mark as read"></form></td></tr>';
 					} else {
 						$key = $tourist['key'];
 						echo '<td><form action="readGuide.php" method="get"><input type="text" value=".'.$tourist['key'].'." name="key">
+<<<<<<< Updated upstream
+=======
+>>>>>>> origin/master
+>>>>>>> Stashed changes
 						<input  type="submit" value="Mark as read"></form></td></tr>';
 					}
 					

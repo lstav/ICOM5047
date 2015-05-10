@@ -4,27 +4,30 @@ $output = '';
 $dropdown = '';
 $ratingList = '';
 $searchq = '';
-
+$query = pg_query($dbconn, "SELECT * FROM \"Tour Category\"");
+while($row = pg_fetch_array($query))
+{
+	$category = $row['Category_Name'];
+	$categoryList .= ' <li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$category.'">'.$category.'</a></li>';
+}
 if(isset($_GET['search'])||isset($_GET['tsort']))
 {
-	var_dump($_GET);
+	//var_dump($_GET);
 	if(isset($_GET['search']))
 	{
 		$searchq = $_GET['search'];
 		//$searchq = preg_replace("#[^0-9a-z]#i", "", $searchq);
-		$query = pg_query($dbconn, "SELECT * FROM \"Tour Info\" NATURAL JOIN \"Location\" NATURAL JOIN \"isCategory\" NATURAL JOIN \"Tour Category\" WHERE lower(\"tour_Name\") LIKE lower('%$searchq%') OR lower(\"Category_Name\") LIKE lower('%$searchq%') OR lower(\"City\") LIKE lower('%$searchq%') OR lower(\"State-Province\") LIKE lower('%$searchq%')");
+		$query = pg_query($dbconn, "SELECT * FROM \"Tour Info\" NATURAL JOIN \"isCategory\" NATURAL JOIN \"Tour Category\" WHERE lower(\"tour_Name\") LIKE lower('%$searchq%') OR lower(\"Category_Name\") LIKE lower('%$searchq%') OR lower(\"City\") LIKE lower('%$searchq%') OR lower(\"State-Province\") LIKE lower('%$searchq%')");
 	}
-	else if(isset($_GET['tsort']))
+	if(isset($_GET['tsort']))
 	{
-		if(isset($_GET['tsort']))
-		{
 			$searchq = $_GET['search'];
-			$searchq = preg_replace("#[^0-9a-z]#i", "", $searchq);
-			$tsort = substr($_GET['tsort'], 1, -1);
-			$tsort = explode(" ",$tsort);
-			var_dump("im in!");
-			$query = pg_query($dbconn, "SELECT * FROM \"Tour\" NATURAL JOIN \"Location\" NATURAL JOIN \"isCategory\" NATURAL JOIN \"Tour Category\" WHERE lower(\"tour_Name\") LIKE lower('%$searchq%') OR lower(\"Category_Name\") LIKE lower('%$searchq%') OR lower(\"City\") LIKE lower('%$searchq%') OR lower(\"State-Province\") LIKE lower('%$searchq%') ORDER BY \"$tsort[0]\" $tsort[1]");
-		}
+			//$searchq = preg_replace("#[^0-9a-z]#i", "", $searchq);
+			//$tsort = substr($_GET['tsort'], 1, -1);
+			$tsort = $_GET['tsort'];
+			$order = $_GET['order'];
+			//var_dump($tsort);
+			$query = pg_query($dbconn, "SELECT * FROM \"Tour Info\" NATURAL JOIN \"isCategory\" NATURAL JOIN \"Tour Category\" WHERE lower(\"tour_Name\") LIKE lower('%$searchq%') OR lower(\"Category_Name\") LIKE lower('%$searchq%') OR lower(\"City\") LIKE lower('%$searchq%') OR lower(\"State-Province\") LIKE lower('%$searchq%') ORDER BY \"$tsort\" $order");
 	}
 	
 	$count = pg_num_rows($query);
@@ -35,8 +38,8 @@ if(isset($_GET['search'])||isset($_GET['tsort']))
 	else
 	{
 		$dropdown = '<li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$searchq.'&tsort=tour_Name">Name</a></li>
-    <li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$searchq.'&tsort=Price ASC">Price: Lowest to Highest</a>
-	<li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$searchq.'&tsort=Price DESC">Price: Highest to Lowest</a></li>';
+    <li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$searchq.'&tsort=Price&order=ASC">Price: Lowest to Highest</a>
+	<li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$searchq.'&tsort=Price&order=DESC">Price: Highest to Lowest</a></li>';
 		while($row = pg_fetch_array($query))
 		{
 			$tname = $row['tour_Name'];
@@ -60,6 +63,7 @@ if(isset($_GET['search'])||isset($_GET['tsort']))
 					<li><span><h7>'.$tcity.'</h7></span></li>
 					<li> <span>'.$tstate.'</span></li>
 					<li><div style = "float:left" id="rating'.$tid.'"></div><a href = "#">('.$rcount.')</a></li> 
+					
 					
 				</ul>
 			</div>
@@ -104,6 +108,16 @@ if(isset($_GET['search'])||isset($_GET['tsort']))
    <?php echo $dropdown;?>
   </ul>
 </div>
+<div class="dropdown" style="float:right
+;margin-right: 20px;">
+                <button class="btn btn-default dropdown-toggle" type="button" id="year" data-toggle="dropdown" aria-expanded="false" style="
+    margin-left: 0px;
+    margin-top: 0px;
+">Categories<span class="caret"></span> </button>
+                <ul class="dropdown-menu" id="yearList" role="menu" aria-labelledby="dropdownMenu1">
+                 <?php echo $categoryList; ?>
+                </ul>
+              </div>
     <h1>Search Results</h1>
     <h2 class="lead"><strong class="text-danger"><?php echo $count;?></strong> results were found for the search for <strong class="text-danger">
       <?php if(isset($searchq)) echo $searchq;?>
