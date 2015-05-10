@@ -21,8 +21,9 @@
 			$response['message'] = "Password Changed";
 			
 			$to      = $email;
-			$subject = 'Password Change Request';
-			$message = 'This is your new password '.$pass;
+			$subject = 'Password Change Request for No Middle Man';
+			$message = 'You have requested a new password for No Middle Man. Your password has been changed to 
+						'.$pass;
 			$headers = 'From: luis.tavarez@outlook.com' . "\r\n" .
 				'Reply-To: luis.tavarez@outlook.com' . "\r\n" .
 				'X-Mailer: PHP/' . phpversion();

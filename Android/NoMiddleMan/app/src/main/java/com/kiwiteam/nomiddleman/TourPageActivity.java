@@ -335,7 +335,7 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
         /*
          * Adds http:// is it does not exists
          */
-        if(!youtube.contains("http://")) {
+        if(!youtube.contains("http://") && !youtube.contains("https://")) {
             youtube = "http://" + youtube;
         }
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(youtube));
@@ -351,7 +351,7 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
         /*
          * Adds http:// is it does not exists
          */
-        if(!facebook.contains("http://")) {
+        if(!facebook.contains("http://") && !facebook.contains("https://")) {
             facebook = "http://" + facebook;
         }
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(facebook));
@@ -367,7 +367,7 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
         /*
          * Adds http:// is it does not exists
          */
-        if(!insta.contains("http://")) {
+        if(!insta.contains("http://") && !insta.contains("https://")) {
             insta = "http://" + insta;
         }
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(insta));
@@ -383,7 +383,7 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
         /*
          * Adds http:// is it does not exists
          */
-        if(!twitter.contains("http://")) {
+        if(!twitter.contains("http://") && !twitter.contains("https://")) {
             twitter = "http://" + twitter;
         }
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(twitter));
@@ -521,7 +521,7 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                         /*
                          * Obtains pictures from server, checks if pictures exist
                          */
-                        while(getResponseCode(c.getString(TAG_PHOTO).trim() + j + ".jpg") != 404) {
+                        if(getResponseCode(c.getString(TAG_PHOTO).trim() + j + ".jpg") != 404) {
                             String url = c.getString(TAG_PHOTO).trim() + j + ".jpg";
 
                             BitmapFactory.Options options = new BitmapFactory.Options();
@@ -533,7 +533,7 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
 
                             bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + j + ".jpg").getContent(), null, options);
                             pictures.add(bitmap);
-                            j++;
+                            //j++;
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -572,7 +572,7 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                             c.getString(TAG_ADDRESS), c.getString(TAG_EMAIL), c.getString(TAG_GNAME), c.getString(TAG_LICENSE), c.getString(TAG_COMPANY),
                             c.getString(TAG_TELEPHONE), c.getDouble(TAG_AVGRATE), c.getInt(TAG_RATECOUNT), tourRatingsA, tourSessionsA);
 
-                    System.out.println("Tour Id " + tour.getTourID());
+                    System.out.println("Youtube " + tour.getYoutube());
 
                 }
             } catch (JSONException e) {
@@ -629,7 +629,7 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                     TextView totalReviews = (TextView) findViewById(R.id.totalReviews);
                     totalReviews.setText(String.format("%.1f", tour.getAverageRating()) + " of 5.0");
 
-                    if(pictures != null) {
+                    if(pictures.size() > 0) {
                         imageAdapter = new ImagePagerAdapter(getSupportFragmentManager(), 1);
                         imagePager = (ViewPager) findViewById(R.id.viewPager);
                         imagePager.setAdapter(imageAdapter);

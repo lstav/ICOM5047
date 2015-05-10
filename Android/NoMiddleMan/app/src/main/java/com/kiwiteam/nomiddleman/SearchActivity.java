@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -37,8 +38,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -381,6 +385,22 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
     }
 
     /**
+     * Checks if link is active
+     * @param urlString
+     * @return
+     * @throws java.net.MalformedURLException
+     * @throws java.io.IOException
+     */
+    public static int getResponseCode(String urlString) throws MalformedURLException, IOException {
+        URL u = new URL(urlString);
+        HttpURLConnection huc =  (HttpURLConnection)  u.openConnection();
+        huc.setRequestMethod("GET");
+        huc.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2 (.NET CLR 3.5.30729)");
+        huc.connect();
+        return huc.getResponseCode();
+    }
+
+    /**
      * Fills the listview with query results
      */
     private class MyListAdapter extends ArrayAdapter<Tour> {
@@ -403,8 +423,13 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
             // fill the view
             //int draw = getResources().getIdentifier(currentTour.getPictures().get(0),"drawable",getPackageName());
 
-            picture = (ImageView) itemView.findViewById(R.id.tourPic);
-            picture.setImageBitmap(currentTour.getPictures().get(0));
+            if(currentTour.getPictures().size() > 0) {
+                picture = (ImageView) itemView.findViewById(R.id.tourPic);
+                picture.setImageBitmap(currentTour.getPictures().get(0));
+            } else {
+                picture = (ImageView) itemView.findViewById(R.id.tourPic);
+                picture.setImageDrawable(getResources().getDrawable(R.mipmap.ic_launcher));
+            }
 
             RatingBar eRating = (RatingBar) itemView.findViewById(R.id.tourRating);
             eRating.setRating((float) currentTour.getExtremeness());
@@ -479,15 +504,20 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
 
                 for (int i=0; i<backup.length(); i++) {
                     JSONObject c = backup.getJSONObject(i);
-                    try {
-                        BitmapFactory.Options options = new BitmapFactory.Options();
-                        options.inJustDecodeBounds = true;
-                        // Calculate inSampleSize
-                        options.inSampleSize = 3;
-                        // Decode bitmap with inSampleSize set
-                        options.inJustDecodeBounds = false;
+                    ArrayList<Bitmap> pictures = new ArrayList<>();
 
-                        bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "1.jpg").getContent(), null, options);
+                    try {
+                        if(getResponseCode(c.getString(TAG_PHOTO).trim() + "1.jpg") != 404) {
+                            BitmapFactory.Options options = new BitmapFactory.Options();
+                            options.inJustDecodeBounds = true;
+                            // Calculate inSampleSize
+                            options.inSampleSize = 5;
+                            // Decode bitmap with inSampleSize set
+                            options.inJustDecodeBounds = false;
+
+                            bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "1.jpg").getContent(), null, options);
+                            pictures.add(bitmap);
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -495,7 +525,7 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
                     success = jObj.getInt("success");
 
                     // Adds tour information from database to Tour class
-                    tourInfo.add(new Tour(c.getString(TAG_NAME), Price.getDouble(c.getString(TAG_PRICE)), new ArrayList<>(Arrays.asList(bitmap)), Integer.parseInt(c.getString(TAG_KEY)), Double.parseDouble(c.getString(TAG_EXTREMENESS))));
+                    tourInfo.add(new Tour(c.getString(TAG_NAME), Price.getDouble(c.getString(TAG_PRICE)), pictures, Integer.parseInt(c.getString(TAG_KEY)), Double.parseDouble(c.getString(TAG_EXTREMENESS))));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -586,20 +616,24 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
 
                 for (int i=0; i<backup.length(); i++) {
                     JSONObject c = backup.getJSONObject(i);
+                    ArrayList<Bitmap> pictures = new ArrayList<>();
                     try {
-                        BitmapFactory.Options options = new BitmapFactory.Options();
-                        options.inJustDecodeBounds = true;
-                        // Calculate inSampleSize
-                        options.inSampleSize = 3;
-                        // Decode bitmap with inSampleSize set
-                        options.inJustDecodeBounds = false;
+                        if(getResponseCode(c.getString(TAG_PHOTO).trim() + "1.jpg") != 404) {
+                            BitmapFactory.Options options = new BitmapFactory.Options();
+                            options.inJustDecodeBounds = true;
+                            // Calculate inSampleSize
+                            options.inSampleSize = 5;
+                            // Decode bitmap with inSampleSize set
+                            options.inJustDecodeBounds = false;
 
-                        bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "1.jpg").getContent(), null, options);
+                            bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "1.jpg").getContent(), null, options);
+                            pictures.add(bitmap);
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
 
-                    tourInfo.add(new Tour(c.getString(TAG_NAME), Price.getDouble(c.getString(TAG_PRICE)), new ArrayList<>(Arrays.asList(bitmap)), Integer.parseInt(c.getString(TAG_KEY)), Double.parseDouble(c.getString(TAG_EXTREMENESS))));
+                    tourInfo.add(new Tour(c.getString(TAG_NAME), Price.getDouble(c.getString(TAG_PRICE)), pictures, Integer.parseInt(c.getString(TAG_KEY)), Double.parseDouble(c.getString(TAG_EXTREMENESS))));
                 }
 
                 success = jObj.getInt("success");
@@ -726,20 +760,24 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
 
                 for (int i=0; i<backup.length(); i++) {
                     JSONObject c = backup.getJSONObject(i);
+                    ArrayList<Bitmap> pictures = new ArrayList<>();
                     try {
-                        BitmapFactory.Options options = new BitmapFactory.Options();
-                        options.inJustDecodeBounds = true;
-                        // Calculate inSampleSize
-                        options.inSampleSize = 3;
-                        // Decode bitmap with inSampleSize set
-                        options.inJustDecodeBounds = false;
+                        if(getResponseCode(c.getString(TAG_PHOTO).trim() + "1.jpg") != 404) {
+                            BitmapFactory.Options options = new BitmapFactory.Options();
+                            options.inJustDecodeBounds = true;
+                            // Calculate inSampleSize
+                            options.inSampleSize = 5;
+                            // Decode bitmap with inSampleSize set
+                            options.inJustDecodeBounds = false;
 
-                        bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "1.jpg").getContent(), null, options);
+                            bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "1.jpg").getContent(), null, options);
+                            pictures.add(bitmap);
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
 
-                    tourInfo.add(new Tour(c.getString(TAG_NAME), Price.getDouble(c.getString(TAG_PRICE)), new ArrayList<>(Arrays.asList(bitmap)), Integer.parseInt(c.getString(TAG_KEY)), Double.parseDouble(c.getString(TAG_EXTREMENESS))));
+                    tourInfo.add(new Tour(c.getString(TAG_NAME), Price.getDouble(c.getString(TAG_PRICE)), pictures, Integer.parseInt(c.getString(TAG_KEY)), Double.parseDouble(c.getString(TAG_EXTREMENESS))));
                 }
 
                 success = jObj.getInt("success");

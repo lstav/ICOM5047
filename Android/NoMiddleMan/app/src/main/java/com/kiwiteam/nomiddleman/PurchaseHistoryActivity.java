@@ -35,8 +35,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -251,8 +254,13 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
             // find the list
             HistoryItem currentTour = pastHistory.get(position);
 
-            picture = (ImageView) itemView.findViewById(R.id.tourPic);
-            picture.setImageBitmap(currentTour.getTour().getPictures().get(0));
+            if(currentTour.getTour().getPictures().size() > 0) {
+                picture = (ImageView) itemView.findViewById(R.id.tourPic);
+                picture.setImageBitmap(currentTour.getTour().getPictures().get(0));
+            } else {
+                picture = (ImageView) itemView.findViewById(R.id.tourPic);
+                picture.setImageDrawable(getResources().getDrawable(R.mipmap.ic_launcher));
+            }
 
             TextView tName = (TextView) itemView.findViewById(R.id.tourName);
             tName.setText(currentTour.getTour().getName());
@@ -292,6 +300,22 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
 
             return itemView;
         }
+    }
+
+    /**
+     * Checks if link is active
+     * @param urlString
+     * @return
+     * @throws java.net.MalformedURLException
+     * @throws java.io.IOException
+     */
+    public static int getResponseCode(String urlString) throws MalformedURLException, IOException {
+        URL u = new URL(urlString);
+        HttpURLConnection huc =  (HttpURLConnection)  u.openConnection();
+        huc.setRequestMethod("GET");
+        huc.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2 (.NET CLR 3.5.30729)");
+        huc.connect();
+        return huc.getResponseCode();
     }
 
     /**
@@ -353,18 +377,22 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
 
                     //pastHistory.clear();
                     backup = jObj.getJSONArray("tours");
+                    ArrayList<Bitmap> pictures = new ArrayList<>();
 
                     for (int i=0; i<backup.length(); i++) {
                         JSONObject c = backup.getJSONObject(i);
                         try {
-                            BitmapFactory.Options options = new BitmapFactory.Options();
-                            options.inJustDecodeBounds = true;
-                            // Calculate inSampleSize
-                            options.inSampleSize = 3;
-                            // Decode bitmap with inSampleSize set
-                            options.inJustDecodeBounds = false;
+                            if(getResponseCode(c.getString(TAG_PHOTO).trim() + "1.jpg") != 404) {
+                                BitmapFactory.Options options = new BitmapFactory.Options();
+                                options.inJustDecodeBounds = true;
+                                // Calculate inSampleSize
+                                options.inSampleSize = 5;
+                                // Decode bitmap with inSampleSize set
+                                options.inJustDecodeBounds = false;
 
-                            bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "1.jpg").getContent(), null, options);
+                                bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "1.jpg").getContent(), null, options);
+                                pictures.add(bitmap);
+                            }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -378,11 +406,12 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
                         if(c.getString(TAG_RATED).equals("t")) {
                             isRated = true;
                         }
+
                         pastHistory.add(new HistoryItem(c.getString(TAG_DATE),
                                 c.getString(TAG_TIME),c.getInt(TAG_TSKEY),c.getInt(TAG_QUANTITY),
                                 isRated, new Tour(c.getString(TAG_NAME),
                                         Price.getDouble(c.getString(TAG_PRICE)),
-                                        new ArrayList<>(Arrays.asList(bitmap)),c.getInt(TAG_KEY),
+                                        pictures, c.getInt(TAG_KEY),
                                         c.getDouble(TAG_EXTREMENESS))));
 
                         if(isActive) {

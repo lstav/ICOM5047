@@ -38,8 +38,10 @@ import java.util.List;
 public class ChangePasswordActivity extends ActionBarActivity {
 
     private DatabaseConnection conn;
+    private String oldPass;
     private String newPass;
     private String confirmPass;
+    private String message;
     private ProgressDialog pDialog;
     private int index;
     private int success;
@@ -130,14 +132,17 @@ public class ChangePasswordActivity extends ActionBarActivity {
     public void confirm(View view) {
         EditText nPass = (EditText) findViewById(R.id.newPass);
         EditText cNPass = (EditText) findViewById(R.id.cNewPass);
+        EditText oPass = (EditText) findViewById(R.id.oldPass);
 
         if(nPass.getText().toString().equals(cNPass.getText().toString()) && nPass.getText().toString().trim().length() >= 8
                 && nPass.getText().toString().trim().length() >= 8) {
             newPass = nPass.getText().toString();
             confirmPass = cNPass.getText().toString();
 
+            oldPass = oPass.getText().toString();
+
             new PassChange().execute();
-            finish();
+            //finish();
         } else {
             Toast.makeText(this, R.string.password_not_match, Toast.LENGTH_SHORT).show();
         }
@@ -179,6 +184,7 @@ public class ChangePasswordActivity extends ActionBarActivity {
                 List<NameValuePair> categoryName = new ArrayList<>();
                 categoryName.add(new BasicNameValuePair("key", Integer.toString(index)));
                 categoryName.add(new BasicNameValuePair("password", newPass));
+                categoryName.add(new BasicNameValuePair("oldpass", oldPass));
 
                 HttpPost httppost = new HttpPost(url_change_password);
 
@@ -213,6 +219,10 @@ public class ChangePasswordActivity extends ActionBarActivity {
 
                 success = jObj.getInt(TAG_SUCCESS);
 
+                if(success == 0) {
+                    message = jObj.getString("message");
+                }
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -233,6 +243,7 @@ public class ChangePasswordActivity extends ActionBarActivity {
                         finish();
                     } else {
                         Toast.makeText(getApplicationContext(), R.string.not_change_password, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                     }
                 }
             });
