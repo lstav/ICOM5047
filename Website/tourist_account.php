@@ -19,7 +19,27 @@ if($_SESSION['uemail'])
 		$ulname = $_SESSION['ulname'];
 		$upass = $_SESSION['upass'];
 		$errorMsg = '';
-		if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POST['new-ulname'])||!empty($_POST['new-upass']))
+		$addr = '';
+		$telephone = '';
+		
+		$oldPass = '';
+		$result = pg_query($dbconn, "SELECT * FROM \"Tourist\" as T WHERE T.\"t_key\" = $uid");
+
+		if(!empty($result)) {
+			if(pg_num_rows($result) > 0) {
+				$row = pg_fetch_array($result);
+				$uemail = trim($row['t_Email']);
+				$ufname = trim($row['t_FName']);
+				$ulname = trim($row['t_LName']);
+				$upass = trim($row['t_password']);
+				$addr = trim($row['t_Address']);
+				$telephone = trim($row['t_telephone']);
+				
+			}
+		}
+		
+		if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POST['new-ulname'])
+			||!empty($_POST['old-upass'])||!empty($_POST['new-upass'])||!empty($_POST['con-new-upass']))
 		{
 			if(!empty($_POST['new-uemail']))
 			{
@@ -61,7 +81,17 @@ if($_SESSION['uemail'])
 					$ulname = $_SESSION['ulname'] = $newulemail;
 				}
 			}
-			if(!empty($_POST['new-upass']) && !empty($_POST['old-upass']))
+			if(!empty($_POST['new-addr']))
+			{
+				$newuaddr = test_input(strip_tags($_POST["new-addr"]));
+				$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"t_Address" = '$newuaddr' WHERE \"t_Email\" = '$uemail' AND \"t_LName\" = '$ulname'");
+			}
+			if(!empty($_POST['new-telephone']))
+			{
+				$newutelephone = test_input(strip_tags($_POST["new-telephone"]));
+				$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"t_telephone" = '$newutelephone' WHERE \"t_Email\" = '$uemail' AND \"t_LName\" = '$ulname'");
+			}
+			if(!empty($_POST['new-upass']) && !empty($_POST['old-upass']) && !empty($_POST['con-new-upass']))
 			{
 				$oldupass = strip_tags($_POST['old-upass']);
 				$salt = '6e663cc2478ebdc49cbce5609ba0305b60d10844';
@@ -72,21 +102,36 @@ if($_SESSION['uemail'])
 				$salt = '6e663cc2478ebdc49cbce5609ba0305b60d10844';
 				$newupass = $newupass.$salt; //.$t_Email;
 				$newupass = sha1($newupass);
-				if($oldupass == $newupass)
+				
+				$connewupass = strip_tags($_POST['con-new-upass']);
+				$salt = '6e663cc2478ebdc49cbce5609ba0305b60d10844';
+				$connewupass = $connewupass.$salt; //.$t_Email;
+				$connewupass = sha1($connewupass);
+				
+				if($oldupass == $upass)
 				{
-					
-					$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"t_password\" = '$newupass' WHERE \"t_Email\" = '$uemail' AND \"t_password\" = '$upass'");
+					if($newupass == $connewupass) {
+						$_SESSION['upass'] = $newupass;
+						$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"t_password\" = '$newupass' WHERE \"t_Email\" = '$uemail' AND \"t_password\" = '$upass'");
+					}
 				}
 				else
 				{
 					$errorMsg = "Invalid password";
-					echo "<h2> Oops that email or password combination was incorrect.
-								<br /> Please try again. </h2>";
-					$upass = $_SESSION['upass'] = $newupass;
+					//echo "<h2> Oops that email or password combination was incorrect.<br /> Please try again. </h2>";
+					//$upass = $_SESSION['upass'] = $newupass;
 				}
 			}
 		}
-				$output = '<div class="control-group">
+					$output = '<div class="control-group">
+									<label class="control-label" for="inputEmail">Email</label>
+		
+									<div class="controls">
+										<input id="inputEmail" name = "new-uemail" placeholder="'.$uemail.'" type="text">
+									</div>
+								</div>
+								
+								<div class="control-group">
 									<label class="control-label" for="inputFirst">First
 									Name</label>
 		
@@ -103,12 +148,20 @@ if($_SESSION['uemail'])
 										<input id="inputLast" name = "new-ulname" placeholder="'.$ulname.'" type="text">
 									</div>
 								</div>
-		
+								
 								<div class="control-group">
-									<label class="control-label" for="inputEmail">Email</label>
+									<label class="control-label" for="inputLast">Address</label>
 		
 									<div class="controls">
-										<input id="inputEmail" name = "new-uemail" placeholder="'.$uemail.'" type="text">
+										<input id="inputLast" name = "new-addr" placeholder="'.$addr.'" type="text">
+									</div>
+								</div>
+		
+								<div class="control-group">
+									<label class="control-label" for="inputEmail">Telephone</label>
+		
+									<div class="controls">
+										<input id="inputEmail" name = "new-telephone" placeholder="'.$telephone.'" type="text">
 									</div>
 								</div>';
 			$uquery = pg_query($dbconn, "SELECT \"tour_key\", \"City\", \"tour_Desc\", \"State-Province\", \"ts_key\", \"tour_Name\", \"extremeness\" , \"Price\", \"s_Time\",\"Payed\", \"s_isActive\",
@@ -240,15 +293,21 @@ $(document).ready(function(){
             <button type = "button" id = "pass-btn" class="btn btn-default btn-sm" style="margin-top: 5px;">Change Password</button>
             <div id = "password-field" style="display: none;">
               <div class="control-group">
-                <label class="control-label" for="inputPassword"> New Password</label>
+                <label class="control-label" for="inputPassword">Old Password</label>
                 <div class="controls">
                   <input id="inputPassword" name="old-upass" placeholder="" type="password">
                 </div>
               </div>
               <div class="control-group">
-                <label class="control-label" for="inputPassword"> Confirm New Password</label>
+                <label class="control-label" for="inputPassword">New Password</label>
                 <div class="controls">
                   <input id="inputPassword" name = "new-upass" placeholder="" type="password">
+                </div>
+              </div>
+			  <div class="control-group">
+                <label class="control-label" for="inputPassword">Confirm New Password</label>
+                <div class="controls">
+                  <input id="inputPassword" name = "con-new-upass" placeholder="" type="password">
                 </div>
               </div>
             </div>

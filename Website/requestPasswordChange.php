@@ -43,7 +43,8 @@ $(document).ready(function(){
 						'.$pass;
 			$headers = 'From: luis.tavarez@outlook.com' . "\r\n" .
 				'Reply-To: luis.tavarez@outlook.com' . "\r\n" .
-				'X-Mailer: PHP/' . phpversion();
+				'X-Mailer: PHP/' . phpversion() .
+				'Content-type: text/html; charset=utf-8' . "\r\n";
 			mail($to, $subject, $message, $headers);
 			
 			echo '<div class = "container"><h3>Your new password was sent to: '.$to.'</h3>Please login <a href = "login.php">here</a></div>';

@@ -26,7 +26,8 @@
 						'.$pass;
 			$headers = 'From: luis.tavarez@outlook.com' . "\r\n" .
 				'Reply-To: luis.tavarez@outlook.com' . "\r\n" .
-				'X-Mailer: PHP/' . phpversion();
+				'X-Mailer: PHP/' . phpversion() .
+				'Content-type: text/html; charset=utf-8' . "\r\n";
 			mail($to, $subject, $message, $headers);
 			
 			echo json_encode($response);

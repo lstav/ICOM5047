@@ -15,6 +15,7 @@ $i = (int)0;
 $dateTail='';
 $dhour = '12:00 am'; 
 $dList = '';
+$errorMsg = '';
 //$time = date("g:i a", strtotime(substr($dhour, 0, -3)));
 //$dhour = strtotime("$dhour + 30 mins");
 $hourList .=  "<option>".$dhour."</option>";
@@ -53,7 +54,14 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
 				$tstate = $_POST['state'];
 				$tduration = $_POST['duration'];
 				$uid = $_SESSION['tgid'];
-				$category = $_POST['category'];
+				if(!empty($_POST['new-category']))
+				{
+					$category = $_POST['new-category'];
+				}
+				else
+				{
+					$category = $_POST['category'];
+				}
 				$tduration = explode(" ", $tduration);
 				if(isset($tduration[3]))
 				{
@@ -131,20 +139,33 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
 					$cquery = pg_query($dbconn, "SELECT \"Create_Category\"('$category')");
 					$cquery = pg_query($dbconn, "SELECT \"Join_Category\"('$category', $tour_key)");
 				}
+				
+				if($mondayf!=$mondayl)
 				$wquery = pg_query($dbconn, "INSERT INTO \"Workdays\" (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") VALUES('Monday', '$tour_key', '$mondayf', '$mondayl')");
+				if($tuesdayf!=$tuesdayl)
 				$wquery = pg_query($dbconn, "INSERT INTO \"Workdays\" (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") VALUES('Tuesday', '$tour_key', '$tuesdayf', '$tuesdayl')");
+				if($wednesdayf!=$wednesdayl)
 				$wquery = pg_query($dbconn, "INSERT INTO \"Workdays\" (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") VALUES('Wednesday', '$tour_key', '$wednesdayf', '$wednesdayl')");
+				if($thursday!=$thursday)
 				$wquery = pg_query($dbconn, "INSERT INTO \"Workdays\" (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") VALUES('Thursday', '$tour_key', '$thursdayf', '$thursdayl')");
+				if($fridayf!=$fridayl)
 				$wquery = pg_query($dbconn, "INSERT INTO \"Workdays\" (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") VALUES('Friday', '$tour_key', '$fridayf', '$fridayl')");
+				if($saturdayf!=$saturdayl)
 				$wquery = pg_query($dbconn, "INSERT INTO \"Workdays\" (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") VALUES('Saturday', '$tour_key', '$saturdayf', '$saturdayl')");
+				if($sundayf!==$sundayl)
 				$wquery = pg_query($dbconn, "INSERT INTO \"Workdays\" (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") VALUES('Sunday', '$tour_key', '$sundayf', '$sundayl')");
 				
 				$wquery = pg_query($dbconn, "SELECT \"TS_Generate\"($tour_key)");
 				//$uploadOk = 1;
 				if (!file_exists("images/".$tour_key)) {
-    mkdir("images/".$tour_key, 0777, true);
-}
+    				mkdir("images/".$tour_key, 0777, true);
+				}
+				
 				$target_file = "images/".$tour_key."/1.jpg";
+				if(file_exists($target_file)){
+    				chmod($target_file,0755); //Change the file permissions if allowed
+    				unlink($target_file); //remove the file
+				}
 				$image_name = $_FILES["image"]["name"];
 				$image_type = $_FILES["image"]["type"];
 				$image_size = $_FILES["image"]["size"];
@@ -193,6 +214,7 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
         <form class="form-horizontal" method = "post" action = "add_tour.php" enctype="multipart/form-data">
           <div class="heading">
             <h2 class="form-heading">Add a Tour</h2>
+            <h3>*<?php echo $errorMsg;?></h3>
           </div>
           <div class="control-group">
             <label class="control-label" for="inputFirst">Tour
@@ -213,7 +235,7 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
                 <?php echo $categoryList;?>
               </select>
               <span style = "width:20%">Or add your own: </span>
-              <input style = "width:20%" id="inputFirst" name="name" placeholder="E.g. Bungie Jumping" type="text">
+              <input style = "width:20%" id="inputFirst" name="new-category" placeholder="E.g. Ziplining" type="text">
             </div>
           </div>
           <div class="control-group">
@@ -240,6 +262,7 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
                     <th>Day</th>
                     <th>First Session</th>
                     <th>Last Session</th>
+                    <!--<th>Available</th>-->
                   </tr>
                 </thead>
                 <tbody>
@@ -251,6 +274,8 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
                     <td><select name = "mondayl" style = "display:inline" class="form-control">
                 <?php echo $hourList;?>
               </select></td>
+              		<!--<td class="col-md-1"><label class="checkbox"><input type="checkbox" name = "checkmonday" value = 'value1'>
+                                </label></td>-->
                   </tr>
                  <tr>
                     <td>Tuesday</td>

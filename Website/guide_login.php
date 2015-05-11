@@ -8,6 +8,7 @@ include_once("dbConnect.php");
 $schedule = '';
 $errorMsg = '';
 $errorLogin = '';
+$emailNotification = '';
 if(!empty($_POST['tgemail'])&&!empty($_POST['tgpass']))
 {
 	//$tgpaswd = $paswd.$salt; //.$t_Email;
@@ -111,11 +112,13 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
 						If you are unable to click on the link, copy and paste it on the address bar.";
 						$headers = 'From: luis.tavarez@outlook.com' . "\r\n" .
 						'Reply-To: luis.tavarez@outlook.com' . "\r\n" .
-						'X-Mailer: PHP/' . phpversion();
+						'X-Mailer: PHP/' . phpversion() .
+						'Content-type: text/html; charset=utf-8' . "\r\n";
 						mail($to, $subject, $message, $headers);
 						/*$row = pg_fetch_array($query);
 						$_SESSION['uid'] = $row['t_key'];*/
 						header("Location: index.php");
+						$emailNotification = "* A verification email will be sent to you on Sign Up. Please follow link to verify account.";
 					}
 					else
 					{
@@ -182,7 +185,7 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
                         <div class="heading">
                             <h4 class="form-heading">Tour Guide Sign Up</h4>
                             <div><font color="red"><?php echo $errorMsg; ?></font></div>
-                            <div><font color="blue">A verification email will be sent to you on Sign Up. Please follow link to verify account.</font></div>
+                            <div><font color="blue">* A verification email will be sent to you on Sign Up. Please follow link to verify account.</font></div>
                         </div>
 
                         <div class="control-group">

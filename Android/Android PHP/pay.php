@@ -7,7 +7,7 @@
 	if(isset($_POST['t_key'])) {
 		$t_key = $_POST['t_key'];
 		
-		$result = pg_query($conn, "Select T.ts_key as ts_key, T.p_quantity as quantity FROM \"Shopping Cart\" as T 
+		$result = pg_query($conn, "Select T.ts_key as ts_key, T.p_quantity as quantity, T.\"total\" as total FROM \"Shopping Cart\" as T 
 		Where T.t_key=$t_key and T.\"s_isActive\" = True and T.\"passed\" = False and T.\"isfull\" = False");
 
 		if(pg_num_rows($result) > 0) {
@@ -16,8 +16,9 @@
 			while($row = pg_fetch_array($result)) {
 				$ts_key = $row['ts_key'];
 				$qty = $row['quantity'];
+				$total = $row['total'];
 				
-				$pay = pg_query($conn, "UPDATE \"Participants\" SET \"Payed\" = (\"Payed\" + $qty), \"p_quantity\" = 0
+				$pay = pg_query($conn, "UPDATE \"Participants\" SET \"Payed\" = (\"Payed\" + $qty), \"p_quantity\" = 0, \"totalPayed\" = $total
 				WHERE \"t_key\" = $t_key  AND \"ts_key\" = $ts_key "); 
  				/*$quantity = pg_query(" SELECT \"p_quantity\" FROM \"Participants\"  WHERE \"t_key\" = $t_key  AND \"ts_key\" = $ts_key "); 
  				$row = pg_fetch_array($quantity); 

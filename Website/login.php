@@ -11,6 +11,8 @@ include_once("dbConnect.php");
 $errorMsg = "";
 $lerrorMsg = "";
 $uemail = '';
+$emailNotification = '';
+
 if(!empty($_POST['uemail'])&&!empty($_POST['password']))
 {
 	$uemail = strip_tags($_POST["uemail"]);
@@ -54,6 +56,7 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
 				$newufname = $_POST["new-ufname"];
 				$newulname = $_POST["new-ulname"];
 				$newupass = $_POST['new-upass'];
+				$checkpass = $_POST['new-upass'];
 				$address = $_POST['address'];
 				$phone = $_POST['phone'];
 				$salt = '6e663cc2478ebdc49cbce5609ba0305b60d10844';
@@ -64,7 +67,7 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
 				$verif = $verifCode;
 				$verifCode = $verifCode.$salt;//.$t_Email;
 				$verifCode = sha1($verifCode);
-		
+				
 				if (!filter_var($newuemail, FILTER_VALIDATE_EMAIL)) 
 				{
   					$errorMsg .= "<a style=\"color:red\">Invalid email format</a><br>"; 
@@ -72,6 +75,10 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
 				else if (!preg_match("/[0-9]/",$phone)) 
 				{
 				  $errorMsg .= "<a style=\"color:red\">Only numbers in phone are allowed</a>"; 
+				}
+				else if(strlen($checkpass)<8)
+				{
+					$errorMsg .= "<a style=\"color:red\">Password not long enough</a>";
 				}
 				else
 				{
@@ -82,7 +89,7 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
 					$query = pg_query($dbconn, "INSERT INTO \"Tourist\" 
 					(\"t_Email\", \"t_FName\", \"t_LName\", \"isAdmin\",
 					\"t_isActive\", \"t_isSuspended\", \"t_password\", \"t_telephone\", 
-					\"t_Address\",\"verification\") VALUES('$newuemail', '$newufname', '$newulname', FALSE, FALSE, 
+					\"t_Address\", \"verification\") VALUES('$newuemail', '$newufname', '$newulname', FALSE, FALSE, 
 					FALSE, '$newupass', '$phone', '$address', '$verifCode') RETURNING \"t_key\"");
 					if($query)
 					{
@@ -93,11 +100,14 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
 						If you are unable to click on the link, copy and paste it on the address bar.";
 						$headers = 'From: luis.tavarez@outlook.com' . "\r\n" .
 						'Reply-To: luis.tavarez@outlook.com' . "\r\n" .
-						'X-Mailer: PHP/' . phpversion();
+						'X-Mailer: PHP/' . phpversion() .
+						'Content-type: text/html; charset=utf-8' . "\r\n";
 						mail($to, $subject, $message, $headers);
 						/*$row = pg_fetch_array($query);
 						$_SESSION['uid'] = $row['t_key'];*/
 						header("Location: index.php");
+						
+						$emailNotification = "*A verification email will be sent to you on Sign Up. Please follow link to verify account.";
 					}
 					else
 					{
@@ -175,7 +185,7 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
                             <h4 class="form-heading">Sign Up</h4>
                             <div><font color="blue">*Please fill out all fields</font></div>
                             <div><font color="red"><?php echo $errorMsg; ?></font></div>
-                            <div><font color="blue">*A verification email will be sent to you on Sign Up. Please follow link to verify account.</font></div>
+                            <div><font color="blue">* A verification email will be sent to you on Sign Up. Please follow link to verify account.</font></div>
                         </div>
 
                         <div class="control-group">
