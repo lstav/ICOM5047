@@ -25,9 +25,9 @@ $receiver = array(array());
 			$tname = $row['tour_Name'];
 			$tdescription = $row['tour_Desc'];
 			$tid = $row['tour_key'];
-			$tprice = $row['Price'];
+			$tprice = $row['total'];
 			$quantity = $row['p_quantity'];
-			$totalPrice += $quantity*(float)preg_replace("/([^0-9\\.])/i", "", $tprice);
+			$totalPrice += (float)preg_replace("/([^0-9\\.])/i", "", $tprice);
 			$tcity = $row['City'];
 			$tstate = $row['State-Province'];
 			//$cid = $row['cid'];
@@ -56,9 +56,9 @@ $receiver = array(array());
 				<h3><a href="tour_page.php?tid='.$tid.' title="">'.$tname.'</a></h3>
 				<p>'.$tdescription.'</p>
 				<h4><strong>Reserved time: '.$reserved_time.'</strong></h4>					
-                <span style="text-align : right"><h4>'.$tprice.'</h4></span>
+                <span style="text-align : center"><h4>'.$tprice.'</h4></span>
 				<h4>Party of: '.$quantity.'</h4>
-				<a style="float:right; color: white; background-color: #248dc1" type="button" class="btn btn-default btn-md" href = "remove_from_cart.php?t_key='.$uid.'&ts_key='.$ts_key.'">
+				<a style="float:center; color: white; background-color: #248dc1" type="button" class="btn btn-default btn-md" href = "remove_from_cart.php?t_key='.$uid.'&ts_key='.$ts_key.'">
   <span class="glyphicon glyphicon-minus" aria-hidden="true"></span></a>
 			</div>
 			<span class="clearfix borda"></span>
@@ -74,7 +74,7 @@ $receiver = array(array());
 		//setlocale(LC_MONETARY, 'en_US');
 		//$totalPrice =  money_format('%(#10n', $totalPrice);
 		
-		$checkOut = '<div style = "float: right"> <h3> Total price: $'.$totalPrice.'</h3><form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
+		$checkOut = '<div style = "float: left"> <h3> Total price: $'.$totalPrice.'</h3><form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
 <!-- Saved buttons use the "secure click" command -->
 <input type="hidden" name="cmd" value="_xclick">
 <!-- Saved buttons are identified by their button IDs -->
