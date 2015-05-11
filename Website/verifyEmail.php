@@ -11,7 +11,7 @@
 		$t_password = $t_password.$salt;//.$t_Email;
 		$t_password = sha1($t_password);	
 		
-		$result = pg_query($dbconn, "SELECT T.\"t_key\" as key, T.\"t_password\" as password 
+		$result = pg_query($dbconn, "SELECT T.\"t_key\" as key, T.\"verification\" as password 
 		FROM \"Tourist\" as T WHERE T.\"t_Email\" = '$t_Email'");
 		
 		if(!empty($result)) {
@@ -37,25 +37,25 @@
 						$response['success'] = 0;
 						$response['message'] = "Wrong Login";
 					
-						echo json_encode($response);
+						//echo json_encode($response);
 					}
 			} else {
 				$response['success'] = 0;
 				$response['message'] = "Wrong Login";
 					
-				echo json_encode($response);
+				//echo json_encode($response);
 			}
 		} else {
 			$response['success'] = 0;
 			$response['message'] = "Wrong Login";
 				
-			echo json_encode($response);
+			//echo json_encode($response);
 		}
 	} else {
 		$response['success'] = 0;
 		$response['message'] = "Wrong Login";
 		
-		echo json_encode($response);
+		//echo json_encode($response);
 	}
 	pg_close($conn);
 ?>

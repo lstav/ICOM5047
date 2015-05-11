@@ -63,6 +63,12 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
 				$phone = $_POST['phone'];
 				$company = $_POST['company'];
 				$license = $_POST['license'];
+				
+				$verifCode = substr( md5(rand()), 0, 8);
+				$verif = $verifCode;
+				$verifCode = $verifCode.$salt;//.$t_Email;
+				$verifCode = sha1($verifCode);
+				
 				if (!filter_var($newuemail, FILTER_VALIDATE_EMAIL)) 
 				{
   					$errorMsg .= "<a style=\"color:red\">Invalid email format</a><br>"; 
@@ -81,7 +87,7 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
 					$ufname = $newufname;
 					$ulname = $newulname;
 					$upass = $newupass;
-					$query = pg_query($dbconn, "INSERT INTO \"Tour Guide\" (\"g_Email\", \"g_FName\", \"g_LName\", \"g_License\", \"Company\", \"g_isActive\", \"g_isSuspended\", \"g_password\", \"g_telephone\", \"g_desc\", \"g_BDate\") VALUES('$uemail', '$ufname', '$ulname', '$license','$company', FALSE, FALSE, '$upass', '$phone', '$desc', '1991-01-01') RETURNING \"g_key\"");
+					$query = pg_query($dbconn, "INSERT INTO \"Tour Guide\" (\"g_Email\", \"g_FName\", \"g_LName\", \"g_License\", \"Company\", \"g_isActive\", \"g_isSuspended\", \"g_password\", \"g_telephone\", \"g_desc\", \"g_BDate\",\"verification\") VALUES('$uemail', '$ufname', '$ulname', '$license','$company', FALSE, FALSE, '$upass', '$phone', '$desc', '1991-01-01', '$verifCode') RETURNING \"g_key\"");
 					$row = pg_fetch_array($query);
 					$g_key = $row['g_key']; 
 					if($query)
@@ -99,9 +105,10 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
 				         $image_tmp_name = $_FILES['image']['tmp_name'];
 				         move_uploaded_file($_FILES["image"]["tmp_name"], $target_file);
 						$to      = $newuemail;
-						$subject = 'Verify Email';
-						$message = 'Please follow this link to verify your account
-						"http://kiwiteam.ece.uprm.edu/NoMiddleMan/website/verifyFormGuide.html"';
+						$subject = 'Verify Email for No Middle Man';
+						$message = "Please follow this link and use this code ".$verif." to verify your account in No Middle Man
+						'http://kiwiteam.ece.uprm.edu/NoMiddleMan/website/verifyFormGuide.html'
+						If you are unable to click on the link, copy and paste it on the address bar.";
 						$headers = 'From: luis.tavarez@outlook.com' . "\r\n" .
 						'Reply-To: luis.tavarez@outlook.com' . "\r\n" .
 						'X-Mailer: PHP/' . phpversion();

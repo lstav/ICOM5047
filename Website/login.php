@@ -18,15 +18,7 @@ if(!empty($_POST['uemail'])&&!empty($_POST['password']))
 	$salt = '6e663cc2478ebdc49cbce5609ba0305b60d10844';
 	$paswd = $paswd.$salt; //.$t_Email;
 	$paswd = sha1($paswd);
-<<<<<<< Updated upstream
-	$query = pg_query($dbconn, "SELECT * FROM \"Tourist\" WHERE \"t_Email\" = '$uemail'");
-=======
-<<<<<<< HEAD
 	$query = pg_query($dbconn, "SELECT * FROM \"Tourist\" WHERE \"t_Email\" = '$uemail' AND \"t_isActive\" = TRUE");
-=======
-	$query = pg_query($dbconn, "SELECT * FROM \"Tourist\" WHERE \"t_Email\" = '$uemail'");
->>>>>>> origin/master
->>>>>>> Stashed changes
 	$count = pg_num_rows($query);
 	
 	if($count > 0)
@@ -67,13 +59,15 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
 				$salt = '6e663cc2478ebdc49cbce5609ba0305b60d10844';
 				$newupass = $newupass.$salt;//.$t_Email;
 				$newupass = sha1($newupass);
+				
+				$verifCode = substr( md5(rand()), 0, 8);
+				$verif = $verifCode;
+				$verifCode = $verifCode.$salt;//.$t_Email;
+				$verifCode = sha1($verifCode);
+		
 				if (!filter_var($newuemail, FILTER_VALIDATE_EMAIL)) 
 				{
   					$errorMsg .= "<a style=\"color:red\">Invalid email format</a><br>"; 
-				}
-				else if (!preg_match("/^[a-zA-Z ]*$/",$newufname)&&!preg_match("/^[a-zA-Z ]*$/",$newulname)) 
-				{
-				  $errorMsg .= "<a style=\"color:red\">Only letters and white space in name are allowed</a>"; 
 				}
 				else if (!preg_match("/[0-9]/",$phone)) 
 				{
@@ -88,14 +82,15 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
 					$query = pg_query($dbconn, "INSERT INTO \"Tourist\" 
 					(\"t_Email\", \"t_FName\", \"t_LName\", \"isAdmin\",
 					\"t_isActive\", \"t_isSuspended\", \"t_password\", \"t_telephone\", 
-					\"t_Address\") VALUES('$newuemail', '$newufname', '$newulname', FALSE, FALSE, 
-					FALSE, '$newupass', '$phone', '$address') RETURNING \"t_key\"");
+					\"t_Address\",\"verification\") VALUES('$newuemail', '$newufname', '$newulname', FALSE, FALSE, 
+					FALSE, '$newupass', '$phone', '$address', '$verifCode') RETURNING \"t_key\"");
 					if($query)
 					{
 						$to      = $newuemail;
-						$subject = 'Verify Email';
-						$message = 'Please follow this link to verify your account
-						"http://kiwiteam.ece.uprm.edu/NoMiddleMan/website/verifyForm.html"';
+						$subject = 'Verify Email for No Middle Man';
+						$message = "Please follow this link and use this code ".$verif." to verify your account in No Middle Man
+						'http://kiwiteam.ece.uprm.edu/NoMiddleMan/website/verifyForm.html'
+						If you are unable to click on the link, copy and paste it on the address bar.";
 						$headers = 'From: luis.tavarez@outlook.com' . "\r\n" .
 						'Reply-To: luis.tavarez@outlook.com' . "\r\n" .
 						'X-Mailer: PHP/' . phpversion();
@@ -106,7 +101,7 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
 					}
 					else
 					{
-						$errorMsg = "Could not create account!";
+						$errorMsg = "Could not create account. Email already exists";
 					}
 					
 				}

@@ -6,7 +6,7 @@
 	
 	$result = pg_query($conn, "Select \"L_key\" as l_key, \"City\" as city, 
 	\"State-Province\" as state, \"Country\" as country
-	From \"Location\"");
+	From \"Location\" Order By \"Country\",\"State-Province\",\"City\" ASC");
 	
 	if(pg_num_rows($result) > 0) {
 		

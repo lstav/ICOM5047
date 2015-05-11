@@ -4,23 +4,12 @@
 <?php include 'header.php';?>
 </head>
 <body>
-<<<<<<< Updated upstream
-<?php include 'navbar.php';?>
-=======
-<<<<<<< HEAD
 <?php include 'guide_navbar_login.php';?>
-=======
-<?php include 'navbar.php';?>
->>>>>>> origin/master
->>>>>>> Stashed changes
 <script>
 $(document).ready(function(){
 	$("#language").attr("style", "");
 });
 </script>
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
 <div class="container">
 	<h2>Enter your tour guide email to recover password.</h2>
 	<h4>An email will be sent with new password.</h4>
@@ -34,18 +23,6 @@ $(document).ready(function(){
       </span>
     </div><!-- /input-group --></form>
 </div>
-=======
->>>>>>> Stashed changes
-	<h2>Enter your guide email to recover password.</h2>
-	<h4>An email will be sent with new password.</h4>
-	 <form action="requestPasswordChangeGuide.php" method="post">
-		email: <input type="text" name="g_Email"><br>
-		<input type="submit">
- </form>
-<<<<<<< Updated upstream
-=======
->>>>>>> origin/master
->>>>>>> Stashed changes
 </body>
 </html>
 		

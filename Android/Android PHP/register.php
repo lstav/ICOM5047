@@ -15,9 +15,15 @@
 		$password = $password.$salt;//.$t_Email;
 		$password = sha1($password);
 		
+		$verifCode = substr( md5(rand()), 0, 8);
+		$verif = $verifCode;
+		$verifCode = $verifCode.$salt;//.$t_Email;
+		$verifCode = sha1($verifCode);
 		
-		$result = pg_query($conn, "Insert into \"Tourist\" (\"t_Email\",\"t_password\",\"t_FName\",\"t_LName\",\"t_telephone\",\"t_Address\") 
-		Values('$t_Email','$password','$t_FName','$t_LName',$t_telephone,'$t_address') ");
+		
+		
+		$result = pg_query($conn, "Insert into \"Tourist\" (\"t_Email\",\"t_password\",\"t_FName\",\"t_LName\",\"t_telephone\",\"t_Address\",\"verification\") 
+		Values('$t_Email','$password','$t_FName','$t_LName',$t_telephone,'$t_address','$verifCode') ");
 		
 		if($result) {
 			
@@ -26,8 +32,8 @@
 			
 			$to      = $t_Email;
 			$subject = 'Verify Email for No Middle Man';
-			$message = "Please follow this link to verify your account in No Middle Man
-			'http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/verifyForm.html'
+			$message = "Please follow this link and use this code ".$verif." to verify your account in No Middle Man
+			'http://kiwiteam.ece.uprm.edu/NoMiddleMan/website/verifyForm.html'
 			If you are unable to click on the link, copy and paste it on the address bar.";
 			$headers = 'From: luis.tavarez@outlook.com' . "\r\n" .
 				'Reply-To: luis.tavarez@outlook.com' . "\r\n" .

@@ -5,15 +5,7 @@
 <?php include 'header.php';?>
 </head>
 <body>
-<<<<<<< Updated upstream
-<?php include 'navbar.php';?>
-=======
-<<<<<<< HEAD
 <?php include 'guide_navbar_login.php';?>
-=======
-<?php include 'navbar.php';?>
->>>>>>> origin/master
->>>>>>> Stashed changes
 <script>
 $(document).ready(function(){
 	$("#language").attr("style", "");
@@ -46,26 +38,15 @@ $(document).ready(function(){
 			$response['message'] = "Password Changed";
 			
 			$to      = $email;
-			$subject = 'Password Change Request';
-			$message = 'This is your new password '.$pass;
+			$subject = 'Password Change Request for No Middle Man';
+			$message = 'You have requested a new password for No Middle Man. Your password has been changed to 
+						'.$pass;
 			$headers = 'From: luis.tavarez@outlook.com' . "\r\n" .
 				'Reply-To: luis.tavarez@outlook.com' . "\r\n" .
 				'X-Mailer: PHP/' . phpversion();
-<<<<<<< Updated upstream
-			mail($to, $subject, $message, $headers);
-			
-			echo "Email notification sent";
-=======
-<<<<<<< HEAD
 			$m = mail($to, $subject, $message, $headers);
 			
-			echo '<div class = "container"><h3>Your new password was sent to: '.$to.'</h3>Please login <a href = "guide_login.php"> here</a></div>';
-=======
-			mail($to, $subject, $message, $headers);
-			
-			echo "Email notification sent";
->>>>>>> origin/master
->>>>>>> Stashed changes
+			echo '<div class = "container"><h3>Your new password was sent to: '.$to.'</h3>Please login <a href = "guide_login.php">here</a></div>';
 		} else {
 			$response['message'] = "Unable to send request";
 				

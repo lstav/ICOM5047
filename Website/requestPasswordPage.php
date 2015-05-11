@@ -10,9 +10,6 @@ $(document).ready(function(){
 	$("#language").attr("style", "");
 });
 </script>
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
 <div class="container">
 	<h2>Enter your tourist email to recover password.</h2>
 	<h4>An email will be sent with new password.</h4>
@@ -26,18 +23,6 @@ $(document).ready(function(){
       </span>
     </div><!-- /input-group --></form>
 </div>
-=======
->>>>>>> Stashed changes
-	<h2>Enter your email to recover password.</h2>
-	<h4>An email will be sent with new password.</h4>
-	 <form action="requestPasswordChange.php" method="post">
-		email: <input type="text" name="t_Email"><br>
-		<input type="submit">
- </form>
-<<<<<<< Updated upstream
-=======
->>>>>>> origin/master
->>>>>>> Stashed changes
 </body>
 </html>
 		

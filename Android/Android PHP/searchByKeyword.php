@@ -24,7 +24,7 @@
 		T.\"tour_Desc\" as Description, T.\"Price\" as Price, 
 		T.\"extremeness\" as Extremeness, T.\"tour_photo\" as Photo 
 		FROM \"Tour Info\" as T 
-		Where upper(concat(T.\"tour_Name\",' ',T.\"tour_Desc\")) like upper('%$keyword%') 	
+		Where lower(concat(T.\"tour_Name\",' ',T.\"tour_Desc\")) like lower('%$keyword%') 	
 		and T.tour_key IN (Select C.tour_key as key	From \"TourAndCategory\" as C Where \"Category_Name\" = $inter)		
 		Order By (T.\"$order\") $by");
 		
@@ -53,6 +53,7 @@
 				array_push($response['categories'], $category_name);
 				
 				array_push($response['tours'], $tour);
+			
 			}
 			
 			$response['success'] = 1;

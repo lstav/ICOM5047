@@ -3,7 +3,7 @@
 	$response = array();
 	
 	include_once("dbconnection.php");
-	$result = pg_query($conn, "SELECT * FROM \"Tour Category\"");
+	$result = pg_query($conn, "SELECT * FROM \"Tour Category\" Order By \"Category_Name\" ASC");
 	
 	if(pg_num_rows($result) > 0) {
 		

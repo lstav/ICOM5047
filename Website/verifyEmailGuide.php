@@ -11,7 +11,7 @@
 		$g_password = $g_password.$salt;//.$t_Email;
 		$g_password = sha1($g_password);	
 		
-		$result = pg_query($dbconn, "SELECT T.\"g_key\" as key, T.\"g_password\" as password 
+		$result = pg_query($dbconn, "SELECT T.\"g_key\" as key, T.\"verification\" as password 
 		FROM \"Tour Guide\" as T WHERE T.\"g_Email\" = '$g_Email'");
 		
 		if(!empty($result)) {
@@ -39,25 +39,25 @@
 						$response['success'] = 0;
 						$response['message'] = "Wrong Login";
 					
-						echo json_encode($response);
+						//echo json_encode($response);
 					}
 			} else {
 				$response['success'] = 0;
 				$response['message'] = "No login";
 					
-				echo json_encode($response);
+				//echo json_encode($response);
 			}
 		} else {
 			$response['success'] = 0;
 			$response['message'] = "No tours found";
 				
-			echo json_encode($response);
+			//echo json_encode($response);
 		}
 	} else {
 		$response['success'] = 0;
 		$response['message'] = "Required field(s) is missing";
 		
-		echo json_encode($response);
+		//echo json_encode($response);
 	}
 	pg_close($dbconn);
 ?>

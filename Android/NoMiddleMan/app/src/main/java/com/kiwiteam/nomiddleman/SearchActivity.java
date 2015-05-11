@@ -24,6 +24,7 @@ import android.widget.RatingBar;
 import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -92,6 +93,7 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
     private static final String TAG_CAT_NAME = "category_name";
     private static final String TAG_ORDER = "order";
     private static final String TAG_BY = "by";
+    private static final String TAG_MESSAGE = "message";
 
 
     private static String url_search_categories = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/searchByCategory.php";
@@ -475,7 +477,7 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
 
                 HttpPost httppost = new HttpPost(url_search_categories);
 
-                httppost.setEntity(new UrlEncodedFormEntity(categoryName));
+                httppost.setEntity(new UrlEncodedFormEntity(categoryName, "UTF-8"));
 
                 HttpResponse response = httpClient.execute(httppost);
 
@@ -541,8 +543,10 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
                 public void run() {
                     if(success == 0) {
                         findViewById(R.id.result).setVisibility(View.VISIBLE);
+                        findViewById(R.id.refiner).setVisibility(View.GONE);
                     } else {
                         findViewById(R.id.result).setVisibility(View.GONE);
+                        findViewById(R.id.refiner).setVisibility(View.VISIBLE);
                     }
                     ArrayAdapter<Tour> adapter = new MyListAdapter();
 
@@ -587,7 +591,7 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
 
                 HttpPost httppost = new HttpPost(url_search_location);
 
-                httppost.setEntity(new UrlEncodedFormEntity(categoryName));
+                httppost.setEntity(new UrlEncodedFormEntity(categoryName, "UTF-8"));
 
                 HttpResponse response = httpClient.execute(httppost);
 
@@ -665,8 +669,10 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
                 public void run() {
                     if(success == 0) {
                         findViewById(R.id.result).setVisibility(View.VISIBLE);
+                        findViewById(R.id.refiner).setVisibility(View.GONE);
                     } else {
                         findViewById(R.id.result).setVisibility(View.GONE);
+                        findViewById(R.id.refiner).setVisibility(View.VISIBLE);
                     }
                     ArrayAdapter<Tour> adapter = new MyListAdapter();
 
@@ -731,7 +737,7 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
 
                 HttpPost httppost = new HttpPost(url_search_keyword);
 
-                httppost.setEntity(new UrlEncodedFormEntity(categoryName));
+                httppost.setEntity(new UrlEncodedFormEntity(categoryName, "UTF-8"));
 
                 HttpResponse response = httpClient.execute(httppost);
 
@@ -806,10 +812,13 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+
                     if(success == 0) {
                         findViewById(R.id.result).setVisibility(View.VISIBLE);
+                        findViewById(R.id.refiner).setVisibility(View.GONE);
                     } else {
                         findViewById(R.id.result).setVisibility(View.GONE);
+                        findViewById(R.id.refiner).setVisibility(View.VISIBLE);
                     }
                     ArrayAdapter<Tour> adapter = new MyListAdapter();
 
