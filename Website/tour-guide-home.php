@@ -3,6 +3,7 @@ session_start();
 include_once("dbConnect.php");
 $schedule = '';
 $tours = '';
+$totaltotal = 0;
 if($_SESSION['tgemail'])
 {
 	    $uemail = $_SESSION['tgemail'];
@@ -14,8 +15,9 @@ if($_SESSION['tgemail'])
 		$tgdesc = $_SESSION['tgdesc'];
 		$errorMsg = '';
 		
-		$squery = pg_query($dbconn, "SELECT \"tour_key\", \"t_FName\",\"t_LName\",\"p_quantity\",\"City\", \"tour_Desc\", \"State-Province\", \"ts_key\", \"tour_Name\", \"extremeness\" , \"Price\", \"s_Time\",\"Payed\", \"s_isActive\",
-		(\"Price\"*\"Payed\") as total
+		$squery = pg_query($dbconn, "SELECT \"tour_key\", \"t_FName\",\"t_LName\",\"p_quantity\",
+		\"City\", \"tour_Desc\", \"State-Province\", \"ts_key\", \"tour_Name\", \"extremeness\" , 
+		\"Price\", \"s_Time\",\"Payed\", \"s_isActive\", (\"total\"*0.90) as total
 		FROM \"Upcoming Tours\" NATURAL JOIN \"Location\" NATURAL JOIN \"Tourist\"
 		WHERE \"g_key\"=$uid ORDER BY \"s_Time\" ASC");
 	while($row = pg_fetch_array($squery))
@@ -25,6 +27,8 @@ if($_SESSION['tgemail'])
 		$tid = $row['tour_key'];
 		$quantity = $row['Payed'];
 		$name = $row['t_FName'].' '.$row['t_LName'];
+		$total = $row['total'];
+		$totaltotal = $totaltotal + substr($total,1);
 		$tcity = $row['City'];
 		$tstate = $row['State-Province'];
 		$reserved_time = date("F/d/Y g:i a" , strtotime(substr($row['s_Time'], 0, -3)));
@@ -35,7 +39,8 @@ if($_SESSION['tgemail'])
 			<div class="col-xs-12 col-sm-12 col-md-7 excerpet">
 				<h3><a title="">'.$tname.'</a></h3>
 				<h5><strong>Reserved time: '.$reserved_time.'</strong></h5>	
-				<h5>'.$name.'\'s party of: '.$quantity.'</h5>				
+				<h5>'.$name.'\'s party of: '.$quantity.'</h5>	
+				<h5>Total Earnings: '.$total.'</h5>
 			</div>
 			<span class="clearfix borda"></span>
 		</article>';
@@ -106,6 +111,9 @@ else
             <div><h3><strong><?php echo $tgcompany;?></strong></h3></div>
             <br />
             <div class="product-desc"><?php echo $tgdesc;?></div>
+          </div>
+		  <div class="col-md-6">
+            <div><h4><strong>Total Earned: <?php echo $totaltotal;?></strong></h4></div>            
           </div>
         </div>
       </div>

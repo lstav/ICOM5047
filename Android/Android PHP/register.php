@@ -33,7 +33,7 @@
 			$to      = $t_Email;
 			$subject = 'Verify Email for No Middle Man';
 			$message = "Please follow this link and use this code ".$verif." to verify your account in No Middle Man
-			'http://kiwiteam.ece.uprm.edu/NoMiddleMan/website/verifyForm.html'
+			'http://kiwiteam.ece.uprm.edu/NoMiddleMan/website/verifyForm.php'
 			If you are unable to click on the link, copy and paste it on the address bar.";
 			$headers = 'From: luis.tavarez@outlook.com' . "\r\n" .
 				'Reply-To: luis.tavarez@outlook.com' . "\r\n" .

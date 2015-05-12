@@ -18,7 +18,7 @@
 				$qty = $row['quantity'];
 				$total = $row['total'];
 				
-				$pay = pg_query($conn, "UPDATE \"Participants\" SET \"Payed\" = (\"Payed\" + $qty), \"p_quantity\" = 0, \"totalPayed\" = $total
+				$pay = pg_query($conn, "UPDATE \"Participants\" SET \"Payed\" = (\"Payed\" + $qty), \"p_quantity\" = 0, \"totalPayed\" = (\"totalPayed\" + '$total')
 				WHERE \"t_key\" = $t_key  AND \"ts_key\" = $ts_key "); 
  				/*$quantity = pg_query(" SELECT \"p_quantity\" FROM \"Participants\"  WHERE \"t_key\" = $t_key  AND \"ts_key\" = $ts_key "); 
  				$row = pg_fetch_array($quantity); 

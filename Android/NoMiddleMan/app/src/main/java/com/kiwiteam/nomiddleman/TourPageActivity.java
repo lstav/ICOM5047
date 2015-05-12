@@ -655,6 +655,7 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                         findViewById(R.id.sessionSpinners).setVisibility(View.GONE);
                         findViewById(R.id.button).setVisibility(View.GONE);
                         findViewById(R.id.textView41).setVisibility(View.VISIBLE);
+                        findViewById(R.id.button10).setVisibility(View.GONE);
                     }
 
                     TextView tDescription = (TextView) findViewById(R.id.description);

@@ -13,17 +13,27 @@ if(isset($_POST['tid']) && isset($_POST['tdatetime']))
 	$datetime = $_POST['tdatetime'];
 	$quantity = $_POST['quantity'];
 	$uid = $_SESSION['uid'];
-	$equery = pg_query($dbconn, "SELECT * FROM \"Participants\" WHERE \"t_key\" = '$uid' AND \"ts_key\"='$tskey'");
+	$equery = pg_query($dbconn, "SELECT * FROM \"Participants\" WHERE \"t_key\" = '$uid' AND 
+	\"ts_key\"='$tskey'");
 	$ecount = pg_num_rows($equery);
+	
+	$qty = 0;
 	if($ecount>0)
 	{
 		$row = pg_fetch_array($equery);
-			$quantity = $quantity + $row['p_quantity'];
-			$query = pg_query($dbconn, "UPDATE \"Participants\" SET \"p_quantity\" = $quantity, \"p_isActive\" = True WHERE \"t_key\" = $uid and \"ts_key\" = $tskey");
+		$quantity = $quantity + $row['p_quantity'];
+		$query = pg_query($dbconn, "UPDATE \"Participants\" SET \"p_quantity\" = $quantity, 
+			\"p_isActive\" = True WHERE \"t_key\" = $uid and \"ts_key\" = $tskey
+			Returning \"p_quantity\"");
+		
+		$quant = pg_fetch_array($query);
+		
+		$qty = $quant['p_quantity'];
 	}
 	else
 	{
-		$result = pg_query($dbconn, "INSERT INTO \"Participants\" (\"t_key\",\"ts_key\",\"p_quantity\") Values($uid,$tskey,$quantity)");
+		$result = pg_query($dbconn, "INSERT INTO \"Participants\" (\"t_key\",\"ts_key\",
+		\"p_quantity\") Values($uid,$tskey,$quantity)");
 	}
 
 	$tquery = pg_query($dbconn, "SELECT * FROM \"Tour\" NATURAL JOIN \"Location\" WHERE \"tour_key\"= '$tid'");
@@ -48,11 +58,20 @@ if(isset($_POST['tid']) && isset($_POST['tdatetime']))
 				<h3><a href="tour_page.php?tid='.$tid.' title="">'.$tname.'</a></h3>
 				<p>'.$tdescription.'</p>	
 				<h4><strong>Reserved time: '.$datetime.'</strong></h4>					
-                <h4>Price: '.$tprice.'</h4>
-				<h4>Party of: '.$quantity.'</h4>
-			</div>
-			<span class="clearfix borda"></span>
-		</article>';
+                <h4>Price: '.$tprice.'</h4>';
+			if($qty < $quantity) {
+				$q = $quantity - $qty;
+				$item = $item.'<h4>Party in cart: '.$qty.'</h4>
+				<h4>Exceeded: '.$q.'</h4>
+				</div>
+				<span class="clearfix borda"></span>
+			</article>';
+			} else {
+				$item = $item.'<h4>Party of: '.$quantity.'</h4>
+				</div>
+				<span class="clearfix borda"></span>
+			</article>';
+			}			
 }
 
 ?>

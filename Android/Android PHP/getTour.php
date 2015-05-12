@@ -71,7 +71,7 @@
 		
 		
 		$result = pg_query($conn, "select \"ts_key\" as tskey, \"s_Time\" as time, \"Availability\" as availability
-		from \"Tour Session\" where \"tour_key\" = $tour_key and \"s_isActive\" = true and \"s_Time\" > now()-interval '4 hour' and \"Availability\" > 0
+		from \"Tour Session\" where \"tour_key\" = $tour_key and \"s_isActive\" = true and \"s_Time\" > (now()-interval '4 hour') and \"Availability\" > 0
 		Order by (\"s_Time\") ASC");
 		
 		if(!empty($result)) {
@@ -82,7 +82,7 @@
 				
 					$tour = array();
 					$tour['tskey'] = $row['tskey'];
-					$tour['time'] = date("g:i A" , strtotime($row['time']));
+					$tour['time'] = date("g:i A" , strtotime(substr($row['time'], 0, -3)));
 					$tour['date'] = date("M-d-Y", strtotime($row['time']));
 					$tour['availability'] = $row['availability'];
 					array_push($response['sessions'], $tour);

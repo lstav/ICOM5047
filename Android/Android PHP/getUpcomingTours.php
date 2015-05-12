@@ -16,7 +16,7 @@
 		T.\"s_Time\" as Time, 
 		T.\"Payed\" as Qty, 
 		T.\"s_isActive\" as isactive,
-		(T.\"Price\"*T.\"Payed\") as total
+		T.\"total\" as total
 		FROM \"Upcoming Tours\" as T 
 		Where \"t_key\"=$keyword
 		Order By T.\"s_Time\" ASC");

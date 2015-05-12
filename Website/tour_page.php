@@ -33,6 +33,7 @@ if(isset($_GET['tid']))
 	  $about = $row['g_desc'];
 	  $company = $row['Company'];
 	  $tprice = $row['Price'];
+	  $extremeness = $row['extremeness'];
 	  $tcity = $row['City'];
 	  $tstate = $row['State-Province'];
 	  $tduration = $row['Duration'];
@@ -40,6 +41,8 @@ if(isset($_GET['tid']))
 	  $squery = pg_query($dbconn, "SELECT \"ts_key\", \"s_Time\", \"Availability\" FROM \"Tour Session\" Where \"tour_key\" = $tid and \"s_isActive\"  = TRUE and \"Availability\" > 0 and \"s_Time\" > now() 
 	  ORDER BY (\"s_Time\") ASC");
 	  $i = 0;
+	  
+	  $ratingListE = '$("#ratingE'.$tid.'").raty({ readOnly: true, score:'.$extremeness.' });';
 	  while($row = pg_fetch_array($squery))
 	  {
 		  $tskey = $row['ts_key'];
@@ -136,9 +139,10 @@ $(document).ready(function(){
           <div class="col-md-6">
             <div class="product-title"><?php echo $tourName;?></div>
              <div style = "float:left" id="rating<?php echo $tid?>"></div><a href = "#">(<?php echo $rcount?>)</a>
-            <div class="product-desc"><?php echo $tdescription.'<br><strong>Estimated Duration: '.$tduration.' minutes </strong><br>'.$taddress .'<br>'.$tcity.', '. $tstate?> <div class="product-price"><?php echo $tprice; ?></div><hr></div>
+            <div class="product-desc"><?php echo $tdescription.'<br><strong>Estimated Duration: '.$tduration.' minutes </strong><br>'.$taddress .'<br>'.$tcity.', '. $tstate?> <div class="product-price"><?php echo $tprice; ?></div>
+			            <div style = "float:left" id="ratingE<?php echo $tid?>"></div><hr></div>
            
-            
+
             
             
            <a title="Lorem ipsum" href="<?php echo $youtube;?>"><img src="images/YouTube-social-squircle_red_48px.png" alt="Lorem ipsum"></a>
@@ -479,4 +483,5 @@ $.fn.raty.defaults.path = 'images';
 <?php echo $ratingList;?>
 <?php echo $tourRating;?>
 </script>
+<script>$.fn.raty.defaults.path = 'images/extremeness'; <?php echo $ratingListE;?></script>
 </html>

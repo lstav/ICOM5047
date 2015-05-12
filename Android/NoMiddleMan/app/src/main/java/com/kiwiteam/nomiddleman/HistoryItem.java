@@ -83,7 +83,7 @@ public class HistoryItem {
      * @return
      */
     public double getPrice() {
-        return tour.getPrice() * quantity;
+        return tour.getPrice();
     }
 
     /**

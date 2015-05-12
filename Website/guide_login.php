@@ -57,6 +57,7 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
 				$newufname = $_POST["new-ufname"];
 				$newulname = $_POST["new-ulname"];
 				$newupass = $_POST['new-upass'];
+				$checkpass = $_POST['new-upass'];
 				$salt = '6e663cc2478ebdc49cbce5609ba0305b60d10844';
 				$newupass = $newupass.$salt;//.$t_Email;
 				$newupass = sha1($newupass);
@@ -81,6 +82,10 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
 				else if (!preg_match("/[0-9]/",$phone)) 
 				{
 				  $errorMsg .= "<a style=\"color:red\">Only numbers in phone are allowed</a>"; 
+				}
+				else if(strlen($checkpass)<8)
+				{
+					$errorMsg .= "<a style=\"color:red\">Password not long enough</a>";
 				}
 				else
 				{
@@ -108,7 +113,7 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
 						$to      = $newuemail;
 						$subject = 'Verify Email for No Middle Man';
 						$message = "Please follow this link and use this code ".$verif." to verify your account in No Middle Man
-						'http://kiwiteam.ece.uprm.edu/NoMiddleMan/website/verifyFormGuide.html'
+						'http://kiwiteam.ece.uprm.edu/NoMiddleMan/website/verifyFormGuide.php'
 						If you are unable to click on the link, copy and paste it on the address bar.";
 						$headers = 'From: luis.tavarez@outlook.com' . "\r\n" .
 						'Reply-To: luis.tavarez@outlook.com' . "\r\n" .
@@ -165,7 +170,6 @@ else if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POS
         <input name = "tgpass" id="inputPassword" placeholder="Min. 8 Characters" type="password">
       </div>
     </div>
-	<a href="http://kiwiteam.ece.uprm.edu/NoMiddleMan/website/requestPasswordPageGuide.php">Lost password?</a>
     <div class="control-group">
       <div class="controls">
         <!--<label class="checkbox">

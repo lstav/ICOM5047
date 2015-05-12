@@ -70,7 +70,7 @@ public class UpcomingPurchaseHistoryActivity extends ActionBarActivity {
     private static final String TAG_KEY = "key";
     private static final String TAG_TSKEY = "ts_key";
     private static final String TAG_NAME = "name";
-    private static final String TAG_PRICE = "price";
+    private static final String TAG_PRICE = "total";
     private static final String TAG_EXTREMENESS = "extremeness";
     private static final String TAG_PHOTO = "photo";
     private static final String TAG_QUANTITY = "quantity";

@@ -275,15 +275,21 @@ $(document).ready(function(){
             <button type = "button" id = "pass-btn" class="btn btn-default btn-sm" style="margin-top: 5px;">Change Password</button>
             <div id = "password-field" style="display: none;">
               <div class="control-group">
-                <label class="control-label" for="inputPassword"> New Password</label>
+                <label class="control-label" for="inputPassword">Old Password</label>
                 <div class="controls">
                   <input id="inputPassword" name="old-upass" placeholder="" type="password">
                 </div>
               </div>
               <div class="control-group">
-                <label class="control-label" for="inputPassword"> Confirm New Password</label>
+                <label class="control-label" for="inputPassword">New Password</label>
                 <div class="controls">
                   <input id="inputPassword" name = "new-upass" placeholder="" type="password">
+                </div>
+              </div>
+			  <div class="control-group">
+                <label class="control-label" for="inputPassword">Confirm New Password</label>
+                <div class="controls">
+                  <input id="inputPassword" name = "con-new-upass" placeholder="" type="password">
                 </div>
               </div>
             </div>

@@ -190,6 +190,7 @@ public class ShoppingCartActivity extends ActionBarActivity {
         if(conn.isLogged()) {
             Intent intent = new Intent(this, CheckoutActivity.class);
             startActivity(intent);
+            finish();
         } else {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);

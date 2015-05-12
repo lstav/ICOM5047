@@ -3,6 +3,7 @@ include_once("dbConnect.php");
 $output = '';
 $dropdown = '';
 $ratingList = '';
+$ratingListE = '';
 $searchq = '';
 $query = pg_query($dbconn, "SELECT * FROM \"Tour Category\"");
 while($row = pg_fetch_array($query))
@@ -48,12 +49,14 @@ if(isset($_GET['search'])||isset($_GET['tsort']))
 			$tprice = $row['Price'];
 			$tcity = $row['City'];
 			$tstate = $row['State-Province'];
+			$extremeness = $row['extremeness'];
 			$rquery = pg_query($dbconn, "SELECT AVG(\"Rate\"), COUNT(*) FROM \"Review\" NATURAL JOIN \"Tour Session\" WHERE \"tour_key\" = $tid");
 			$ratingRow = pg_fetch_array($rquery);
 			$trating = $ratingRow['avg'];
 			$rcount = $ratingRow['count'];
 			$trating = round($trating, 1);
 			$ratingList .= '$("#rating'.$tid.'").raty({ readOnly: true, score:'.$trating.' });';
+			$ratingListE .= '$("#ratingE'.$tid.'").raty({ readOnly: true, score:'.$extremeness.' });';
 			$output .= '<article class="search-result row">
 			<div class="col-xs-12 col-sm-12 col-md-3">
 				<a title="Lorem ipsum" class="thumbnail" href="tour_page.php?tid='.$tid.'"><img src="images/'.$tid.'/1.jpg" alt="Lorem ipsum"></a>
@@ -63,6 +66,7 @@ if(isset($_GET['search'])||isset($_GET['tsort']))
 					<li><span><h7>'.$tcity.'</h7></span></li>
 					<li> <span>'.$tstate.'</span></li>
 					<li><div style = "float:left" id="rating'.$tid.'"></div><a href = "#">('.$rcount.')</a></li> 
+					<li><div style = "float:left" id="ratingE'.$tid.'"></div></li> 
 					
 					
 				</ul>
@@ -130,5 +134,6 @@ if(isset($_GET['search'])||isset($_GET['tsort']))
   </section>
 </div>
 <script>$.fn.raty.defaults.path = 'images'; <?php echo $ratingList;?></script>
+<script>$.fn.raty.defaults.path = 'images/extremeness'; <?php echo $ratingListE;?></script>
 </body>
 </html>

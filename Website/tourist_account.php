@@ -50,7 +50,8 @@ if($_SESSION['uemail'])
 				}
 				else
 				{
-					$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"t_Email\" = '$newuemail' WHERE \"t_Email\" = '$uemail'");
+					$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"t_Email\" = '$newuemail' 
+					WHERE \"t_Email\" = '$uemail'");
 					$uemail = $_SESSION['uemail'] = $newuemail;
 				}
 			}
@@ -64,7 +65,8 @@ if($_SESSION['uemail'])
 				}
 				else
 				{
-					$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"t_FName\" = '$newufname' WHERE \"t_Email\" = '$uemail' AND \"t_FName\" = '$ufname'");
+					$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"t_FName\" = '$newufname' 
+					WHERE \"t_Email\" = '$uemail' AND \"t_FName\" = '$ufname'");
 					$ufname = $_SESSION['ufname'] = $newufname;
 				}
 			}
@@ -77,19 +79,22 @@ if($_SESSION['uemail'])
 				}
 				else
 				{
-					$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"t_LName\" = '$newulname' WHERE \"t_Email\" = '$uemail' AND \"t_LName\" = '$ulname'");
+					$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"t_LName\" = '$newulname' 
+					WHERE \"t_Email\" = '$uemail' AND \"t_LName\" = '$ulname'");
 					$ulname = $_SESSION['ulname'] = $newulemail;
 				}
 			}
 			if(!empty($_POST['new-addr']))
 			{
 				$newuaddr = test_input(strip_tags($_POST["new-addr"]));
-				$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"t_Address" = '$newuaddr' WHERE \"t_Email\" = '$uemail' AND \"t_LName\" = '$ulname'");
+				$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"t_Address\" = '$newuaddr' 
+				WHERE \"t_Email\" = '$uemail' AND \"t_LName\" = '$ulname'");
 			}
 			if(!empty($_POST['new-telephone']))
 			{
 				$newutelephone = test_input(strip_tags($_POST["new-telephone"]));
-				$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"t_telephone" = '$newutelephone' WHERE \"t_Email\" = '$uemail' AND \"t_LName\" = '$ulname'");
+				$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"t_telephone\" = '$newutelephone' 
+				WHERE \"t_Email\" = '$uemail' AND \"t_LName\" = '$ulname'");
 			}
 			if(!empty($_POST['new-upass']) && !empty($_POST['old-upass']) && !empty($_POST['con-new-upass']))
 			{
@@ -112,7 +117,8 @@ if($_SESSION['uemail'])
 				{
 					if($newupass == $connewupass) {
 						$_SESSION['upass'] = $newupass;
-						$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"t_password\" = '$newupass' WHERE \"t_Email\" = '$uemail'");
+						$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"t_password\" = 
+						'$newupass' WHERE \"t_Email\" = '$uemail'");
 					} else {
 						$errorMsg = "Passwords do not match";
 					}
@@ -167,8 +173,8 @@ if($_SESSION['uemail'])
 									</div>
 								</div>';
 								
-			$uquery = pg_query($dbconn, "SELECT \"tour_key\", \"City\", \"tour_Desc\", \"State-Province\", \"ts_key\", \"tour_Name\", \"extremeness\" , \"Price\", \"s_Time\",\"Payed\", \"s_isActive\",
-		(\"Price\"*\"Payed\") as total
+			$uquery = pg_query($dbconn, "SELECT \"tour_key\", \"City\", \"tour_Desc\", \"State-Province\", \"ts_key\", \"tour_Name\", 
+			\"extremeness\" , \"Price\", \"s_Time\",\"Payed\", \"s_isActive\", \"total\" as total
 		FROM \"Upcoming Tours\" NATURAL JOIN \"Location\"
 		WHERE \"t_key\"=$uid");
 			$ucount = pg_num_rows($uquery);
@@ -212,8 +218,9 @@ if($_SESSION['uemail'])
 			  <span class="clearfix borda"></span>
 		  </article>';
 			}
-			$pquery = pg_query($dbconn, "SELECT \"tour_key\", \"City\", \"State-Province\", \"tour_Desc\", \"ts_key\", \"tour_Name\", \"extremeness\" , \"Price\", \"s_Time\",\"Payed\", \"s_isActive\",
-		(\"Price\"*\"Payed\") as total
+			$pquery = pg_query($dbconn, "SELECT \"tour_key\", \"City\", \"State-Province\", 
+			\"tour_Desc\", \"ts_key\", \"tour_Name\", \"extremeness\" , \"Price\", \"s_Time\",
+			\"Payed\", \"s_isActive\", \"total\" as total
 		FROM \"Past Tour\" NATURAL JOIN \"Location\"
 		Where \"t_key\"=$uid");
 			$pcount = pg_num_rows($pquery);
