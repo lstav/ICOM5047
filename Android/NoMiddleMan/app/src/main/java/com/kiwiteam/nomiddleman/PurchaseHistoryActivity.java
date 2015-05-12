@@ -254,13 +254,8 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
             // find the list
             HistoryItem currentTour = pastHistory.get(position);
 
-            if(currentTour.getTour().getPictures().size() > 0) {
-                picture = (ImageView) itemView.findViewById(R.id.tourPic);
-                picture.setImageBitmap(currentTour.getTour().getPictures().get(0));
-            } else {
-                picture = (ImageView) itemView.findViewById(R.id.tourPic);
-                picture.setImageDrawable(getResources().getDrawable(R.mipmap.ic_launcher));
-            }
+            picture = (ImageView) itemView.findViewById(R.id.tourPic);
+            picture.setImageBitmap(currentTour.getTour().getPictures().get(0));
 
             TextView tName = (TextView) itemView.findViewById(R.id.tourName);
             tName.setText(currentTour.getTour().getName());
@@ -375,14 +370,13 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
 
                 if(success == 1) {
 
-                    //pastHistory.clear();
+                    pastHistory.clear();
                     backup = jObj.getJSONArray("tours");
                     ArrayList<Bitmap> pictures = new ArrayList<>();
 
                     for (int i=0; i<backup.length(); i++) {
                         JSONObject c = backup.getJSONObject(i);
                         try {
-                            if(getResponseCode(c.getString(TAG_PHOTO).trim() + "1.jpg") != 404) {
                                 BitmapFactory.Options options = new BitmapFactory.Options();
                                 options.inJustDecodeBounds = true;
                                 // Calculate inSampleSize
@@ -392,7 +386,6 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
 
                                 bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "1.jpg").getContent(), null, options);
                                 pictures.add(bitmap);
-                            }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -411,7 +404,7 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
                                 c.getString(TAG_TIME),c.getInt(TAG_TSKEY),c.getInt(TAG_QUANTITY),
                                 isRated, new Tour(c.getString(TAG_NAME),
                                         Price.getDouble(c.getString(TAG_PRICE)),
-                                        pictures, c.getInt(TAG_KEY),
+                                        new ArrayList<>(Arrays.asList(bitmap)), c.getInt(TAG_KEY),
                                         c.getDouble(TAG_EXTREMENESS))));
 
                         if(isActive) {
@@ -440,9 +433,9 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
                         pastListView = (ListView) findViewById(R.id.pastListView);
                         pastListView.setAdapter(pastAdapter);
 
-                        pastAdapter.notifyDataSetChanged();
-
                         setListViewHeightBasedOnChildren(pastListView);
+
+                        pastAdapter.notifyDataSetChanged();
                     }
                 }
             });
