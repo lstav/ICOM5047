@@ -1,6 +1,5 @@
 <?php 
 // Moved here
-
 function test_input($data)
 {
    $data = trim($data);
@@ -12,11 +11,10 @@ include_once("dbConnect.php");
 session_start();
 $uorders = '';
 $uid = '';
-$uid = '';
 $porders = '';
 if($_SESSION['tgid'])
 {
-	   $uemail =  $_SESSION['tgemail'];
+		$uemail =  $_SESSION['tgemail'];
 		$uid = $_SESSION['tgid'];
 		$ufname = $_SESSION['tgfname'];
 		$ulname = $_SESSION['tglname'];
@@ -24,7 +22,27 @@ if($_SESSION['tgid'])
 		//$_SESSION['tgcompany'] = $row['Company'];
 		//$_SESSION['tgdesc'] = $row['g_desc'];
 		$errorMsg = '';
-		if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POST['new-ulname'])||!empty($_POST['new-upass']))
+		$addr = '';
+		$telephone = '';
+		
+		$oldPass = '';
+		$result = pg_query($dbconn, "SELECT * FROM \"Tour Guide\" as T WHERE T.\"g_key\" = $uid");
+
+		if(!empty($result)) {
+			if(pg_num_rows($result) > 0) {
+				$row = pg_fetch_array($result);
+				$uemail = trim($row['g_Email']);
+				$ufname = trim($row['g_FName']);
+				$ulname = trim($row['g_LName']);
+				$upass = trim($row['g_password']);
+				$addr = trim($row['g_Address']);
+				$telephone = trim($row['g_telephone']);
+				
+			}
+		}
+		
+		if(!empty($_POST['new-uemail'])||!empty($_POST['new-ufname'])||!empty($_POST['new-ulname'])
+			||!empty($_POST['old-upass'])||!empty($_POST['new-upass'])||!empty($_POST['con-new-upass']))
 		{
 			if(!empty($_POST['new-uemail']))
 			{
@@ -66,7 +84,7 @@ if($_SESSION['tgid'])
 					$ulname = $_SESSION['ulname'] = $newulemail;
 				}
 			}
-			if(!empty($_POST['new-upass']) && !empty($_POST['old-upass']))
+			if(!empty($_POST['new-upass']) && !empty($_POST['old-upass']) && !empty($_POST['con-new-upass']))
 			{
 				$oldupass = strip_tags($_POST['old-upass']);
 				$salt = '6e663cc2478ebdc49cbce5609ba0305b60d10844';
@@ -77,21 +95,38 @@ if($_SESSION['tgid'])
 				$salt = '6e663cc2478ebdc49cbce5609ba0305b60d10844';
 				$newupass = $newupass.$salt; //.$t_Email;
 				$newupass = sha1($newupass);
-				if($oldupass == $newupass)
+				
+				$connewupass = strip_tags($_POST['con-new-upass']);
+				$salt = '6e663cc2478ebdc49cbce5609ba0305b60d10844';
+				$connewupass = $connewupass.$salt; //.$t_Email;
+				$connewupass = sha1($connewupass);
+				
+				if($oldupass == $upass)
 				{
-					
-					$query = pg_query($dbconn, "UPDATE \"Tour Guide\" SET \"g_password\" = '$newupass' WHERE \"g_Email\" = '$uemail' AND \"g_password\" = '$upass'");
+					if($newupass == $connewupass) {
+						$_SESSION['upass'] = $newupass;
+						$query = pg_query($dbconn, "UPDATE \"Tour Guide\" SET \"g_password\" = '$newupass' WHERE \"g_Email\" = '$uemail'");
+					} else {
+						$errorMsg = "Passwords do not match";
+					}
 				}
 				else
 				{
 					$errorMsg = "Invalid password";
-					echo "<h2> Oops that email or password combination was incorrect.
-								<br /> Please try again. </h2>";
-					$upass = $_SESSION['upass'] = $newupass;
+					//echo "<h2> Oops that email or password combination was incorrect.<br /> Please try again. </h2>";
+					//$upass = $_SESSION['upass'] = $newupass;
 				}
 			}
 		}
 				$output = '<div class="control-group">
+									<label class="control-label" for="inputEmail">Email</label>
+		
+									<div class="controls">
+										<input id="inputEmail" name = "new-uemail" placeholder="'.$uemail.'" type="text">
+									</div>
+								</div>
+								
+								<div class="control-group">
 									<label class="control-label" for="inputFirst">First
 									Name</label>
 		
@@ -110,12 +145,21 @@ if($_SESSION['tgid'])
 								</div>
 		
 								<div class="control-group">
-									<label class="control-label" for="inputEmail">Email</label>
+									<label class="control-label" for="inputLast">Address</label>
 		
 									<div class="controls">
-										<input id="inputEmail" name = "new-uemail" placeholder="'.$uemail.'" type="text">
+										<input id="inputLast" name = "new-addr" placeholder="'.$addr.'" type="text">
+									</div>
+								</div>
+		
+								<div class="control-group">
+									<label class="control-label" for="inputEmail">Telephone</label>
+		
+									<div class="controls">
+										<input id="inputEmail" name = "new-telephone" placeholder="'.$telephone.'" type="text">
 									</div>
 								</div>';
+								
 			$uquery = pg_query($dbconn, "SELECT \"tour_key\", \"City\", \"tour_Desc\", \"State-Province\", \"ts_key\", \"tour_Name\", \"extremeness\" , \"Price\", \"s_Time\",\"Payed\", \"s_isActive\",
 		(\"Price\"*\"Payed\") as total
 		FROM \"Upcoming Tours\" NATURAL JOIN \"Location\"

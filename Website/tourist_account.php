@@ -112,7 +112,9 @@ if($_SESSION['uemail'])
 				{
 					if($newupass == $connewupass) {
 						$_SESSION['upass'] = $newupass;
-						$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"t_password\" = '$newupass' WHERE \"t_Email\" = '$uemail' AND \"t_password\" = '$upass'");
+						$query = pg_query($dbconn, "UPDATE \"Tourist\" SET \"t_password\" = '$newupass' WHERE \"t_Email\" = '$uemail'");
+					} else {
+						$errorMsg = "Passwords do not match";
 					}
 				}
 				else
@@ -164,6 +166,7 @@ if($_SESSION['uemail'])
 										<input id="inputEmail" name = "new-telephone" placeholder="'.$telephone.'" type="text">
 									</div>
 								</div>';
+								
 			$uquery = pg_query($dbconn, "SELECT \"tour_key\", \"City\", \"tour_Desc\", \"State-Province\", \"ts_key\", \"tour_Name\", \"extremeness\" , \"Price\", \"s_Time\",\"Payed\", \"s_isActive\",
 		(\"Price\"*\"Payed\") as total
 		FROM \"Upcoming Tours\" NATURAL JOIN \"Location\"
