@@ -95,7 +95,8 @@
         <item>Highest Price</item>
         <item>Lowest Extremeness</item>
         <item>Highest Extremeness</item>
-
+        <item>Lowest Rating</item>
+        <item>Highest Rating</item>
     </string-array>
 
     <string name="rate_tour">Rate this tour</string>

@@ -23,10 +23,10 @@
 			$to      = $email;
 			$subject = 'Password Change Request for No Middle Man';
 			$message = 'You have requested a new password for No Middle Man. Your password has been changed to 
-						'.$pass;
+						<b>'.$pass.'</b>';
 			$headers = 'From: luis.tavarez@outlook.com' . "\r\n" .
 				'Reply-To: luis.tavarez@outlook.com' . "\r\n" .
-				'X-Mailer: PHP/' . phpversion() .
+				'X-Mailer: PHP/' . phpversion().' MIME-Version: 1.0'."\r\n".
 				'Content-type: text/html; charset=utf-8' . "\r\n";
 			mail($to, $subject, $message, $headers);
 			

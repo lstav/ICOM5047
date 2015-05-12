@@ -95,6 +95,8 @@
         <item>Mayor Precio</item>
         <item>Menor Extremo</item>
         <item>Mayor Extremo</item>
+        <item>Menor Calificación</item>
+        <item>Mayor Calificación</item>
     </string-array>
 
     <string name="rate_tour">Califica este tour</string>

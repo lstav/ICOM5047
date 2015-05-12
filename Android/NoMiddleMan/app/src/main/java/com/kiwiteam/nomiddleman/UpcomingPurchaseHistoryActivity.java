@@ -346,7 +346,7 @@ public class UpcomingPurchaseHistoryActivity extends ActionBarActivity {
                             BitmapFactory.Options options = new BitmapFactory.Options();
                             options.inJustDecodeBounds = true;
                             // Calculate inSampleSize
-                            options.inSampleSize = 3;
+                            options.inSampleSize = 5;
                             // Decode bitmap with inSampleSize set
                             options.inJustDecodeBounds = false;
 

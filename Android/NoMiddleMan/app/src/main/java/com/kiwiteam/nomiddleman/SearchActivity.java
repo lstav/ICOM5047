@@ -339,6 +339,20 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
                 by = "DESC";
                 callSearch();
                 break;
+            // Lowest Rating
+            case 6:
+                tourInfo.clear();
+                order = "avg";
+                by = "ASC";
+                callSearch();
+                break;
+            // Highest Rating
+            case 7:
+                tourInfo.clear();
+                order = "avg";
+                by = "DESC";
+                callSearch();
+                break;
         }
     }
 
