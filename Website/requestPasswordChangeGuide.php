@@ -51,12 +51,12 @@ $(document).ready(function(){
 		} else {
 			$response['message'] = "Unable to send request";
 				
-			echo json_encode($response);
+			echo '<div class = "container"><h3>Email not found</h3></div>';
 		}
 	} else {
 		$response['message'] = "Required field(s) is missing";
 		
-		echo json_encode($response);
+		echo '<div class = "container"><h3>Email not entered</h3></div>';
 	}
 	pg_close($dbconn);
 ?>

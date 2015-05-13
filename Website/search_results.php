@@ -5,11 +5,18 @@ $dropdown = '';
 $ratingList = '';
 $ratingListE = '';
 $searchq = '';
-$query = pg_query($dbconn, "SELECT * FROM \"Tour Category\"");
+$cityList = '';
+$query = pg_query($dbconn, "SELECT * FROM \"Tour Category\" Order By \"Category_Name\" Asc");
 while($row = pg_fetch_array($query))
 {
 	$category = $row['Category_Name'];
 	$categoryList .= ' <li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$category.'">'.$category.'</a></li>';
+}
+$query = pg_query($dbconn, "SELECT DISTINCT \"City\" FROM \"Location\" Order By \"City\" Asc");
+while($row = pg_fetch_array($query))
+{
+	$city = $row['City'];
+	$cityList .= '<li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$city.'">'.$city.'</a></li>';
 }
 if(isset($_GET['search'])||isset($_GET['tsort']))
 {
@@ -39,12 +46,15 @@ if(isset($_GET['search'])||isset($_GET['tsort']))
 	else
 	{
 		$dropdown = '<li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$searchq.'&tsort=tour_Name">Name</a></li>
-    <li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$searchq.'&tsort=Price&order=ASC">Price: Lowest to Highest</a>
-	<li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$searchq.'&tsort=Price&order=DESC">Price: Highest to Lowest</a></li>';
+		<li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$searchq.'&tsort=Price&order=ASC">Price: Lowest to Highest</a>
+		<li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$searchq.'&tsort=Price&order=DESC">Price: Highest to Lowest</a></li>
+		<li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$searchq.'&tsort=extremeness&order=ASC">Extremeness: Lowest to Highest</a>
+		<li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$searchq.'&tsort=extremeness&order=DESC">Extremeness: Highest to Lowest</a></li>';
 		while($row = pg_fetch_array($query))
 		{
 			$tname = $row['tour_Name'];
 			$tdescription = $row['tour_Desc'];
+			$tour_photo = trim($row['tour_photo']);
 			$tid = $row['tour_key'];
 			$tprice = $row['Price'];
 			$tcity = $row['City'];
@@ -59,7 +69,7 @@ if(isset($_GET['search'])||isset($_GET['tsort']))
 			$ratingListE .= '$("#ratingE'.$tid.'").raty({ readOnly: true, score:'.$extremeness.' });';
 			$output .= '<article class="search-result row">
 			<div class="col-xs-12 col-sm-12 col-md-3">
-				<a title="Lorem ipsum" class="thumbnail" href="tour_page.php?tid='.$tid.'"><img src="images/'.$tid.'/1.jpg" alt="Lorem ipsum"></a>
+				<a title="Lorem ipsum" class="thumbnail" href="tour_page.php?tid='.$tid.'"><img src="'.$tour_photo.'1.jpg" alt="Lorem ipsum"></a>
 			</div>
 			<div class="col-xs-12 col-sm-12 col-md-2">
 				<ul class="meta-search">
@@ -120,6 +130,16 @@ if(isset($_GET['search'])||isset($_GET['tsort']))
 ">Categories<span class="caret"></span> </button>
                 <ul class="dropdown-menu" id="yearList" role="menu" aria-labelledby="dropdownMenu1">
                  <?php echo $categoryList; ?>
+                </ul>
+              </div>
+              <div class="dropdown" style="float:right
+;margin-right: 20px;">
+                <button class="btn btn-default dropdown-toggle" type="button" id="year" data-toggle="dropdown" aria-expanded="false" style="
+    margin-left: 0px;
+    margin-top: 0px;
+">City<span class="caret"></span> </button>
+                <ul class="dropdown-menu" id="yearList" role="menu" aria-labelledby="dropdownMenu1">
+                 <?php echo $cityList; ?>
                 </ul>
               </div>
     <h1>Search Results</h1>

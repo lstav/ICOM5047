@@ -1,6 +1,6 @@
 <?php 
 include_once("dbConnect.php");
-$query = pg_query($dbconn, "SELECT * FROM \"Tour Category\"");
+$query = pg_query($dbconn, "SELECT * FROM \"Tour Category\" Order By \"Category_Name\" ASC");
 while($row = pg_fetch_array($query))
 {
 	$category = $row['Category_Name'];

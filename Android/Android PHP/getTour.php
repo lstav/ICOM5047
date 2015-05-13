@@ -7,13 +7,28 @@
 	if(isset($_POST['tour_key'])) {
 		$tour_key = $_POST['tour_key'];
 		
-		$result = pg_query($conn, "select \"tour_key\" as key, \"tour_Name\" as name, \"tour_Desc\" as description,
+		/*$result = pg_query($conn, "select \"tour_key\" as key, \"tour_Name\" as name, \"tour_Desc\" as description,
 		\"Facebook\" as facebook, \"Youtube\" as youtube, \"Instagram\" as instagram, \"Twitter\" as twitter, 
 		\"Price\" as price, \"tour_quantity\" as quantity, \"extremeness\" as extremeness, \"tour_photo\" as photo, 
 		\"g_Email\" as gemail, \"g_FName\" as gfname, \"g_LName\" as glname, \"g_License\" as license, \"Company\" as company,
 		\"g_telephone\" as telephone, \"avg\" as averagerate, \"count\" as ratecount, \"tour_address\" as address,
 		\"State-Province\" as state, \"City\" as city, \"Country\" as country
-		from \"Tour Info\" where \"tour_key\"=$tour_key");
+		from \"Tour Info\" where \"tour_key\"=$tour_key");*/
+		
+		$result = pg_query($conn, "SELECT \"Tour Guide\".g_telephone as telephone, 
+		\"Tour Guide\".g_key, \"Tour Guide\".g_desc, \"Tour Guide\".\"Company\" as company, \"Tour Guide\".\"g_Email\" gemail, 
+		\"Tour Guide\".\"g_FName\" as gfname, \"Tour Guide\".\"g_LName\" as glname, \"Tour Guide\".\"g_License\" as license, \"Tour\".tour_photo as photo, 
+		\"Tour\".extremeness as extremeness, 
+		\"Tour\".tour_address as address, \"Tour\".tour_quantity as quantity, \"Tour\".\"L_key\", \"Tour\".\"Price\" as price, 
+		\"Tour\".\"Twitter\" as twitter, \"Tour\".\"Youtube\" as youtube, \"Tour\".\"Facebook\" as facebook, \"Tour\".tour_key as key, \"Tour\".\"Instagram\" as instagram,
+		\"Tour\".\"tour_Desc\" as description,
+		\"Tour\".\"tour_Name\" as name, \"Location\".\"State-Province\" as state, \"Location\".\"City\" as city, \"Location\".\"Country\" as country, \"Rating\".avg as averagerate,
+		\"Rating\".count as ratecount
+		FROM \"Tour Guide\"
+		JOIN \"Tour\" ON \"Tour Guide\".g_key = \"Tour\".g_key
+		JOIN \"Location\" ON \"Tour\".\"L_key\" = \"Location\".\"L_key\"
+		NATURAL JOIN \"Rating\"
+		WHERE \"tour_key\"=$tour_key");
 		
 		if(!empty($result)) {
 			if(pg_num_rows($result) > 0) {

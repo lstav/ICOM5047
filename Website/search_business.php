@@ -21,6 +21,10 @@ else if(isset($_GET))
 	$email = $_GET['email'];
 	//var_dump($op);
 	//var_dump($email);
+	$gquery = pg_query($dbconn,"Select g_key From \"Tour Guide\" WHERE \"g_Email\" = '$email'");
+	$rg = pg_fetch_array($gquery);
+	$g_key = $rg['g_key'];
+	
 	if($op == 'activate')
 	{
 		$query = pg_query($dbconn,"UPDATE \"Tour Guide\" as t SET \"g_isActive\" = True WHERE t.\"g_Email\" = '$email'");
@@ -31,7 +35,8 @@ else if(isset($_GET))
 	}
 	else if($op == 'suspend')
 	{
-		$query = pg_query($dbconn,"UPDATE \"Tour Guide\" as t SET \"g_isActive\" = False WHERE t.\"g_Email\" = '$email'");
+		//$query = pg_query($dbconn,"UPDATE \"Tour Guide\" as t SET \"g_isActive\" = False WHERE t.\"g_Email\" = '$email'");
+		$query = pg_query($dbconn,"Select \"suspend_TourGuide\"($g_key)");
 		if($query)
 			$msg =  "Operation successful";
 		else

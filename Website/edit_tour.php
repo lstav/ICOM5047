@@ -5,7 +5,59 @@ if (session_status() == PHP_SESSION_NONE)
 {
 	session_start();
 }
+
 //var_dump($_GET);
+$hourList = array();
+$smondayf = '';
+$smondayl = '';
+$stuesdayf = '';
+$stuesdayl = '';
+$swednesdayf = '';
+$swednesdayl = '';
+$sthursdayf = '';
+$sthursdayl = '';
+$sfridayf = '';
+$sfridayl = '';
+$ssaturdayf = '';
+$ssaturdayl = '';
+$ssundayf = '';
+$ssundayl = '';
+
+$hourList['mondayf'] =  '';
+$hourList['tuesdayf'] =  '';
+$hourList['wednesdayf'] =  '';
+$hourList['thursdayf'] =  '';
+$hourList['fridayf'] =  '';
+$hourList['saturdayf'] =  '';
+$hourList['sundayf'] =  '';
+$hourList['mondayl'] =  '';
+$hourList['tuesdayl'] =  '';
+$hourList['wednesdayl'] =  '';
+$hourList['thursdayl'] =  '';
+$hourList['fridayl'] =  '';
+$hourList['saturdayl'] =  '';
+$hourList['sundayl'] =  '';
+
+$checkMark = array();
+$checkMark['monday'] = '';
+$checkMark['tuesday'] = '';
+$checkMark['wednesday'] = '';
+$checkMark['thursday'] = '';
+$checkMark['friday'] = '';
+$checkMark['saturday'] = '';
+$checkMark['sunday'] = '';
+
+$isInDB = array();
+$isInDB['monday'] = '';
+$isInDB['tuesday'] = '';
+$isInDB['wednesday'] = '';
+$isInDB['thursday'] = '';
+$isInDB['friday'] = '';
+$isInDB['saturday'] = '';
+$isInDB['sunday'] = '';
+
+
+
 if(isset($_GET["tid"]))
 {
 	$tour_key = $_GET['tid'];
@@ -25,23 +77,220 @@ if(isset($_GET["tid"]))
 	$form['instagram'] = $row['Instagram'];
 	$form['youtube'] = $row['Youtube'];
 	$form['twitter'] = $row['Twitter'];
+	$form['extremeness'] = $row['extremeness'];
+	$query = pg_query($dbconn, "SELECT DISTINCT \"State-Province\" FROM \"Location\"");
+	while($row = pg_fetch_array($query))
+	{
+		$state = $row['State-Province'];
+		if($state == $form['state'])
+			$stateList .= '<option selected>'.$state.'</option>';
+		else
+			$stateList .= '<option>'.$state.'</option>';
+	}
+
+	$query = pg_query($dbconn, "SELECT DISTINCT \"Country\" FROM \"Location\"");
+	while($row = pg_fetch_array($query))
+	{
+		$country = $row['Country'];
+		if($country == $form['country'])
+			$countryList .= '<option selected>'.$country.'</option>';
+		else
+			$countryList .= '<option>'.$country.'</option>';
+	}
+
+	$query = pg_query($dbconn, "SELECT DISTINCT \"City\" FROM \"Location\"");
+	while($row = pg_fetch_array($query))
+	{
+		$city = $row['City'];
+		if($city == $form['city'])
+			$cityList .= '<option selected>'.$city.'</option>';
+		else
+			$cityList .= '<option>'.$city.'</option>';
+	}
+	$query = pg_query($dbconn, "SELECT \"active\",\"dayname\", \"startTime\",\"endTime\" FROM \"Workdays\" WHERE \"tour_key\" = '$tour_key'");
+	while($row = pg_fetch_array($query))
+	{
+		$dayname=trim($row['dayname']);
+		if($dayname == 'Monday')
+		{
+			$isInDB['monday'] = "true";
+			$smondayf = $row['startTime'];
+			$smondayl = $row['endTime'];
+			$active = $row['active'];
+			if(($smondayf !== $smondayl) && $active == 't')
+			{
+				$checkMark['monday'] = "checked";
+			} 
+		}
+		else if($dayname == 'Tuesday')
+		{
+			$isInDB['tuesday'] = "true";
+			$stuesdayf = $row['startTime'];
+			$stuesdayl = $row['endTime'];
+			$active = $row['active'];
+			if(($stuesdayf !== $stuesdayl)&& $active == 't')
+			{
+				$checkMark['tuesday'] = "checked";
+			}
+		}
+		else if($dayname == 'Wednesday')
+		{
+			$isInDB['wednesday'] = "true";
+			$swednesdayf = $row['startTime'];
+			$swednesdayl = $row['endTime'];
+			$active = $row['active'];
+			if(($swednesdayf !== $swednesdayl)&& $active == 't')
+			{
+				$checkMark['wednesday'] = "checked";
+			}
+		}
+		else if($dayname == 'Thursday')
+		{
+			$isInDB['thursday'] = "true";
+			$sthursdayf = $row['startTime'];
+			$sthursdayl = $row['endTime'];
+			$active = $row['active'];
+			if(($sthursdayf !== $sthursdayl)&& $active == 't')
+			{
+				$checkMark['thursday'] = "checked";
+			}
+		}
+		else if($dayname == 'Friday')
+		{
+			$isInDB['friday'] = "true";
+			$sfridayf = $row['startTime'];
+			$sfridayl = $row['endTime'];
+			$active = $row['active'];
+			
+			if(($sfridayf !== $sfridayl) && $active == 't')
+			{
+				$checkMark['friday'] = "checked";
+			}
+		}
+		else if($dayname == 'Saturday')
+		{
+			$isInDB['saturday'] = "true";
+			$ssaturdayf = $row['startTime'];
+			$ssaturdayl = $row['endTime'];
+			$active = $row['active'];
+			if(($ssaturdayf !== $ssaturdayl)&&$active == 't')
+			{
+				$checkMark['saturday'] = "checked";
+			}
+		}
+		else if($dayname == 'Sunday')
+		{
+			$isInDB['sunday'] = "true";
+			$ssundayf = $row['startTime'];
+			$ssundayl = $row['endTime'];
+			$active = $row['active'];
+			if(($ssundayf !== $ssundayl)&&$active == 't')
+			{
+				$checkMark['sunday'] = "checked";
+			}
+		}
+	}	
 }
-$hourList= '';
+else
+{
+	header("Location: bad_gateway.php");
+}
+for($i = 0; $i < 5; $i++)
+{
+	//var_dump((int)$form['extremeness'] == ($i + 1));
+	if((int)$form['extremeness'] == ($i + 1))
+		$extremeList .= "<option selected>".($i+1)."</option>";
+	else
+		$extremeList .= "<option>".($i+1)."</option>";
+}
+
 $i = (int)0;
 $dateTail='';
 $dhour = '12:00 am'; 
 $dList = '';
 //$time = date("g:i a", strtotime(substr($dhour, 0, -3)));
 //$dhour = strtotime("$dhour + 30 mins");
-$hourList .=  "<option>".$dhour."</option>";
+$hourList['mondayf'] .=  '<option>'.$dhour.'</option>';
+	$hourList['tuesdayf'] .=  '<option>'.$dhour.'</option>';
+	$hourList['wednesdayf'] .=  '<option>'.$dhour.'</option>';
+	$hourList['thursdayf'] .=  '<option>'.$dhour.'</option>';
+	$hourList['fridayf'] .=  '<option>'.$dhour.'</option>';
+	$hourList['saturdayf'] .=  '<option>'.$dhour.'</option>';
+	$hourList['sundayf'] .=  '<option>'.$dhour.'</option>';
+	$hourList['mondayl'] .=  '<option>'.$dhour.'</option>';
+	$hourList['tuesdayl'] .=  '<option>'.$dhour.'</option>';
+	$hourList['wednesdayl'] .=  '<option>'.$dhour.'</option>';
+	$hourList['thursdayl'] .=  '<option>'.$dhour.'</option>';
+	$hourList['fridayl'] .=  '<option>'.$dhour.'</option>';
+	$hourList['saturdayl'] .=  '<option>'.$dhour.'</option>';
+	$hourList['sundayl'] .=  '<option>'.$dhour.'</option>';
 //$hours[$time] = $dhour;
-for($i = 0; $i<47;$i++)
+for($i = 0; $i<95;$i++)
 {
-	$dhour = date("g:i a", strtotime("$dhour + 30 mins"));
-	//$dhour = strtotime("$dhour + 30 mins");
-	$hourList .=  '<option>'.$dhour.'</option>';
-	//$hours[$time] = $dhour;
+	$dhour = date("g:i a", strtotime("$dhour + 15 mins"));
+	$hourInStamp =  date("H:i", strtotime($dhour)).":00+00";
+	//First time
+	//var_dump($smonday);
+	if($smondayf == $hourInStamp)
+	$hourList['mondayf'] .=  '<option selected>'.$dhour.'</option>';
+	else
+	$hourList['mondayf'] .=  '<option>'.$dhour.'</option>';
+	if($stuesdayf == $hourInStamp)
+	$hourList['tuesdayf'] .=  '<option selected>'.$dhour.'</option>';
+	else
+	$hourList['tuesdayf'] .=  '<option>'.$dhour.'</option>';
+	if($swednesdayf == $hourInStamp)
+	$hourList['wednesdayf'] .=  '<option selected>'.$dhour.'</option>';
+	else
+	$hourList['wednesdayf'] .=  '<option>'.$dhour.'</option>';
+	if($sthursdayf == $hourInStamp)
+	$hourList['thursdayf'] .=  '<option selected>'.$dhour.'</option>';
+	else
+	$hourList['thursdayf'] .=  '<option>'.$dhour.'</option>';
+	if($sfridayf == $hourInStamp)
+	$hourList['fridayf'] .=  '<option selected>'.$dhour.'</option>';
+	else
+	$hourList['fridayf'] .=  '<option>'.$dhour.'</option>';
+	if($ssaturdayf == $hourInStamp)
+	$hourList['saturdayf'] .=  '<option selected>'.$dhour.'</option>';
+	else
+	$hourList['saturdayf'] .=  '<option>'.$dhour.'</option>';
+	if($ssundayf == $hourInStamp)
+	$hourList['sundayf'] .=  '<option selected>'.$dhour.'</option>';
+	else
+	$hourList['sundayf'] .=  '<option>'.$dhour.'</option>';
+	
+	//Last session end time
+	if($smondayl == $hourInStamp)
+	$hourList['mondayl'] .=  '<option selected>'.$dhour.'</option>';
+	else
+	$hourList['mondayl'] .=  '<option>'.$dhour.'</option>';
+	if($stuesdayl == $hourInStamp)
+	$hourList['tuesdayl'] .=  '<option selected>'.$dhour.'</option>';
+	else
+	$hourList['tuesdayl'] .=  '<option>'.$dhour.'</option>';
+	if($swednesdayl == $hourInStamp)
+	$hourList['wednesdayl'] .=  '<option selected>'.$dhour.'</option>';
+	else
+	$hourList['wednesdayl'] .=  '<option>'.$dhour.'</option>';
+	if($sthursdayl == $hourInStamp)
+	$hourList['thursdayl'] .=  '<option selected>'.$dhour.'</option>';
+	else
+	$hourList['thursdayl'] .=  '<option>'.$dhour.'</option>';
+	if($sfridayl == $hourInStamp)
+	$hourList['fridayl'] .=  '<option selected>'.$dhour.'</option>';
+	else
+	$hourList['fridayl'] .=  '<option>'.$dhour.'</option>';
+	if($ssaturdayf == $hourInStamp)
+	$hourList['saturdayl'] .=  '<option selected>'.$dhour.'</option>';
+	else
+	$hourList['saturdayl'] .=  '<option>'.$dhour.'</option>';
+	if($ssundayl == $hourInStamp)
+	$hourList['sundayl'] .=  '<option selected>'.$dhour.'</option>';
+	else
+	$hourList['sundayl'] .=  '<option>'.$dhour.'</option>';
 }
+
 $j = 0;
 for($j = 0; $j < 24; $j++)
 {
@@ -74,6 +323,91 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
 				$uid = $_SESSION['tgid'];
 				$category = $_POST['category'];
 				$tduration = explode(" ", $tduration);
+				
+				$query = pg_query($dbconn, "SELECT \"active\",\"dayname\", \"startTime\",\"endTime\" FROM \"Workdays\" WHERE \"tour_key\" = '$tour_key'");
+	while($row = pg_fetch_array($query))
+	{
+		$dayname=trim($row['dayname']);
+		if($dayname == 'Monday')
+		{
+			$isInDB['monday'] = "true";
+			$smondayf = $row['startTime'];
+			$smondayl = $row['endTime'];
+			$active = $row['active'];
+			if(($smondayf !== $smondayl) && $active == 't')
+			{
+				$checkMark['monday'] = "checked";
+			} 
+		}
+		else if($dayname == 'Tuesday')
+		{
+			$isInDB['tuesday'] = "true";
+			$stuesdayf = $row['startTime'];
+			$stuesdayl = $row['endTime'];
+			$active = $row['active'];
+			if(($stuesdayf !== $stuesdayl)&& $active == 't')
+			{
+				$checkMark['tuesday'] = "checked";
+			}
+		}
+		else if($dayname == 'Wednesday')
+		{
+			$isInDB['wednesday'] = "true";
+			$swednesdayf = $row['startTime'];
+			$swednesdayl = $row['endTime'];
+			$active = $row['active'];
+			if(($swednesdayf !== $swednesdayl)&& $active == 't')
+			{
+				$checkMark['wednesday'] = "checked";
+			}
+		}
+		else if($dayname == 'Thursday')
+		{
+			$isInDB['thursday'] = "true";
+			$sthursdayf = $row['startTime'];
+			$sthursdayl = $row['endTime'];
+			$active = $row['active'];
+			if(($sthursdayf !== $sthursdayl)&& $active == 't')
+			{
+				$checkMark['thursday'] = "checked";
+			}
+		}
+		else if($dayname == 'Friday')
+		{
+			$isInDB['friday'] = "true";
+			$sfridayf = $row['startTime'];
+			$sfridayl = $row['endTime'];
+			$active = $row['active'];
+			
+			if(($sfridayf !== $sfridayl) && $active == 't')
+			{
+				$checkMark['friday'] = "checked";
+			}
+		}
+		else if($dayname == 'Saturday')
+		{
+			$isInDB['saturday'] = "true";
+			$ssaturdayf = $row['startTime'];
+			$ssaturdayl = $row['endTime'];
+			$active = $row['active'];
+			if(($ssaturdayf !== $ssaturdayl)&&$active == 't')
+			{
+				$checkMark['saturday'] = "checked";
+			}
+		}
+		else if($dayname == 'Sunday')
+		{
+			$isInDB['sunday'] = "true";
+			$ssundayf = $row['startTime'];
+			$ssundayl = $row['endTime'];
+			$active = $row['active'];
+			if(($ssundayf !== $ssundayl)&&$active == 't')
+			{
+				$checkMark['sunday'] = "checked";
+			}
+		}
+	}
+				
 				if(isset($tduration[3]))
 				{
 					$tduration = ((int)$tduration[0])*60 + (int)($tduration[3]);
@@ -118,6 +452,15 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
 				$sundayf = date("H:i", strtotime($sundayf)).":00+00";
 				$sundayl = $_POST['sundayl'];
 				$sundayl = date("H:i", strtotime($sundayl)).":00+00";
+				
+				$checkmonday = $_POST['checkmonday'];
+				$checktuesday = $_POST['checktuesday'];
+				$checkwednesday = $_POST['checkwednesday'];
+				$checkthursday = $_POST['checkthursday'];
+				$checkfriday = $_POST['checkfriday'];
+				$checksaturday = $_POST['checksaturday'];
+				$checksunday = $_POST['checksunday'];
+				
 				$lquery = pg_query($dbconn, "SELECT \"L_key\" FROM \"Location\" WHERE \"City\" = upper('$tcity') AND \"State-Province\"= upper('$tstate') AND \"Country\" = upper('$tcountry')");
 				$lKey = '';
 				if(pg_num_rows($lquery) > 0)
@@ -135,30 +478,143 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
 				$query = pg_query($dbconn, "UPDATE \"Tour\" SET (\"tour_Name\", \"tour_Desc\", \"Duration\", \"Price\", \"Facebook\", \"Youtube\", \"Instagram\", \"Twitter\", \"g_key\", \"tour_isActive\", \"tour_isSuspended\", \"L_key\", \"tour_quantity\", \"extremeness\", \"tour_address\", \"autoGen\") = ('$tourName', '$tdescription', '$tduration', '$tprice', '$facebook', '$youtube', '$instagram', '$twitter', '$uid', TRUE, FALSE, $lKey, $quantity, $extreme, '$taddress', TRUE) WHERE \"tour_key\"='$tour_key'");
 				//$row = pg_fetch_array($query);
 				//$tour_key = $row['tour_key'];
-				$query = pg_query($dbconn, "UPDATE \"Tour\" SET \"tour_photo\" = 'http://kiwiteam.ece.uprm.edu/NoMiddleMan/website/images/$tour_key/' WHERE \"tour_key\" = $tour_key"); 
-				$cquery = pg_query($dbconn, "SELECT * FROM \"Tour Category\" NATURAL JOIN \"isCategory\" WHERE upper(\"Category_Name\") = upper('$category') AND \"tour_key\" = '$tour_key'");
+				
+				/*$cquery = pg_query($dbconn, "SELECT * FROM \"Tour Category\" NATURAL JOIN \"isCategory\" WHERE upper(\"Category_Name\") = upper('$category') AND \"tour_key\" = '$tour_key'");
 				$cKey = '';
 				if(pg_num_rows($cquery) == 0)
 				{
 					$cquery = pg_query($dbconn, "SELECT \"Create_Category\"('$category')");
 					$cquery = pg_query($dbconn, "SELECT \"Join_Category\"('$category', $tour_key)");
+				}*/
+				
+				if($checkmonday) {
+					if($checkMark['monday'] == "checked" || $isInDB['monday'] == "true")
+					{
+						$wquery = pg_query($dbconn, "UPDATE \"Workdays\" SET (\"dayname\", \"tour_key\", \"startTime\", \"endTime\", \"active\") 
+						= ('Monday', '$tour_key', '$mondayf', '$mondayl', TRUE) WHERE \"tour_key\" = '$tour_key' AND \"dayname\" = 'Monday'");
+					}
+					else
+					{
+						$wquery = pg_query($dbconn, "INSERT INTO \"Workdays\" (\"dayname\", \"tour_key\", \"startTime\", \"endTime\", \"active\") 
+						VALUES ('Monday', '$tour_key', '$mondayf', '$mondayl', TRUE)");
+					}
 				}
-				$wquery = pg_query($dbconn, "UPDATE \"Workdays\" SET (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") = ('Monday', '$tour_key', '$mondayf', '$mondayl') WHERE \"tour_key\" = '$tour_key' AND \"dayname\" = 'Monday'");
-				$wquery = pg_query($dbconn, "UPDATE \"Workdays\" SET (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") = ('Tuesday', '$tour_key', '$tuesdayf', '$tuesdayl') WHERE \"tour_key\" = '$tour_key' AND \"dayname\" = 'Tuesday'");
-				$wquery = pg_query($dbconn, "UPDATE \"Workdays\" SET (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") = ('Wednesday', '$tour_key', '$wednesdayf', '$wednesdayl') WHERE \"tour_key\" = '$tour_key' AND \"dayname\" = 'Wednesday'");
-				$wquery = pg_query($dbconn, "UPDATE \"Workdays\" SET (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") = ('Thursday', '$tour_key', '$thursdayf', '$thursdayl') WHERE \"tour_key\" = '$tour_key' AND \"dayname\" = 'Thursday'");
-				$wquery = pg_query($dbconn, "UPDATE \"Workdays\" SET (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") = ('Friday', '$tour_key', '$fridayf', '$fridayl') WHERE \"tour_key\" = '$tour_key' AND \"dayname\" = 'Friday'");
-				$wquery = pg_query($dbconn, "UPDATE \"Workdays\" SET (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") = ('Saturday', '$tour_key', '$saturdayf', '$saturdayl') WHERE \"tour_key\" = '$tour_key' AND \"dayname\" = 'Saturday'");
-				$wquery = pg_query($dbconn, "UPDATE \"Workdays\" SET (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") = ('Sunday', '$tour_key', '$sundayf', '$sundayl') WHERE \"tour_key\" = '$tour_key' AND \"dayname\" = 'Sunday'");
+				else
+				{
+					$wquery = pg_query($dbconn, "UPDATE \"Workdays\" SET (\"active\") = (FALSE) WHERE \"tour_key\" = '$tour_key' AND \"dayname\" = 'Monday'");
+				}
+				
+				if($checktuesday)
+				{
+					//var_dump($checkMark['tuesday'] == "checked" || $isInDB['tuesday'] == 'true');
+					if($checkMark['tuesday'] == "checked" || $isInDB['tuesday'] == 'true')
+					{
+						$wquery = pg_query($dbconn, "UPDATE \"Workdays\" SET (\"dayname\", \"tour_key\", \"startTime\", \"endTime\", \"active\") = ('Tuesday', '$tour_key', '$tuesdayf', '$tuesdayl', TRUE) WHERE \"tour_key\" = '$tour_key' AND \"dayname\" = 'Tuesday'");
+					}
+					else
+					{
+						$wquery = pg_query($dbconn, "INSERT INTO \"Workdays\" (\"dayname\", \"tour_key\", \"startTime\", \"endTime\", \"active\") VALUES ('Tuesday', '$tour_key', '$tuesdayf', '$tuesdayl', TRUE)");
+					}
+					
+				}
+				else{
+					$wquery = pg_query($dbconn, "UPDATE \"Workdays\" SET (\"active\") = (FALSE) WHERE \"tour_key\" = '$tour_key' AND \"dayname\" = 'Tuesday'");
+				}
+				
+				if($checkwednesday)
+				{
+						if($checkMark['wednesday'] == "checked" || $isInDB['wednesday'] == 'true')
+					{
+						$wquery = pg_query($dbconn, "UPDATE \"Workdays\" SET (\"dayname\", \"tour_key\", \"startTime\", \"endTime\", \"active\") = ('Wednesday', '$tour_key', '$wednesdayf', '$wednesdayl', TRUE) WHERE \"tour_key\" = '$tour_key' AND \"dayname\" = 'Wednesday'");
+					}
+					else
+					{
+						$wquery = pg_query($dbconn, "INSERT INTO \"Workdays\" (\"dayname\", \"tour_key\", \"startTime\", \"endTime\", \"active\") VALUES ('Wednesday', '$tour_key', '$wednesdayf', '$wednesdayl', TRUE)");
+					}
+				}
+				else {
+					$wquery = pg_query($dbconn, "UPDATE \"Workdays\" SET (\"active\") = (FALSE) WHERE \"tour_key\" = '$tour_key' AND \"dayname\" = 'Wednesday'");
+				}
+				
+				if($checkthursday)
+				{
+					if($checkMark['thursday'] == "checked" || $isInDB['thursday'] == 'true')
+					{
+						$wquery = pg_query($dbconn, "UPDATE \"Workdays\" SET (\"dayname\", \"tour_key\", \"startTime\", \"endTime\", \"active\") = ('Thursday', '$tour_key', '$thursdayf', '$thursdayl', TRUE) WHERE \"tour_key\" = '$tour_key' AND \"dayname\" = 'Thursday'");
+					}
+					else
+					{
+						$wquery = pg_query($dbconn, "INSERT INTO \"Workdays\" (\"dayname\", \"tour_key\", \"startTime\", \"endTime\", \"active\") VALUES ('Thursday', '$tour_key', '$thursdayf', '$thursdayl', TRUE)");
+					}
+				}
+				else
+				{
+					$wquery = pg_query($dbconn, "UPDATE \"Workdays\" SET (\"active\") = (FALSE) WHERE \"tour_key\" = '$tour_key' AND \"dayname\" = 'Thursday'");
+				}
+				if($checkfriday)
+				{
+					if($checkMark['friday'] == "checked" || $isInDB['friday'] == 'true')
+					{
+						$wquery = pg_query($dbconn, "UPDATE \"Workdays\" SET (\"dayname\", \"tour_key\", \"startTime\", \"endTime\", \"active\") = ('Friday', '$tour_key', '$fridayf', '$fridayl', TRUE) WHERE \"tour_key\" = '$tour_key' AND \"dayname\" = 'Friday'");
+					}
+					else
+					{
+						$wquery = pg_query($dbconn, "INSERT INTO \"Workdays\" (\"dayname\", \"tour_key\", \"startTime\", \"endTime\", \"active\") VALUES ('Friday', '$tour_key', '$fridayf', '$fridayl', TRUE)");
+					}
+				}
+				else
+				{
+					
+				$wquery = pg_query($dbconn, "UPDATE \"Workdays\" SET \"active\" = FALSE WHERE \"tour_key\" = '$tour_key' AND \"dayname\" = 'Friday'");
+				
+				}
+				
+				
+				if($checksaturday)
+				{
+					if($checkMark['saturday'] == "checked" || $isInDB['saturday'] == 'true')
+					{
+						$wquery = pg_query($dbconn, "UPDATE \"Workdays\" SET (\"dayname\", \"tour_key\", \"startTime\", \"endTime\", \"active\") = ('Saturday', '$tour_key', '$saturdayf', '$saturdayl', TRUE) WHERE \"tour_key\" = '$tour_key' AND \"dayname\" = 'Saturday'");
+					}
+					else
+					{
+						$wquery = pg_query($dbconn, "INSERT INTO \"Workdays\" (\"dayname\", \"tour_key\", \"startTime\", \"endTime\", \"active\") VALUES ('Saturday', '$tour_key', '$saturdayf', '$saturdayl', TRUE)");
+					}
+				}
+				else
+				{
+					
+				$wquery = pg_query($dbconn, "UPDATE \"Workdays\" SET (\"active\") = (FALSE) WHERE \"tour_key\" = '$tour_key' AND \"dayname\" = 'Saturday'");
+				}
+				if($checksunday)
+				{
+					if($checkMark['sunday'] == "checked" || $isInDB['sunday'] == 'true')
+					{
+						$wquery = pg_query($dbconn, "UPDATE \"Workdays\" SET (\"dayname\", \"tour_key\", \"startTime\", \"endTime\", \"active\") = ('Sunday', '$tour_key', '$sundayf', '$sundayl', TRUE) WHERE \"tour_key\" = '$tour_key' AND \"dayname\" = 'Sunday'");
+					}
+					else
+					{
+						$wquery = pg_query($dbconn, "INSERT INTO \"Workdays\" (\"dayname\", \"tour_key\", \"startTime\", \"endTime\", \"active\") VALUES ('Sunday', '$tour_key', '$sundayf', '$sundayl', TRUE)");
+					}
+				}
+				else
+				{
+					$wquery = pg_query($dbconn, "UPDATE \"Workdays\" SET (\"active\") = (FALSE) WHERE \"tour_key\" = '$tour_key' AND \"dayname\" = 'Sunday'");
+				}
 				
 				$wquery = pg_query($dbconn, "SELECT \"TS_Generate\"($tour_key)");
 				//$uploadOk = 1;
-				if(isset($_FILES["image"]["name"]))
+				if(is_uploaded_file($_FILES["image"]["tmp_name"]))
 				{
+					$query = pg_query($dbconn, "UPDATE \"Tour\" SET \"tour_photo\" = 'http://kiwiteam.ece.uprm.edu/NoMiddleMan/website/images/$tour_key/' WHERE \"tour_key\" = $tour_key"); 
 					if (!file_exists("images/".$tour_key)) {
     mkdir("images/".$tour_key, 0777, true);
-}
+}						
 					$target_file = "images/".$tour_key."/1.jpg";
+					if(file_exists($target_file)&&is_uploaded_file($_FILES["image"]["tmp_name"])){
+    				chmod($target_file,0777); //Change the file permissions if allowed
+    				unlink($target_file); //remove the file
+					}
 					$image_name = $_FILES["image"]["name"];
 					$image_type = $_FILES["image"]["type"];
 					$image_size = $_FILES["image"]["size"];
@@ -221,12 +677,12 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
               Description: </label>
             <textarea id="inputLast" class="form-control" value = "<?php echo $form['desc'];?>" rows="5" name = "desc" placeholder="<?php echo $form['desc'];?>" type="text"><?php echo $form['desc'];?></textarea>
           </div>
-          <div class="control-group">
+          <!--<div class="control-group">
             <label class="control-label" for="inputFirst">Category</label>
             <div class="controls">
               <input id="inputFirst" name = "category" value = "<?php echo $form['category'];?>" placeholder="<?php echo $form['category'];?>" type="text">
             </div>
-          </div>
+          </div>-->
           <div class="control-group">
             <label class="control-label" for="inputEmail">Image:</label>
             <div class="controls">
@@ -248,74 +704,100 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
               <table class="table">
                 <thead>
                   <tr>
-                    <th>Day</th>
+					<th>Selected</th>
+					<th>Day</th>
                     <th>First Session Start Time</th>
                     <th>Last Session End Time</th>
+                     
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
+				  <td class="col-md-1" style="text-align: center"><input type="checkbox" name = "checkmonday" value = 'value1' <?php echo $checkMark['monday'];?>>
+                       </td>
                     <td>Monday</td>
                     <td><select name = "mondayf" style = "display:inline" class="form-control">
-                <?php echo $hourList;?>
+                <?php echo $hourList['mondayf'];?>
               </select></td>
                     <td><select name = "mondayl" style = "display:inline" class="form-control">
-                <?php echo $hourList;?>
+                <?php echo $hourList['mondayl'];?>
               </select></td>
+
                   </tr>
                  <tr>
+					<td class="col-md-1" style="text-align: center"><input type="checkbox" name = "checktuesday" value = 'value1' <?php echo $checkMark['tuesday'];?>>
+                           </td>
                     <td>Tuesday</td>
                     <td><select name = "tuesdayf" style = "display:inline" class="form-control">
-                <?php echo $hourList;?>
+                <?php echo $hourList['tuesdayf'];?>
               </select></td>
                     <td><select name = "tuesdayl" style = "display:inline" class="form-control">
-                <?php echo $hourList;?>
+                <?php echo $hourList['tuesdayl'];?>
               </select></td>
                   </tr>
                   <tr>
+					<td class="col-md-1" style="text-align: center"><input type="checkbox" name = "checkwednesday" value = 'value1' <?php echo $checkMark['wednesday'];?>>
+                           </td>
                     <td>Wednesday</td>
                     <td><select name = "wednesdayf" style = "display:inline" class="form-control">
-                <?php echo $hourList;?>
+                <?php echo $hourList['wednesdayf'];?>
               </select></td>
                     <td><select name = "wednesdayl" style = "display:inline" class="form-control">
-                <?php echo $hourList;?>
+                <?php echo $hourList['wednesdayl'];?>
               </select></td>
+
                   </tr>
                   <tr>
+				  <td class="col-md-1" style="text-align: center"><input type="checkbox" name = "checkthursday" value = 'value1' <?php echo $checkMark['thursday'];?>> 
+                           </td>
                     <td>Thursday</td>
+				
                     <td><select name = "thursdayf" style = "display:inline" class="form-control">
-                <?php echo $hourList;?>
+                <?php echo $hourList['thursdayf'];?>
               </select></td>
                     <td><select name = "thursdayl" style = "display:inline" class="form-control">
-                <?php echo $hourList;?>
+                <?php echo $hourList['thursdayl'];?>
               </select></td>
+
                   </tr>
                   <tr>
+				  <td class="col-md-1" style="text-align: center"><input type="checkbox" name = "checkfriday" value = 'value1' <?php echo $checkMark['friday'];?>>
+                           </td>
                     <td>Friday</td>
+					
                     <td><select name = "fridayf" style = "display:inline" class="form-control">
-                <?php echo $hourList;?>
+                <?php echo $hourList['fridayf'];?>
               </select></td>
                     <td><select name = "fridayl" style = "display:inline" class="form-control">
-                <?php echo $hourList;?>
+                <?php echo $hourList['fridayl'];?>
               </select></td>
+
                   </tr>
                   <tr>
+				  <td class="col-md-1" style="text-align: center"><input type="checkbox" name = "checksaturday" value = 'value1' <?php echo $checkMark['saturday'];?>>
+                           </td>
                     <td>Saturday</td>
+					
                     <td><select name = "saturdayf" style = "display:inline" class="form-control">
-                <?php echo $hourList;?>
+                <?php echo $hourList['saturdayf'];?>
               </select></td>
                     <td><select name = "saturdayl" style = "display:inline" class="form-control">
-                <?php echo $hourList;?>
+                <?php echo $hourList['saturdayl'];?>
               </select></td>
+
                   </tr>
                   <tr>
+				  <td class="col-md-1" style="text-align: center"><input type="checkbox" name = "checksunday" value = 'value1' <?php echo $checkMark['sunday'];?>>
+                           </td>
                     <td>Sunday</td>
+					
                     <td><select name = "sundayf" style = "display:inline" class="form-control">
-                <?php echo $hourList;?>
+                <?php echo $hourList['sundayf'];?>
               </select></td>
                     <td><select name = "sundayl" style = "display:inline" class="form-control">
-                <?php echo $hourList;?>
+                <?php echo $hourList['sundayl'];?>
               </select></td>
+
                   </tr>
                 </tbody>
               </table>
@@ -326,7 +808,7 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
                             <div class="dropdown">
                               <button class="btn btn-default dropdown-toggle" type="button" id="time" data-toggle="dropdown" aria-expanded="true"> 5:00pm <span class="caret"></span> </button>
                               <ul class="dropdown-menu" id="timeList" role="menu" aria-labelledby="dropdownMenu1">
-                                <?php echo $hourList;?>
+                                <?php //echo $hourList;?>
                               </ul>
                             </div>
                           </div>--> 
@@ -352,20 +834,26 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
           <div class="control-group">
             <label class="control-label" for="inputPassword">City:</label>
             <div class="controls">
-              <input id="inputPassword" name = "city" value = "<?php echo $form['city'];?>" placeholder="<?php echo $form['city'];?>" type="text">
+              <select name = "city" style = "width:20%;display:inline" class="form-control">
+                <?php echo $cityList;?>
+              </select>
             </div>
           </div>
           <div class="control-group">
             <label class="control-label" for="inputPassword">State/Providence:</label>
             <div class="controls">
-              <input id="inputPassword" name = "state" value = "<?php echo $form['state'];?>" placeholder="<?php echo $form['state'];?>" type="text">
+              <select name = "state" style = "width:20%;display:inline" class="form-control">
+                <?php echo $stateList;?>
+              </select>
             </div>
           </div>
           <div class="control-group">
             <label class="control-label" for="inputPassword">Country:</label>
-            <div class="controls">
-              <input id="inputPassword" name = "country" value = "<?php echo $form['country'];?>" placeholder="<?php echo $form['country'];?>" type="text">
-            </div>
+           <div class = "controls">
+            <select name = "country" style = "width:20%;display:inline" class="form-control">
+                <?php echo $countryList;?>
+              </select>
+           </div>
           </div>
           <div class="control-group">
             <label class="control-label" for="inputPassword">Facebook link:</label>
@@ -394,14 +882,20 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
           <div class="control-group">
             <label class="control-label" for="inputPassword"> Extremeness:</label><br />
             <select name = "extreme" style = "display:inline; width:10%" class="form-control">
-                <option>1</option> <option>2</option><option>3</option><option>4</option>
-                <option>5</option>
+                <?php echo $extremeList; ?>
               </select>
           </div>
           <div style = "margin-top:10px" class="control-group">
             <div class="controls">
               </label>
               <button class="btn btn-success" type="submit">Edit Tour</button>
+              <!--<button class="btn" type="button">Help</button>--> 
+            </div>
+          </div>
+          <div style = "margin-top:10px" class="control-group">
+            <div class="controls">
+              </label>
+              <a class="btn btn-danger" data-toggle="modal" type = "button" data-target="#myModal">Delete Tour</a>
               <!--<button class="btn" type="button">Help</button>--> 
             </div>
           </div>
@@ -412,5 +906,25 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
     </div>
   </div>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Are you sure your wish to delete tour?</h4>
+      </div>
+      <div class="modal-body">
+       The tour will not be visible to your tourists
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <a href = "delete_tour.php?tour_key=<?php echo $tour_key;?>"><button type="button" class="btn btn-primary">Delete Tour</button></a>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

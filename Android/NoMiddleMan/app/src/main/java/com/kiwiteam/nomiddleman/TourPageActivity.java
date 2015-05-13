@@ -591,7 +591,11 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                 public void run() {
                     ratings = tourRatingsA;
 
-                    System.out.println("youtube link " + tour.getYoutube());
+                    if(!tour.getYoutube().contains("youtube")) {
+                        findViewById(R.id.video).setVisibility(View.GONE);
+                    } else {
+                        findViewById(R.id.video).setVisibility(View.VISIBLE);
+                    }
 
                     if(!tour.getFacebook().contains("facebook")) {
                         findViewById(R.id.facebook).setVisibility(View.GONE);
