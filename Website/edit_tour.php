@@ -281,7 +281,7 @@ for($i = 0; $i<95;$i++)
 	$hourList['fridayl'] .=  '<option selected>'.$dhour.'</option>';
 	else
 	$hourList['fridayl'] .=  '<option>'.$dhour.'</option>';
-	if($ssaturdayf == $hourInStamp)
+	if($ssaturdayl == $hourInStamp)
 	$hourList['saturdayl'] .=  '<option selected>'.$dhour.'</option>';
 	else
 	$hourList['saturdayl'] .=  '<option>'.$dhour.'</option>';

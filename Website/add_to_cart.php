@@ -45,7 +45,7 @@ if(isset($_POST['tid']) && isset($_POST['tdatetime']))
 	$tprice = $row['Price'];
 	$tcity = $row['City'];
 	$tstate = $row['State-Province'];
-	$tourphoto = $row['tour_photo'];
+	$tourphoto = trim($row['tour_photo']);
 	$item = '<article class="search-result row">
 			<div class="col-xs-12 col-sm-12 col-md-3">
 				<a title="Lorem ipsum" class="thumbnail" href="tour_page.php?tid='.$tid.'"><img src="'.$tourphoto.'1.jpg" alt="Lorem ipsum"></a>

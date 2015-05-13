@@ -3,6 +3,7 @@ session_start();
 $checkOut = '';
 $total = '';
 $cartList = '';
+$message = '';
 $receiver = array(array());
 	include_once("dbConnect.php");
 	
@@ -20,6 +21,7 @@ $receiver = array(array());
 		$totalPrice = 0;
 		$totalRPrice = array();
 		$i = 0;
+		$notActiveCount = 0;
 		while($row = pg_fetch_array($cquery))
 		{
 			$tname = $row['tour_Name'];
@@ -27,8 +29,19 @@ $receiver = array(array());
 			$tid = $row['tour_key'];
 			$tprice = $row['total'];
 			$quantity = $row['p_quantity'];
-			$totalPrice += (float)preg_replace("/([^0-9\\.])/i", "", $tprice);
+			$isActive = $row['s_isActive'];
+			$passed = $row['passed'];
+			$full = $row['isfull'];
+			if($passed == "t" || $full == "t") {
+				$isActive = "f";
+			}
+			if($isActive == "t") {
+				$totalPrice += (float)preg_replace("/([^0-9\\.])/i", "", $tprice);
+			} else {
+				$notActiveCount++;
+			}
 			$tcity = $row['City'];
+			$tourphoto = trim($row['tour_photo']);
 			$tstate = $row['State-Province'];
 			//$cid = $row['cid'];
 			$ts_key = $row['ts_key'];
@@ -44,7 +57,7 @@ $receiver = array(array());
 			$i++;
 			$cartList .= '<article class="search-result row">
 			<div class="col-xs-12 col-sm-12 col-md-3">
-				<a title="Lorem ipsum" class="thumbnail" href="tour_page.php?tid='.$tid.'"><img src="images/'.$tid.'/1.jpg" alt="Lorem ipsum"></a>
+				<a title="Lorem ipsum" class="thumbnail" href="tour_page.php?tid='.$tid.'"><img src="'.$tourphoto.'1.jpg" alt="Lorem ipsum"></a>
 			</div>
 			<div class="col-xs-12 col-sm-12 col-md-2">
 				<ul class="meta-search">
@@ -53,7 +66,11 @@ $receiver = array(array());
 				</ul>
 			</div>
 			<div class="col-xs-12 col-sm-12 col-md-7 excerpet">
-				<h3><a href="tour_page.php?tid='.$tid.' title="">'.$tname.'</a></h3>
+				<h3><a href="tour_page.php?tid='.$tid.' title="">'.$tname.'</a>';
+				if($isActive == "f") {
+					$cartList .= ' <font color="red">*</font>';
+				}
+				$cartList .= '</h3>
 				<p>'.$tdescription.'</p>
 				<h4><strong>Reserved time: '.$reserved_time.'</strong></h4>					
                 <span style="text-align : center"><h4>'.$tprice.'</h4></span>
@@ -65,6 +82,10 @@ $receiver = array(array());
 		</article>';
 			$_SESSION['trankey'] = $ts_key;
 		}
+		if($notActiveCount > 0) {
+			
+			$message = '<font color = "red"> * One or more item of these items cannot be processed for purchase</font>';
+		}
 		
 		$_SESSION['receiver'] = $receiver;
 		$_SESSION['defaultreceiver'] = 'skydiving@test.com';
@@ -74,7 +95,7 @@ $receiver = array(array());
 		//setlocale(LC_MONETARY, 'en_US');
 		//$totalPrice =  money_format('%(#10n', $totalPrice);
 		
-		$checkOut = '<div style = "float: left"> <h3> Total price: $'.$totalPrice.'</h3><form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
+		$checkOut = '<div style = "float: right"> <h3> Total price: $'.$totalPrice.'</h3><form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
 <!-- Saved buttons use the "secure click" command -->
 <input type="hidden" name="cmd" value="_xclick">
 <!-- Saved buttons are identified by their button IDs -->
@@ -108,8 +129,12 @@ $(document).ready(function(){
 </head>
 <body>
 <?php include 'navbar.php';?>
+<div class = "container">
 <h2>Shopping Cart </h2>
+
 <div style="margin-right: 20px;margin-left: 20px;" class="list-group"> <?php echo $cartList;?></div>
+<div style="margin-right: 20px;margin-left: 20px;" class="list-group"><?php echo $message;?></div>
 <?php echo $checkOut;?>
+</div>
 </body>
 </html>
