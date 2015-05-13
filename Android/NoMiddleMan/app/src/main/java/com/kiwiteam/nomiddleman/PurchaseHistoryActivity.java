@@ -82,6 +82,7 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
     private static final String TAG_ACTIVE = "isActive";
     private static final String TAG_SUCCESS = "success";
     private static final String TAG_RATED = "isRated";
+    private static final String TAG_AVG = "avg";
 
     private static String url_get_past_tours = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/getPastTours.php";
 
@@ -254,13 +255,8 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
             // find the list
             HistoryItem currentTour = pastHistory.get(position);
 
-            if(currentTour.getTour().getPictures().size() > 0) {
-                picture = (ImageView) itemView.findViewById(R.id.tourPic);
-                picture.setImageBitmap(currentTour.getTour().getPictures().get(0));
-            } else {
-                picture = (ImageView) itemView.findViewById(R.id.tourPic);
-                picture.setImageDrawable(getResources().getDrawable(R.mipmap.ic_launcher));
-            }
+            picture = (ImageView) itemView.findViewById(R.id.tourPic);
+            picture.setImageBitmap(currentTour.getTour().getPictures().get(0));
 
             TextView tName = (TextView) itemView.findViewById(R.id.tourName);
             tName.setText(currentTour.getTour().getName());
@@ -382,17 +378,17 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
                     for (int i=0; i<backup.length(); i++) {
                         JSONObject c = backup.getJSONObject(i);
                         try {
-                            if(getResponseCode(c.getString(TAG_PHOTO).trim() + "1.jpg") != 404) {
-                                BitmapFactory.Options options = new BitmapFactory.Options();
-                                options.inJustDecodeBounds = true;
-                                // Calculate inSampleSize
-                                options.inSampleSize = 5;
-                                // Decode bitmap with inSampleSize set
-                                options.inJustDecodeBounds = false;
 
-                                bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "1.jpg").getContent(), null, options);
-                                pictures.add(bitmap);
-                            }
+                            BitmapFactory.Options options = new BitmapFactory.Options();
+                            options.inJustDecodeBounds = true;
+                            // Calculate inSampleSize
+                            options.inSampleSize = 5;
+                            // Decode bitmap with inSampleSize set
+                            options.inJustDecodeBounds = false;
+
+                            bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "1.jpg").getContent(), null, options);
+                            pictures.add(bitmap);
+
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -410,9 +406,9 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
                         pastHistory.add(new HistoryItem(c.getString(TAG_DATE),
                                 c.getString(TAG_TIME),c.getInt(TAG_TSKEY),c.getInt(TAG_QUANTITY),
                                 isRated, new Tour(c.getString(TAG_NAME),
-                                        Price.getDouble(c.getString(TAG_PRICE)),
-                                        pictures, c.getInt(TAG_KEY),
-                                        c.getDouble(TAG_EXTREMENESS))));
+                                Price.getDouble(c.getString(TAG_PRICE)),
+                                new ArrayList<>(Arrays.asList(bitmap)), c.getInt(TAG_KEY),
+                                c.getDouble(TAG_EXTREMENESS),c.getDouble(TAG_AVG))));
 
                         if(isActive) {
                             totalPrice = totalPrice + Price.getDouble(c.getString(TAG_PRICE));

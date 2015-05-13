@@ -22,7 +22,7 @@
 		$result = pg_query($conn, "Select T.tour_key as Key, 
 		upper(T.\"tour_Name\") as Name, 
 		T.\"tour_Desc\" as Description, T.\"Price\" as Price, 
-		T.\"extremeness\" as Extremeness, T.\"tour_photo\" as Photo 
+		T.\"extremeness\" as Extremeness, T.\"tour_photo\" as Photo, T.\"avg\" as avg 
 		FROM \"Tour Info\" as T 
 		Where lower(concat(T.\"tour_Name\",' ',T.\"tour_Desc\")) like lower('%$keyword%') 	
 		and T.tour_key IN (Select C.tour_key as key	From \"TourAndCategory\" as C Where \"Category_Name\" = $inter)		
@@ -40,6 +40,7 @@
 				$tour['price'] = $row['price'];
 				$tour['extremeness'] = $row['extremeness'];
 				$tour['photo'] = $row['photo'];
+				$tour['avg'] = $row['avg'];
 				
 				$getCategories = pg_query($conn, "Select \"Category_Name\"
 				From \"Tour Category\"

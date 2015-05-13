@@ -154,6 +154,7 @@ public class ResetRequestActivity extends ActionBarActivity {
                 @Override
                 public void run() {
                     if(success == 1) {
+                        Toast.makeText(getApplicationContext(), R.string.notification_sent, Toast.LENGTH_SHORT).show();
                         finish();
                     } else {
                         Toast.makeText(getApplicationContext(), R.string.not_change_password, Toast.LENGTH_SHORT).show();

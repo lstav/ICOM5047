@@ -45,7 +45,7 @@
 		
 		$result = pg_query($conn, "Select T.tour_key as Key, upper(T.\"tour_Name\") as Name, 
 									T.\"Price\" as Price, T.\"extremeness\" as Extremeness, 
-									T.\"tour_photo\" as Photo
+									T.\"tour_photo\" as Photo, T.\"avg\" as avg
 									From \"Tour Info\" as T
 									Where \"Country\" = $country and 
 									\"State-Province\" = $state and 
@@ -65,6 +65,7 @@
 				$tour['price'] = $row['price'];
 				$tour['extremeness'] = $row['extremeness'];
 				$tour['photo'] = $row['photo'];
+				$tour['avg'] = $row['avg'];
 				
 				$getCategories = pg_query($conn, "Select \"Category_Name\"
 				From \"Tour Category\"

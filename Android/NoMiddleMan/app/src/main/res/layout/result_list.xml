@@ -35,14 +35,27 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent">
 
-                <RatingBar
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/tourRating"
-                    style="?android:attr/ratingBarStyleSmall"
-                    android:progressDrawable="@drawable/extreme_rating_bar"
-                    android:stepSize=".25"
-                    android:numStars="5" />
+                <TableLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content">
+
+                    <RatingBar
+                        style="?android:attr/ratingBarStyleSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/avgRate"
+                        android:stepSize=".25"
+                        android:numStars="5" />
+
+                    <RatingBar
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/tourRating"
+                        style="?android:attr/ratingBarStyleSmall"
+                        android:progressDrawable="@drawable/extreme_rating_bar"
+                        android:stepSize=".25"
+                        android:numStars="5" />
+                </TableLayout>
 
                 <TextView
                     android:id="@+id/tourPrice"

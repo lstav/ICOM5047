@@ -157,4 +157,12 @@
     <string name="addr_req">Dirección *</string>
     <string name="tele_req">Teléfono *</string>
 
+    <string name="go_to_cart">Ve a la cesta</string>
+    <string name="continue_shopping">Continua Comprando</string>
+
+    <string name="total_cart">Total en cesta</string>
+    <string name="not_add">No se puede añadir</string>
+    <string name="added">Añadido</string>
+    <string name="to_cart">a la cesta</string>
+
 </resources>

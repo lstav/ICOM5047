@@ -79,6 +79,7 @@ public class UpcomingPurchaseHistoryActivity extends ActionBarActivity {
     private static final String TAG_ACTIVE = "isActive";
     private static final String TAG_SUCCESS = "success";
     private static final String TAG_RATED = "isRated";
+    private static final String TAG_AVG = "avg";
 
 
     private static String url_get_upcoming_tours = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/getUpcomingTours.php";
@@ -369,7 +370,7 @@ public class UpcomingPurchaseHistoryActivity extends ActionBarActivity {
                                 isRated, new Tour(c.getString(TAG_NAME),
                                 Price.getDouble(c.getString(TAG_PRICE)),
                                 new ArrayList<>(Arrays.asList(bitmap)),c.getInt(TAG_KEY),
-                                c.getDouble(TAG_EXTREMENESS))));
+                                c.getDouble(TAG_EXTREMENESS),c.getDouble(TAG_AVG))));
 
                         if(isActive) {
                             totalPrice = totalPrice + Price.getDouble(c.getString(TAG_PRICE));

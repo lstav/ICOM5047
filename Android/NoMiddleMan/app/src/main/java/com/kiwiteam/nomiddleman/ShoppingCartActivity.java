@@ -75,6 +75,7 @@ public class ShoppingCartActivity extends ActionBarActivity {
     private static final String TAG_ACTIVE = "isActive";
     private static final String TAG_SUCCESS = "success";
     private static final String TAG_GEMAIL = "gEmail";
+    private static final String TAG_AVG = "avg";
 
 
     private static String url_get_shopping_cart = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/getShoppingCart.php";
@@ -236,13 +237,9 @@ public class ShoppingCartActivity extends ActionBarActivity {
                 isAct.setVisibility(View.GONE);
             }
 
-            if(currentTour.getTourPicture().size() > 0) {
-                picture = (ImageView) itemView.findViewById(R.id.tourPic);
-                picture.setImageBitmap(currentTour.getTourPicture().get(0));
-            } else {
-                picture = (ImageView) itemView.findViewById(R.id.tourPic);
-                picture.setImageDrawable(getResources().getDrawable(R.mipmap.ic_launcher));
-            }
+
+            picture = (ImageView) itemView.findViewById(R.id.tourPic);
+            picture.setImageBitmap(currentTour.getTourPicture().get(0));
 
             TextView tName = (TextView) itemView.findViewById(R.id.tourName);
             tName.setText(currentTour.getTourName());
@@ -353,17 +350,15 @@ public class ShoppingCartActivity extends ActionBarActivity {
                     for (int i=0; i<backup.length(); i++) {
                         JSONObject c = backup.getJSONObject(i);
                         try {
-                            if(getResponseCode(c.getString(TAG_PHOTO).trim() + "1.jpg") != 404) {
-                                BitmapFactory.Options options = new BitmapFactory.Options();
-                                options.inJustDecodeBounds = true;
-                                // Calculate inSampleSize
-                                options.inSampleSize = 5;
-                                // Decode bitmap with inSampleSize set
-                                options.inJustDecodeBounds = false;
+                            BitmapFactory.Options options = new BitmapFactory.Options();
+                            options.inJustDecodeBounds = true;
+                            // Calculate inSampleSize
+                            options.inSampleSize = 5;
+                            // Decode bitmap with inSampleSize set
+                            options.inJustDecodeBounds = false;
 
-                                bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "1.jpg").getContent(), null, options);
-                                pictures.add(bitmap);
-                            }
+                            bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "1.jpg").getContent(), null, options);
+                            pictures.add(bitmap);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -376,8 +371,8 @@ public class ShoppingCartActivity extends ActionBarActivity {
                         // Adds tours to shopping cart item
                         shoppingCart.add(new ShoppingItem(new Tour(c.getString(TAG_NAME),
                                 Price.getDouble(c.getString(TAG_PRICE)),
-                                pictures,
-                                c.getInt(TAG_KEY),c.getDouble(TAG_EXTREMENESS)),c.getInt(TAG_TSKEY),
+                                new ArrayList<>(Arrays.asList(bitmap)),
+                                c.getInt(TAG_KEY),c.getDouble(TAG_EXTREMENESS),c.getDouble(TAG_AVG)),c.getInt(TAG_TSKEY),
                                 c.getInt(TAG_QUANTITY),c.getString(TAG_DATE), c.getString(TAG_TIME),
                                 isActive, c.getString(TAG_GEMAIL)));
 

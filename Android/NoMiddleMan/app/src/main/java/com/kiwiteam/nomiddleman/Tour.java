@@ -13,6 +13,7 @@ public class Tour {
     private ArrayList<Bitmap> picture;
     private int id;
     private double extremeness;
+    private double avg;
 
     /**
      * Constructor for Tour class
@@ -22,7 +23,7 @@ public class Tour {
      * @param id
      * @param extremeness
      */
-    public Tour(String name, double price, ArrayList<Bitmap> picture, int id, double extremeness) {
+    public Tour(String name, double price, ArrayList<Bitmap> picture, int id, double extremeness, double avg) {
         super();
 
         this.name = name;
@@ -30,6 +31,7 @@ public class Tour {
         this.picture = picture;
         this.id = id;
         this.extremeness = extremeness;
+        this.avg = avg;
     }
 
     /**
@@ -70,6 +72,10 @@ public class Tour {
      */
     public double getExtremeness() {
         return extremeness;
+    }
+
+    public double getAvg() {
+        return avg;
     }
 
 }

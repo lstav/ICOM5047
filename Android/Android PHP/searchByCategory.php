@@ -13,7 +13,7 @@
 		
 		$result = pg_query($conn, "Select T.tour_key as Key, upper(T.\"tour_Name\") as Name, 
 		T.\"tour_Desc\" as Description, T.\"Price\" as Price, T.\"extremeness\" as Extremeness, 
-		T.\"tour_photo\" as Photo FROM \"SearchByCat\"('$category'::text) as T
+		T.\"tour_photo\" as Photo, T.\"avg\" as avg FROM \"SearchByCat\"('$category'::text) as T
 		Order By (T.\"$order\") $by");
 		
 		if(pg_num_rows($result) > 0) {
@@ -26,6 +26,7 @@
 				$tour['price'] = $row['price'];
 				$tour['extremeness'] = $row['extremeness'];
 				$tour['photo'] = $row['photo'];
+				$tour['avg'] = $row['avg'];
 				
 				array_push($response['tours'], $tour);
 			}

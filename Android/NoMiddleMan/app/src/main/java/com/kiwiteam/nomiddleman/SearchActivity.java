@@ -94,6 +94,7 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
     private static final String TAG_ORDER = "order";
     private static final String TAG_BY = "by";
     private static final String TAG_MESSAGE = "message";
+    private static final String TAG_AVG = "avg";
 
 
     private static String url_search_categories = "http://kiwiteam.ece.uprm.edu/NoMiddleMan/Android%20Files/searchByCategory.php";
@@ -442,6 +443,8 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
             picture = (ImageView) itemView.findViewById(R.id.tourPic);
             picture.setImageBitmap(currentTour.getPictures().get(0));
 
+            RatingBar aRating = (RatingBar) itemView.findViewById(R.id.avgRate);
+            aRating.setRating((float) currentTour.getAvg());
 
             RatingBar eRating = (RatingBar) itemView.findViewById(R.id.tourRating);
             eRating.setRating((float) currentTour.getExtremeness());
@@ -535,7 +538,9 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
                     success = jObj.getInt("success");
 
                     // Adds tour information from database to Tour class
-                    tourInfo.add(new Tour(c.getString(TAG_NAME), Price.getDouble(c.getString(TAG_PRICE)), pictures, Integer.parseInt(c.getString(TAG_KEY)), Double.parseDouble(c.getString(TAG_EXTREMENESS))));
+                    tourInfo.add(new Tour(c.getString(TAG_NAME), Price.getDouble(c.getString(TAG_PRICE)),
+                            new ArrayList<>(Arrays.asList(bitmap)), Integer.parseInt(c.getString(TAG_KEY)),
+                            Double.parseDouble(c.getString(TAG_EXTREMENESS)),c.getDouble(TAG_AVG)));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -645,7 +650,9 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
                         e.printStackTrace();
                     }
 
-                    tourInfo.add(new Tour(c.getString(TAG_NAME), Price.getDouble(c.getString(TAG_PRICE)), pictures, Integer.parseInt(c.getString(TAG_KEY)), Double.parseDouble(c.getString(TAG_EXTREMENESS))));
+                    tourInfo.add(new Tour(c.getString(TAG_NAME), Price.getDouble(c.getString(TAG_PRICE)),
+                            new ArrayList<>(Arrays.asList(bitmap)), Integer.parseInt(c.getString(TAG_KEY)),
+                            Double.parseDouble(c.getString(TAG_EXTREMENESS)),c.getDouble(TAG_AVG)));
                 }
 
                 success = jObj.getInt("success");
@@ -790,7 +797,9 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
                         e.printStackTrace();
                     }
 
-                    tourInfo.add(new Tour(c.getString(TAG_NAME), Price.getDouble(c.getString(TAG_PRICE)), pictures, Integer.parseInt(c.getString(TAG_KEY)), Double.parseDouble(c.getString(TAG_EXTREMENESS))));
+                    tourInfo.add(new Tour(c.getString(TAG_NAME), Price.getDouble(c.getString(TAG_PRICE)),
+                            new ArrayList<>(Arrays.asList(bitmap)), Integer.parseInt(c.getString(TAG_KEY)),
+                            Double.parseDouble(c.getString(TAG_EXTREMENESS)),c.getDouble(TAG_AVG)));
                 }
 
                 success = jObj.getInt("success");

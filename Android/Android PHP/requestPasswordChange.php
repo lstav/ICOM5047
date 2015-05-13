@@ -15,7 +15,7 @@
 		$result = pg_query($conn, "UPDATE \"Tourist\" as t SET \"t_password\" = '$password' 
 		WHERE t.\"t_Email\" = '$email'");
 		
-		if($result) {
+		if(pg_affected_rows($result) > 0) {
 			
 			$response['success'] = 1;
 			$response['message'] = "Password Changed";
@@ -33,7 +33,7 @@
 			echo json_encode($response);
 		} else {
 			$response['success'] = 0;
-			$response['message'] = "No tours found";
+			$response['message'] = "No emails found";
 				
 			echo json_encode($response);
 		}

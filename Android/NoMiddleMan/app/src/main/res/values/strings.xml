@@ -158,5 +158,13 @@
     <string name="addr_req">Address *</string>
     <string name="tele_req">Telephone *</string>
 
+    <string name="go_to_cart">Go to cart</string>
+    <string name="continue_shopping">Continue Shopping</string>
+
+    <string name="total_cart">Total in cart</string>
+    <string name="not_add">Could not add</string>
+    <string name="added">Added</string>
+    <string name="to_cart">to cart</string>
+
 
 </resources>

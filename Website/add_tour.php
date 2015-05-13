@@ -10,7 +10,7 @@ $stateList = '';
 $countryList = '';
 $cityList = '';
 
-$query = pg_query($dbconn, "SELECT * FROM \"Tour Category\"");
+$query = pg_query($dbconn, "SELECT * FROM \"Tour Category\" Order By \"Category_Name\" ASC");
 while($row = pg_fetch_array($query))
 {
 	$category = $row['Category_Name'];
@@ -31,7 +31,7 @@ while($row = pg_fetch_array($query))
 	$countryList .= '<option>'.$country.'</option>';
 }
 
-$query = pg_query($dbconn, "SELECT DISTINCT \"City\" FROM \"Location\"");
+$query = pg_query($dbconn, "SELECT DISTINCT \"City\" FROM \"Location\" Order By \"City\" ASC");
 while($row = pg_fetch_array($query))
 {
 	$city = $row['City'];
@@ -159,8 +159,7 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
 				$query = pg_query($dbconn, "INSERT INTO \"Tour\" (\"tour_Name\", \"tour_Desc\", \"Duration\", \"Price\", \"Facebook\", \"Youtube\", \"Instagram\", \"Twitter\", \"g_key\", \"tour_isActive\", \"tour_isSuspended\", \"L_key\", \"tour_quantity\", \"extremeness\", \"tour_address\", \"autoGen\") VALUES('$tourName', '$tdescription', '$tduration', '$tprice', '$facebook', '$youtube', '$instagram', '$twitter', '$uid', TRUE, FALSE, $lKey, $quantity, $extreme, '$taddress', TRUE) RETURNING \"tour_key\"");
 				$row = pg_fetch_array($query);
 				$tour_key = $row['tour_key'];
-				
-				$query = pg_query($dbconn, "UPDATE \"Tour\" SET \"tour_photo\" = 'http://kiwiteam.ece.uprm.edu/NoMiddleMan/website/images/$tour_key/' WHERE \"tour_key\" = $tour_key"); 
+			
 				$cquery = pg_query($dbconn, "SELECT * FROM \"Tour Category\" WHERE upper(\"Category_Name\") = upper('$category')");
 				$cKey = '';
 				if(pg_num_rows($cquery) > 0)
@@ -195,8 +194,10 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
 				if (!file_exists("images/".$tour_key)) {
     				mkdir("images/".$tour_key, 0777, true);
 				}
-				
-				$target_file = "images/".$tour_key."/1.jpg";
+				if(is_uploaded_file($_FILES["image"]["tmp_name"]))
+				{
+					$query = pg_query($dbconn, "UPDATE \"Tour\" SET \"tour_photo\" = 'http://kiwiteam.ece.uprm.edu/NoMiddleMan/website/images/$tour_key/' WHERE \"tour_key\" = $tour_key"); 
+					$target_file = "images/".$tour_key."/1.jpg";
 				if(file_exists($target_file)){
     				chmod($target_file,0755); //Change the file permissions if allowed
     				unlink($target_file); //remove the file
@@ -206,6 +207,11 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
 				$image_size = $_FILES["image"]["size"];
 				$image_tmp_name = $_FILES['image']['tmp_name'];
 				move_uploaded_file($_FILES["image"]["tmp_name"], $target_file);
+				}
+				else
+				{
+					$query = pg_query($dbconn, "UPDATE \"Tour\" SET \"tour_photo\" = 'http://kiwiteam.ece.uprm.edu/NoMiddleMan/website/images/0/' WHERE \"tour_key\" = $tour_key"); 
+				}
 				/*// Allow certain file formats
 				if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
 				&& $imageFileType != "gif" ) {
@@ -294,14 +300,16 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
               <table class="table">
                 <thead>
                   <tr>
+					<th>Selected</th>
                     <th>Day</th>
-                    <th>First Session</th>
-                    <th>Last Session</th>
-                    <th style="text-align: center">Available</th>
+                    <th>First Session Start Time</th>
+                    <th>Last Session End Time</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
+				<td class="col-md-1" style="text-align: center"><input type="checkbox" name = "checkmonday" value = 'value1'>
+                           </td>
                     <td>Monday</td>
                     <td><select name = "mondayf" style = "display:inline" class="form-control">
                 <?php echo $hourList;?>
@@ -309,10 +317,11 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
                     <td><select name = "mondayl" style = "display:inline" class="form-control">
                 <?php echo $hourList;?>
               </select></td>
-              		<td class="col-md-1" style="text-align: center"><input type="checkbox" name = "checkmonday" value = 'value1'>
-                           </td>
+
                   </tr>
                  <tr>
+				 <td class="col-md-1" style="text-align: center"><input type="checkbox" name = "checktuesday" value = 'value1'>
+                           </td>
                     <td>Tuesday</td>
                     <td><select name = "tuesdayf" style = "display:inline" class="form-control">
                 <?php echo $hourList;?>
@@ -320,10 +329,11 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
                     <td><select name = "tuesdayl" style = "display:inline" class="form-control">
                 <?php echo $hourList;?>
               </select></td>
-              		<td class="col-md-1" style="text-align: center"><input type="checkbox" name = "checktuesday" value = 'value1'>
-                           </td>
+              		
                   </tr>
                   <tr>
+				  <td class="col-md-1" style="text-align: center"><input type="checkbox" name = "checkwednesday" value = 'value1'>
+                           </td>
                     <td>Wednesday</td>
                     <td><select name = "wednesdayf" style = "display:inline" class="form-control">
                 <?php echo $hourList;?>
@@ -331,10 +341,11 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
                     <td><select name = "wednesdayl" style = "display:inline" class="form-control">
                 <?php echo $hourList;?>
               </select></td>
-              		<td class="col-md-1" style="text-align: center"><input type="checkbox" name = "checkwednesday" value = 'value1'>
-                           </td>
+              		
                   </tr>
                   <tr>
+				  <td class="col-md-1" style="text-align: center"><input type="checkbox" name = "checkthursday" value = 'value1'>
+                           </td>
                     <td>Thursday</td>
                     <td><select name = "thursdayf" style = "display:inline" class="form-control">
                 <?php echo $hourList;?>
@@ -342,10 +353,11 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
                     <td><select name = "thursdayl" style = "display:inline" class="form-control">
                 <?php echo $hourList;?>
               </select></td>
-              	<td class="col-md-1" style="text-align: center"><input type="checkbox" name = "checkthursday" value = 'value1'>
-                           </td>
+              	
                   </tr>
                   <tr>
+				  <td class="col-md-1" style="text-align: center"><input type="checkbox" name = "checkfriday" value = 'value1'>
+                           </td>
                     <td>Friday</td>
                     <td><select name = "fridayf" style = "display:inline" class="form-control">
                 <?php echo $hourList;?>
@@ -353,10 +365,11 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
                     <td><select name = "fridayl" style = "display:inline" class="form-control">
                 <?php echo $hourList;?>
               </select></td>
-              <td class="col-md-1" style="text-align: center"><input type="checkbox" name = "checkfriday" value = 'value1'>
-                           </td>
+              
                   </tr>
                   <tr>
+				  <td class="col-md-1" style="text-align: center"><input type="checkbox" name = "checksaturday" value = 'value1'>
+                           </td>
                     <td>Saturday</td>
                     <td><select name = "saturdayf" style = "display:inline" class="form-control">
                 <?php echo $hourList;?>
@@ -364,10 +377,11 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
                     <td><select name = "saturdayl" style = "display:inline" class="form-control">
                 <?php echo $hourList;?>
               </select></td>
-              <td class="col-md-1" style="text-align: center"><input type="checkbox" name = "checksaturday" value = 'value1'>
-                           </td>
+              
                   </tr>
                   <tr>
+				  <td class="col-md-1" style="text-align: center"><input type="checkbox" name = "checksunday" value = 'value1'>
+                           </td>
                     <td>Sunday</td>
                     <td><select name = "sundayf" style = "display:inline" class="form-control">
                 <?php echo $hourList;?>
@@ -375,8 +389,7 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
                     <td><select name = "sundayl" style = "display:inline" class="form-control">
                 <?php echo $hourList;?>
               </select></td>
-              	<td class="col-md-1" style="text-align: center"><input type="checkbox" name = "checksunday" value = 'value1'>
-                           </td>
+              	
                   </tr>
                 </tbody>
               </table>

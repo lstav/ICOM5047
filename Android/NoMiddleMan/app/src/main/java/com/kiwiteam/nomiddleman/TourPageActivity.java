@@ -1,9 +1,13 @@
 package com.kiwiteam.nomiddleman;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -114,6 +118,9 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
     private static final String TAG_AVGRATE = "averagerate";
     private static final String TAG_RATECOUNT = "ratecount";
 
+    private static final String TAG_CARTQTY = "cartQty";
+    private static final String TAG_ADDEDQTY = "addedQty";
+
     private static final String TAG_TSKEY = "tskey";
     private static final String TAG_TIME = "time";
     private static final String TAG_DATE = "date";
@@ -124,6 +131,8 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
     private static final String TAG_REVIEW = "review";
 
     private int success;
+    private int cartQty;
+    private int addedQty;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -696,6 +705,37 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
         }
     }
 
+    public class AddedCartDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the Builder class for convenient dialog construction
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            String message = new String();
+            if(cartQty < addedQty) {
+                int ex = addedQty - cartQty;
+                message = getString(R.string.total_cart) + ": " + cartQty + "\n" +
+                        getString(R.string.not_add) + ": " + ex;
+            } else {
+                message = getString(R.string.added) + " " + addedQty + " " + getString(R.string.to_cart);
+            }
+            builder.setMessage(message)
+                    .setPositiveButton(R.string.go_to_cart, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // FIRE ZE MISSILES!
+                            Intent intent = new Intent(TourPageActivity.this, ShoppingCartActivity.class);
+                            startActivity(intent);
+                        }
+                    })
+                    .setNegativeButton(R.string.continue_shopping, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User cancelled the dialog
+                        }
+                    });
+            // Create the AlertDialog object and return it
+            return builder.create();
+        }
+    }
+
     /**
      * Class to add tour session to cart
      */
@@ -753,9 +793,11 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                 JSONObject jObj = new JSONObject(result);
 
                 success = jObj.getInt(TAG_SUCCESS);
+                addedQty = jObj.getInt(TAG_ADDEDQTY);
+                cartQty = jObj.getInt(TAG_CARTQTY);
 
-                System.out.println("Success = " + success);
-                System.out.println("Message = " + jObj.getString("message"));
+                /*System.out.println("Success = " + success);
+                System.out.println("Message = " + jObj.getString("message"));*/
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -769,7 +811,16 @@ public class TourPageActivity extends ActionBarActivity implements AdapterView.O
                 @Override
                 public void run() {
                     if(success == 1) {
-                        Toast.makeText(TourPageActivity.this, R.string.added_to_cart, Toast.LENGTH_SHORT).show();
+                        /*if(cartQty < addedQty) {
+                            int ex = addedQty-cartQty;
+                            Toast.makeText(TourPageActivity.this, "Exceeded Cart by " + ex, Toast.LENGTH_SHORT).show();
+                        } else {*/
+                            AddedCartDialogFragment diag = new AddedCartDialogFragment();
+                            diag.show(getFragmentManager(),"cart");
+                            //Toast.makeText(TourPageActivity.this, R.string.added_to_cart, Toast.LENGTH_SHORT).show();
+                        //}
+                    } else {
+                        Toast.makeText(TourPageActivity.this, R.string.not_add, Toast.LENGTH_SHORT).show();
                     }
                 }
             });

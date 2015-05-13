@@ -100,6 +100,7 @@ public class CheckoutActivity extends ActionBarActivity {
     private static final String TAG_ACTIVE = "isActive";
     private static final String TAG_SUCCESS = "success";
     private static final String TAG_GEMAIL = "gEmail";
+    private static final String TAG_AVG = "avg";
 
     private static final String CONFIG_CLIENT_ID = "AdurtY7CcDo9ygeg8Ic1fhVjZuzPvW-nB4lcXGHrEuExkAWfgxaAbUEpmwMMjmALMXi-EPz-zNZJhKBz";
 
@@ -558,8 +559,8 @@ public class CheckoutActivity extends ActionBarActivity {
 
                         shoppingCart.add(new ShoppingItem(new Tour(c.getString(TAG_NAME),
                                 Price.getDouble(c.getString(TAG_PRICE)),
-                                pictures,
-                                c.getInt(TAG_KEY),c.getDouble(TAG_EXTREMENESS)),c.getInt(TAG_TSKEY),
+                                new ArrayList<>(Arrays.asList(bitmap)),
+                                c.getInt(TAG_KEY),c.getDouble(TAG_EXTREMENESS),c.getDouble(TAG_AVG)),c.getInt(TAG_TSKEY),
                                 c.getInt(TAG_QUANTITY),c.getString(TAG_DATE), c.getString(TAG_TIME),
                                 isActive, c.getString(TAG_GEMAIL)));
 
