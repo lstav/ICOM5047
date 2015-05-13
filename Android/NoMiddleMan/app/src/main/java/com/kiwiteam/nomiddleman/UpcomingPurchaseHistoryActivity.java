@@ -370,7 +370,7 @@ public class UpcomingPurchaseHistoryActivity extends ActionBarActivity {
                                 isRated, new Tour(c.getString(TAG_NAME),
                                 Price.getDouble(c.getString(TAG_PRICE)),
                                 new ArrayList<>(Arrays.asList(bitmap)),c.getInt(TAG_KEY),
-                                c.getDouble(TAG_EXTREMENESS),c.getDouble(TAG_AVG))));
+                                c.getDouble(TAG_EXTREMENESS),0.0)));
 
                         if(isActive) {
                             totalPrice = totalPrice + Price.getDouble(c.getString(TAG_PRICE));

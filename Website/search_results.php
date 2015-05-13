@@ -5,13 +5,14 @@ $dropdown = '';
 $ratingList = '';
 $ratingListE = '';
 $searchq = '';
+$categoryList = '';
 $cityList = '';
-$query = pg_query($dbconn, "SELECT * FROM \"Tour Category\" Order By \"Category_Name\" Asc");
-while($row = pg_fetch_array($query))
-{
-	$category = $row['Category_Name'];
-	$categoryList .= ' <li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$category.'">'.$category.'</a></li>';
-}
+//$query = pg_query($dbconn, "SELECT * FROM \"Tour Category\" Order By \"Category_Name\" Asc");
+//while($row = pg_fetch_array($query))
+//{
+	//$category = $row['Category_Name'];
+	//$categoryList .= ' <li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$category.'">'.$category.'</a></li>';
+//}
 $query = pg_query($dbconn, "SELECT DISTINCT \"City\" FROM \"Location\" Order By \"City\" Asc");
 while($row = pg_fetch_array($query))
 {
@@ -24,6 +25,7 @@ if(isset($_GET['search'])||isset($_GET['tsort']))
 	if(isset($_GET['search']))
 	{
 		$searchq = $_GET['search'];
+		$categoryList .= ' <li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$searchq.'&filter=ALL">ALL</a></li>';
 		//$searchq = preg_replace("#[^0-9a-z]#i", "", $searchq);
 		$query = pg_query($dbconn, "SELECT * FROM \"Tour Info\" NATURAL JOIN \"isCategory\" NATURAL JOIN \"Tour Category\" WHERE lower(\"tour_Name\") LIKE lower('%$searchq%') OR lower(\"Category_Name\") LIKE lower('%$searchq%') OR lower(\"City\") LIKE lower('%$searchq%') OR lower(\"State-Province\") LIKE lower('%$searchq%')");
 	}
@@ -37,7 +39,21 @@ if(isset($_GET['search'])||isset($_GET['tsort']))
 			//var_dump($tsort);
 			$query = pg_query($dbconn, "SELECT * FROM \"Tour Info\" NATURAL JOIN \"isCategory\" NATURAL JOIN \"Tour Category\" WHERE lower(\"tour_Name\") LIKE lower('%$searchq%') OR lower(\"Category_Name\") LIKE lower('%$searchq%') OR lower(\"City\") LIKE lower('%$searchq%') OR lower(\"State-Province\") LIKE lower('%$searchq%') ORDER BY \"$tsort\" $order");
 	}
-	
+	else if(isset($_GET['filter']))
+	{
+			$searchq = $_GET['search'];
+			//$searchq = preg_replace("#[^0-9a-z]#i", "", $searchq);
+			//$tsort = substr($_GET['tsort'], 1, -1);
+			$tcategory = $_GET['filter'];
+			if($tcategory == "ALL")
+			{
+				$query = pg_query($dbconn, "SELECT * FROM \"Tour Info\" NATURAL JOIN \"isCategory\" NATURAL JOIN \"Tour Category\" WHERE lower(\"tour_Name\") LIKE lower('%$searchq%') OR lower(\"Category_Name\") LIKE lower('%$searchq%') OR lower(\"City\") LIKE lower('%$searchq%') OR lower(\"State-Province\") LIKE lower('%$searchq%')");
+			}
+			else
+			{
+				$query = pg_query($dbconn, "SELECT * FROM \"Tour Info\" NATURAL JOIN \"isCategory\" NATURAL JOIN \"Tour Category\" WHERE (lower(\"tour_Name\") LIKE lower('%$searchq%') OR lower(\"Category_Name\") LIKE lower('%$searchq%') OR lower(\"City\") LIKE lower('%$searchq%') OR lower(\"State-Province\") LIKE lower('%$searchq%')) AND (lower(\"Category_Name\") = lower('$tcategory'))");
+			}
+	}
 	$count = pg_num_rows($query);
 	if($count == 0)
 	{
@@ -45,11 +61,14 @@ if(isset($_GET['search'])||isset($_GET['tsort']))
 	}
 	else
 	{
-		$dropdown = '<li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$searchq.'&tsort=tour_Name">Name</a></li>
+		$dropdown = '<li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$searchq.'&tsort=tour_Name&order=ASC">A-Z</a></li>
+		<li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$searchq.'&tsort=tour_Name&order=DESC">Z-A</a></li>
 		<li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$searchq.'&tsort=Price&order=ASC">Price: Lowest to Highest</a>
 		<li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$searchq.'&tsort=Price&order=DESC">Price: Highest to Lowest</a></li>
 		<li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$searchq.'&tsort=extremeness&order=ASC">Extremeness: Lowest to Highest</a>
-		<li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$searchq.'&tsort=extremeness&order=DESC">Extremeness: Highest to Lowest</a></li>';
+		<li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$searchq.'&tsort=extremeness&order=DESC">Extremeness: Highest to Lowest</a></li>
+		<li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$searchq.'&tsort=avg&order=ASC">Rating: Lowest to Highest</a>
+		<li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$searchq.'&tsort=avg&order=DESC">Rating: Highest to Lowest</a></li>';
 		while($row = pg_fetch_array($query))
 		{
 			$tname = $row['tour_Name'];
@@ -67,6 +86,14 @@ if(isset($_GET['search'])||isset($_GET['tsort']))
 			$trating = round($trating, 1);
 			$ratingList .= '$("#rating'.$tid.'").raty({ readOnly: true, score:'.$trating.' });';
 			$ratingListE .= '$("#ratingE'.$tid.'").raty({ readOnly: true, score:'.$extremeness.' });';
+			
+			$category = $row['Category_Name'];
+			$categoryList .= ' <li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$searchq.'&filter='.$category.'">'.$category.'</a></li>';
+			
+			$city = $row['City'];
+	$cityList .= '<li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$city.'">'.$city.'</a></li>';
+			
+			
 			$output .= '<article class="search-result row">
 			<div class="col-xs-12 col-sm-12 col-md-3">
 				<a title="Lorem ipsum" class="thumbnail" href="tour_page.php?tid='.$tid.'"><img src="'.$tour_photo.'1.jpg" alt="Lorem ipsum"></a>
@@ -124,24 +151,24 @@ if(isset($_GET['search'])||isset($_GET['tsort']))
 </div>
 <div class="dropdown" style="float:right
 ;margin-right: 20px;">
-                <button class="btn btn-default dropdown-toggle" type="button" id="year" data-toggle="dropdown" aria-expanded="false" style="
+                <button class="btn btn-default dropdown-toggle" type="button" id="categoryList" data-toggle="dropdown" aria-expanded="false" style="
     margin-left: 0px;
     margin-top: 0px;
 ">Categories<span class="caret"></span> </button>
-                <ul class="dropdown-menu" id="yearList" role="menu" aria-labelledby="dropdownMenu1">
+                <ul class="dropdown-menu" id="categoryList" role="menu" aria-labelledby="dropdownMenu1">
                  <?php echo $categoryList; ?>
                 </ul>
               </div>
-              <div class="dropdown" style="float:right
+              <!--<div class="dropdown" style="float:right
 ;margin-right: 20px;">
                 <button class="btn btn-default dropdown-toggle" type="button" id="year" data-toggle="dropdown" aria-expanded="false" style="
     margin-left: 0px;
     margin-top: 0px;
 ">City<span class="caret"></span> </button>
                 <ul class="dropdown-menu" id="yearList" role="menu" aria-labelledby="dropdownMenu1">
-                 <?php echo $cityList; ?>
+                 <?php //echo $cityList; ?>
                 </ul>
-              </div>
+              </div>-->
     <h1>Search Results</h1>
     <h2 class="lead"><strong class="text-danger"><?php echo $count;?></strong> results were found for the search for <strong class="text-danger">
       <?php if(isset($searchq)) echo $searchq;?>
@@ -153,7 +180,27 @@ if(isset($_GET['search'])||isset($_GET['tsort']))
 		 echo $output ?>
   </section>
 </div>
-<script>$.fn.raty.defaults.path = 'images'; <?php echo $ratingList;?></script>
-<script>$.fn.raty.defaults.path = 'images/extremeness'; <?php echo $ratingListE;?></script>
+<script>
+$.fn.raty.defaults.path = 'images'; <?php echo $ratingList;?>
+</script>
+<script>
+
+$(document).ready(function() {
+var usedNames = {};
+$("#categoryList>li>a").each(function () {
+    if(usedNames[this.text]) 
+	{
+		console.log("Entered!");
+        $(this).remove();
+    } else 
+	{
+		console.log(this.value);
+        usedNames[this.text] = this.text;
+}});});
+
+$.fn.raty.defaults.path = 'images/extremeness'; 
+<?php echo $ratingListE;?>
+
+</script>
 </body>
 </html>

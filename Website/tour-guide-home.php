@@ -17,7 +17,7 @@ if($_SESSION['tgemail'])
 		
 		$squery = pg_query($dbconn, "SELECT \"tour_key\", \"t_FName\",\"t_LName\",\"p_quantity\",
 		\"City\", \"tour_Desc\", \"State-Province\", \"ts_key\", \"tour_Name\", \"extremeness\" , 
-		\"Price\", \"s_Time\",\"Payed\", \"s_isActive\", (\"total\"*0.90) as total
+		\"Price\", \"s_Time\",\"Payed\", \"s_isActive\", (\"total\"*0.90) as total, \"tour_photo\"
 		FROM \"Upcoming Tours\" NATURAL JOIN \"Location\" NATURAL JOIN \"Tourist\"
 		WHERE \"g_key\"=$uid ORDER BY \"s_Time\" ASC");
 		
@@ -35,10 +35,11 @@ if($_SESSION['tgemail'])
 		$total = $row['total'];
 		$tcity = $row['City'];
 		$tstate = $row['State-Province'];
+		$tourphoto = trim($row['tour_photo']);
 		$reserved_time = date("F/d/Y g:i a" , strtotime(substr($row['s_Time'], 0, -3)));
 	    $schedule .= '<article class="search-result row">
 			<div class="col-xs-12 col-sm-12 col-md-3">
-				<a title="Lorem ipsum" class="thumbnail"><img src="images/'.$tid.'/1.jpg" alt="Lorem ipsum"></a>
+				<a title="Lorem ipsum" class="thumbnail"><img src="'.$tourphoto.'1.jpg" alt="Lorem ipsum"></a>
 			</div>
 			<div class="col-xs-12 col-sm-12 col-md-7 excerpet">
 				<h3><a title="">'.$tname.'</a></h3>
@@ -59,14 +60,19 @@ if($_SESSION['tgemail'])
 		$tcity = $row['City'];
 		$tstate = $row['State-Province'];
 		$tprice = $row['Price'];
+		$tourphoto = trim($row['tour_photo']);
+		$isActive = $row['tour_isActive'];
 		
 		$tours .= '<article class="search-result row">
 			<div class="col-xs-12 col-sm-12 col-md-3">
-				<a title="Lorem ipsum" class="thumbnail" href="guide_tour_page.php?tid='.$tid.'"><img src="images/'.$tid.'/1.jpg" alt="Lorem ipsum"></a>
+				<a title="Lorem ipsum" class="thumbnail" href="guide_tour_page.php?tid='.$tid.'"><img src="'.$tourphoto.'1.jpg" alt="Lorem ipsum"></a>
 			</div>
 			<div class="col-xs-12 col-sm-12 col-md-7 excerpet">
-				<h3><a href="guide_tour_page.php?tid='.$tid.'">'.$tname.'</a></h3>
-				<p>'.$tdescription.'</p>	
+				<h3><a href="guide_tour_page.php?tid='.$tid.'">'.$tname.'</a></h3>';
+				if($isActive == "f") {
+					$tours.='<h5><font color="red">Tour is not active</font></h5>';
+				}
+				$tours.='<p>'.$tdescription.'</p>	
 				<h7>'.$tcity.'</h7>
 				<h7>'.$tstate.'</h7>
 				<h5>'.$tprice.'</h5>

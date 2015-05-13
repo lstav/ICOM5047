@@ -373,7 +373,6 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
 
                     //pastHistory.clear();
                     backup = jObj.getJSONArray("tours");
-                    ArrayList<Bitmap> pictures = new ArrayList<>();
 
                     for (int i=0; i<backup.length(); i++) {
                         JSONObject c = backup.getJSONObject(i);
@@ -387,7 +386,6 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
                             options.inJustDecodeBounds = false;
 
                             bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "1.jpg").getContent(), null, options);
-                            pictures.add(bitmap);
 
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -408,7 +406,7 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
                                 isRated, new Tour(c.getString(TAG_NAME),
                                 Price.getDouble(c.getString(TAG_PRICE)),
                                 new ArrayList<>(Arrays.asList(bitmap)), c.getInt(TAG_KEY),
-                                c.getDouble(TAG_EXTREMENESS),c.getDouble(TAG_AVG))));
+                                c.getDouble(TAG_EXTREMENESS),0.0)));
 
                         if(isActive) {
                             totalPrice = totalPrice + Price.getDouble(c.getString(TAG_PRICE));
