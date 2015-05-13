@@ -4,12 +4,40 @@ if (session_status() == PHP_SESSION_NONE)
 {
 	session_start();
 }
+
+$categoryList = '';
+$stateList = '';
+$countryList = '';
+$cityList = '';
+
 $query = pg_query($dbconn, "SELECT * FROM \"Tour Category\"");
 while($row = pg_fetch_array($query))
 {
 	$category = $row['Category_Name'];
 	$categoryList .= '<option>'.$category.'</option>';
 }
+
+$query = pg_query($dbconn, "SELECT DISTINCT \"State-Province\" FROM \"Location\"");
+while($row = pg_fetch_array($query))
+{
+	$state = $row['State-Province'];
+	$stateList .= '<option>'.$state.'</option>';
+}
+
+$query = pg_query($dbconn, "SELECT DISTINCT \"Country\" FROM \"Location\"");
+while($row = pg_fetch_array($query))
+{
+	$country = $row['Country'];
+	$countryList .= '<option>'.$country.'</option>';
+}
+
+$query = pg_query($dbconn, "SELECT DISTINCT \"City\" FROM \"Location\"");
+while($row = pg_fetch_array($query))
+{
+	$city = $row['City'];
+	$cityList .= '<option>'.$city.'</option>';
+}
+
 $hourList= '';
 $i = (int)0;
 $dateTail='';
@@ -107,6 +135,13 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
 				$sundayf = date("H:i", strtotime($sundayf)).":00+00";
 				$sundayl = $_POST['sundayl'];
 				$sundayl = date("H:i", strtotime($sundayl)).":00+00";
+				$checkmonday = $_POST['checkmonday'];
+				$checktuesday = $_POST['checktuesday'];
+				$checkwednesday = $_POST['checkwednesday'];
+				$checkthursday = $_POST['checkthursday'];
+				$checkfriday = $_POST['checkfriday'];
+				$checksaturday = $_POST['checksaturday'];
+				$checksunday = $_POST['checksunday'];
 				$lquery = pg_query($dbconn, "SELECT \"L_key\" FROM \"Location\" WHERE \"City\" = upper('$tcity') AND \"State-Province\"= upper('$tstate') AND \"Country\" = upper('$tcountry')");
 				$lKey = '';
 				if(pg_num_rows($lquery) > 0)
@@ -140,19 +175,19 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
 					$cquery = pg_query($dbconn, "SELECT \"Join_Category\"('$category', $tour_key)");
 				}
 				
-				if($mondayf!=$mondayl)
+				if($mondayf!=$mondayl&&$checkmonday)
 				$wquery = pg_query($dbconn, "INSERT INTO \"Workdays\" (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") VALUES('Monday', '$tour_key', '$mondayf', '$mondayl')");
-				if($tuesdayf!=$tuesdayl)
+				if($tuesdayf!=$tuesdayl&&$checktuesday)
 				$wquery = pg_query($dbconn, "INSERT INTO \"Workdays\" (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") VALUES('Tuesday', '$tour_key', '$tuesdayf', '$tuesdayl')");
-				if($wednesdayf!=$wednesdayl)
+				if($wednesdayf!=$wednesdayl&&$checkwednesday)
 				$wquery = pg_query($dbconn, "INSERT INTO \"Workdays\" (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") VALUES('Wednesday', '$tour_key', '$wednesdayf', '$wednesdayl')");
-				if($thursday!=$thursday)
+				if($thursdayf!=$thursdayl&&$checkthursday)
 				$wquery = pg_query($dbconn, "INSERT INTO \"Workdays\" (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") VALUES('Thursday', '$tour_key', '$thursdayf', '$thursdayl')");
-				if($fridayf!=$fridayl)
+				if($fridayf!=$fridayl&&$checkfriday)
 				$wquery = pg_query($dbconn, "INSERT INTO \"Workdays\" (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") VALUES('Friday', '$tour_key', '$fridayf', '$fridayl')");
-				if($saturdayf!=$saturdayl)
+				if($saturdayf!=$saturdayl&&$checksaturday)
 				$wquery = pg_query($dbconn, "INSERT INTO \"Workdays\" (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") VALUES('Saturday', '$tour_key', '$saturdayf', '$saturdayl')");
-				if($sundayf!==$sundayl)
+				if($sundayf!==$sundayl&&$checksunday)
 				$wquery = pg_query($dbconn, "INSERT INTO \"Workdays\" (\"dayname\", \"tour_key\", \"startTime\", \"endTime\") VALUES('Sunday', '$tour_key', '$sundayf', '$sundayl')");
 				
 				$wquery = pg_query($dbconn, "SELECT \"TS_Generate\"($tour_key)");
@@ -214,7 +249,7 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
         <form class="form-horizontal" method = "post" action = "add_tour.php" enctype="multipart/form-data">
           <div class="heading">
             <h2 class="form-heading">Add a Tour</h2>
-            <h3>*<?php echo $errorMsg;?></h3>
+            <h3><?php echo $errorMsg;?></h3>
           </div>
           <div class="control-group">
             <label class="control-label" for="inputFirst">Tour
@@ -262,7 +297,7 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
                     <th>Day</th>
                     <th>First Session</th>
                     <th>Last Session</th>
-                    <!--<th>Available</th>-->
+                    <th style="text-align: center">Available</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -274,8 +309,8 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
                     <td><select name = "mondayl" style = "display:inline" class="form-control">
                 <?php echo $hourList;?>
               </select></td>
-              		<!--<td class="col-md-1"><label class="checkbox"><input type="checkbox" name = "checkmonday" value = 'value1'>
-                                </label></td>-->
+              		<td class="col-md-1" style="text-align: center"><input type="checkbox" name = "checkmonday" value = 'value1'>
+                           </td>
                   </tr>
                  <tr>
                     <td>Tuesday</td>
@@ -285,6 +320,8 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
                     <td><select name = "tuesdayl" style = "display:inline" class="form-control">
                 <?php echo $hourList;?>
               </select></td>
+              		<td class="col-md-1" style="text-align: center"><input type="checkbox" name = "checktuesday" value = 'value1'>
+                           </td>
                   </tr>
                   <tr>
                     <td>Wednesday</td>
@@ -294,6 +331,8 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
                     <td><select name = "wednesdayl" style = "display:inline" class="form-control">
                 <?php echo $hourList;?>
               </select></td>
+              		<td class="col-md-1" style="text-align: center"><input type="checkbox" name = "checkwednesday" value = 'value1'>
+                           </td>
                   </tr>
                   <tr>
                     <td>Thursday</td>
@@ -303,6 +342,8 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
                     <td><select name = "thursdayl" style = "display:inline" class="form-control">
                 <?php echo $hourList;?>
               </select></td>
+              	<td class="col-md-1" style="text-align: center"><input type="checkbox" name = "checkthursday" value = 'value1'>
+                           </td>
                   </tr>
                   <tr>
                     <td>Friday</td>
@@ -312,6 +353,8 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
                     <td><select name = "fridayl" style = "display:inline" class="form-control">
                 <?php echo $hourList;?>
               </select></td>
+              <td class="col-md-1" style="text-align: center"><input type="checkbox" name = "checkfriday" value = 'value1'>
+                           </td>
                   </tr>
                   <tr>
                     <td>Saturday</td>
@@ -321,6 +364,8 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
                     <td><select name = "saturdayl" style = "display:inline" class="form-control">
                 <?php echo $hourList;?>
               </select></td>
+              <td class="col-md-1" style="text-align: center"><input type="checkbox" name = "checksaturday" value = 'value1'>
+                           </td>
                   </tr>
                   <tr>
                     <td>Sunday</td>
@@ -330,6 +375,8 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
                     <td><select name = "sundayl" style = "display:inline" class="form-control">
                 <?php echo $hourList;?>
               </select></td>
+              	<td class="col-md-1" style="text-align: center"><input type="checkbox" name = "checksunday" value = 'value1'>
+                           </td>
                   </tr>
                 </tbody>
               </table>
@@ -340,7 +387,7 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
                             <div class="dropdown">
                               <button class="btn btn-default dropdown-toggle" type="button" id="time" data-toggle="dropdown" aria-expanded="true"> 5:00pm <span class="caret"></span> </button>
                               <ul class="dropdown-menu" id="timeList" role="menu" aria-labelledby="dropdownMenu1">
-                                <?php echo $hourList;?>
+                                <?php //echo $hourList;?>
                               </ul>
                             </div>
                           </div>--> 
@@ -366,20 +413,26 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
           <div class="control-group">
             <label class="control-label" for="inputPassword">City:</label>
             <div class="controls">
-              <input id="inputPassword" name = "city" placeholder="E.g. Orlando" type="text">
+              <select name = "city" style = "width:20%;display:inline" class="form-control">
+                <?php echo $cityList;?>
+              </select>
             </div>
           </div>
           <div class="control-group">
             <label class="control-label" for="inputPassword">State/Providence:</label>
             <div class="controls">
-              <input id="inputPassword" name = "state" placeholder="E.g. PR" type="text">
+              <select name = "state" style = "width:20%;display:inline" class="form-control">
+                <?php echo $stateList;?>
+              </select>
             </div>
           </div>
           <div class="control-group">
             <label class="control-label" for="inputPassword">Country:</label>
-            <div class="controls">
-              <input id="inputPassword" name = "country" placeholder="Canada" type="text">
-            </div>
+           <div class = "controls">
+            <select name = "country" style = "width:20%;display:inline" class="form-control">
+                <?php echo $countryList;?>
+              </select>
+           </div>
           </div>
           <div class="control-group">
             <label class="control-label" for="inputPassword">Facebook link:</label>
@@ -408,8 +461,7 @@ if(!empty($_POST['name'])||!empty($_POST['desc'])||!empty($_POST['image'])||!emp
           <div class="control-group">
             <label class="control-label" for="inputPassword"> Extremeness:</label><br />
             <select name = "extreme" style = "display:inline; width:10%" class="form-control">
-                <option>1</option> <option>2</option><option>3</option><option>4</option>
-                <option>5</option>
+                <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
               </select>
           </div>
           <div style = "margin-top:10px" class="control-group">

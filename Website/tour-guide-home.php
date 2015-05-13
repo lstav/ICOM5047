@@ -3,7 +3,7 @@ session_start();
 include_once("dbConnect.php");
 $schedule = '';
 $tours = '';
-$totaltotal = 0;
+$totaltotal = '';
 if($_SESSION['tgemail'])
 {
 	    $uemail = $_SESSION['tgemail'];
@@ -20,6 +20,11 @@ if($_SESSION['tgemail'])
 		\"Price\", \"s_Time\",\"Payed\", \"s_isActive\", (\"total\"*0.90) as total
 		FROM \"Upcoming Tours\" NATURAL JOIN \"Location\" NATURAL JOIN \"Tourist\"
 		WHERE \"g_key\"=$uid ORDER BY \"s_Time\" ASC");
+		
+		$earning = pg_query($dbconn, "Select \"getEarning\"($uid)");
+		$rowtotal = pg_fetch_array($earning);
+		$totaltotal = $rowtotal['getEarning'];
+		
 	while($row = pg_fetch_array($squery))
 	{
 		$tname = $row['tour_Name'];
@@ -28,7 +33,6 @@ if($_SESSION['tgemail'])
 		$quantity = $row['Payed'];
 		$name = $row['t_FName'].' '.$row['t_LName'];
 		$total = $row['total'];
-		$totaltotal = $totaltotal + substr($total,1);
 		$tcity = $row['City'];
 		$tstate = $row['State-Province'];
 		$reserved_time = date("F/d/Y g:i a" , strtotime(substr($row['s_Time'], 0, -3)));

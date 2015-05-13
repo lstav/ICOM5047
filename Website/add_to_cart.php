@@ -34,6 +34,7 @@ if(isset($_POST['tid']) && isset($_POST['tdatetime']))
 	{
 		$result = pg_query($dbconn, "INSERT INTO \"Participants\" (\"t_key\",\"ts_key\",
 		\"p_quantity\") Values($uid,$tskey,$quantity)");
+		$qty = $quantity;
 	}
 
 	$tquery = pg_query($dbconn, "SELECT * FROM \"Tour\" NATURAL JOIN \"Location\" WHERE \"tour_key\"= '$tid'");
@@ -44,9 +45,10 @@ if(isset($_POST['tid']) && isset($_POST['tdatetime']))
 	$tprice = $row['Price'];
 	$tcity = $row['City'];
 	$tstate = $row['State-Province'];
+	$tourphoto = $row['tour_photo'];
 	$item = '<article class="search-result row">
 			<div class="col-xs-12 col-sm-12 col-md-3">
-				<a title="Lorem ipsum" class="thumbnail" href="tour_page.php?tid='.$tid.'"><img src="images/'.$tid.'/1.jpg" alt="Lorem ipsum"></a>
+				<a title="Lorem ipsum" class="thumbnail" href="tour_page.php?tid='.$tid.'"><img src="'.$tourphoto.'1.jpg" alt="Lorem ipsum"></a>
 			</div>
 			<div class="col-xs-12 col-sm-12 col-md-2">
 				<ul class="meta-search">
@@ -61,8 +63,8 @@ if(isset($_POST['tid']) && isset($_POST['tdatetime']))
                 <h4>Price: '.$tprice.'</h4>';
 			if($qty < $quantity) {
 				$q = $quantity - $qty;
-				$item = $item.'<h4>Party in cart: '.$qty.'</h4>
-				<h4>Exceeded: '.$q.'</h4>
+				$item = $item.'<h4>Total in cart: '.$qty.'</h4>
+				<h4><font color="red">Could not add: '.$q.'</font></h4>
 				</div>
 				<span class="clearfix borda"></span>
 			</article>';

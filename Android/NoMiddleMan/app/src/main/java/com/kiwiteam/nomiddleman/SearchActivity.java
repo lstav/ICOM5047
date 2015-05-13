@@ -439,13 +439,9 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
             // fill the view
             //int draw = getResources().getIdentifier(currentTour.getPictures().get(0),"drawable",getPackageName());
 
-            if(currentTour.getPictures().size() > 0) {
-                picture = (ImageView) itemView.findViewById(R.id.tourPic);
-                picture.setImageBitmap(currentTour.getPictures().get(0));
-            } else {
-                picture = (ImageView) itemView.findViewById(R.id.tourPic);
-                picture.setImageDrawable(getResources().getDrawable(R.mipmap.ic_launcher));
-            }
+            picture = (ImageView) itemView.findViewById(R.id.tourPic);
+            picture.setImageBitmap(currentTour.getPictures().get(0));
+
 
             RatingBar eRating = (RatingBar) itemView.findViewById(R.id.tourRating);
             eRating.setRating((float) currentTour.getExtremeness());
@@ -523,17 +519,15 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
                     ArrayList<Bitmap> pictures = new ArrayList<>();
 
                     try {
-                        if(getResponseCode(c.getString(TAG_PHOTO).trim() + "1.jpg") != 404) {
-                            BitmapFactory.Options options = new BitmapFactory.Options();
-                            options.inJustDecodeBounds = true;
-                            // Calculate inSampleSize
-                            options.inSampleSize = 5;
-                            // Decode bitmap with inSampleSize set
-                            options.inJustDecodeBounds = false;
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inJustDecodeBounds = true;
+                        // Calculate inSampleSize
+                        options.inSampleSize = 5;
+                        // Decode bitmap with inSampleSize set
+                        options.inJustDecodeBounds = false;
 
-                            bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "1.jpg").getContent(), null, options);
-                            pictures.add(bitmap);
-                        }
+                        bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "1.jpg").getContent(), null, options);
+                        pictures.add(bitmap);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -636,17 +630,17 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
                     JSONObject c = backup.getJSONObject(i);
                     ArrayList<Bitmap> pictures = new ArrayList<>();
                     try {
-                        if(getResponseCode(c.getString(TAG_PHOTO).trim() + "1.jpg") != 404) {
-                            BitmapFactory.Options options = new BitmapFactory.Options();
-                            options.inJustDecodeBounds = true;
-                            // Calculate inSampleSize
-                            options.inSampleSize = 5;
-                            // Decode bitmap with inSampleSize set
-                            options.inJustDecodeBounds = false;
 
-                            bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "1.jpg").getContent(), null, options);
-                            pictures.add(bitmap);
-                        }
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inJustDecodeBounds = true;
+                        // Calculate inSampleSize
+                        options.inSampleSize = 5;
+                        // Decode bitmap with inSampleSize set
+                        options.inJustDecodeBounds = false;
+
+                        bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "1.jpg").getContent(), null, options);
+                        pictures.add(bitmap);
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -782,17 +776,16 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
                     JSONObject c = backup.getJSONObject(i);
                     ArrayList<Bitmap> pictures = new ArrayList<>();
                     try {
-                        if(getResponseCode(c.getString(TAG_PHOTO).trim() + "1.jpg") != 404) {
-                            BitmapFactory.Options options = new BitmapFactory.Options();
-                            options.inJustDecodeBounds = true;
-                            // Calculate inSampleSize
-                            options.inSampleSize = 5;
-                            // Decode bitmap with inSampleSize set
-                            options.inJustDecodeBounds = false;
 
-                            bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "1.jpg").getContent(), null, options);
-                            pictures.add(bitmap);
-                        }
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inJustDecodeBounds = true;
+                        // Calculate inSampleSize
+                        options.inSampleSize = 5;
+                        // Decode bitmap with inSampleSize set
+                        options.inJustDecodeBounds = false;
+
+                        bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "1.jpg").getContent(), null, options);
+                        pictures.add(bitmap);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

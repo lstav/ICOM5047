@@ -382,15 +382,17 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
                     for (int i=0; i<backup.length(); i++) {
                         JSONObject c = backup.getJSONObject(i);
                         try {
-                            BitmapFactory.Options options = new BitmapFactory.Options();
-                            options.inJustDecodeBounds = true;
-                            // Calculate inSampleSize
-                            options.inSampleSize = 5;
-                            // Decode bitmap with inSampleSize set
-                            options.inJustDecodeBounds = false;
+                            if(getResponseCode(c.getString(TAG_PHOTO).trim() + "1.jpg") != 404) {
+                                BitmapFactory.Options options = new BitmapFactory.Options();
+                                options.inJustDecodeBounds = true;
+                                // Calculate inSampleSize
+                                options.inSampleSize = 5;
+                                // Decode bitmap with inSampleSize set
+                                options.inJustDecodeBounds = false;
 
-                            bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "1.jpg").getContent(), null, options);
-                            pictures.add(bitmap);
+                                bitmap = BitmapFactory.decodeStream((InputStream) new URL(c.getString(TAG_PHOTO).trim() + "1.jpg").getContent(), null, options);
+                                pictures.add(bitmap);
+                            }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -409,7 +411,7 @@ public class PurchaseHistoryActivity extends ActionBarActivity {
                                 c.getString(TAG_TIME),c.getInt(TAG_TSKEY),c.getInt(TAG_QUANTITY),
                                 isRated, new Tour(c.getString(TAG_NAME),
                                         Price.getDouble(c.getString(TAG_PRICE)),
-                                        new ArrayList<>(Arrays.asList(bitmap)), c.getInt(TAG_KEY),
+                                        pictures, c.getInt(TAG_KEY),
                                         c.getDouble(TAG_EXTREMENESS))));
 
                         if(isActive) {
