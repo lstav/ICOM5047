@@ -134,6 +134,7 @@
     <string name="loading">Cargando. Por favor espera...</string>
     <string name="not_change_password">No se pudo cambiar la contraseña</string>
     <string name="registering">Registrando. Por favor espera...</string>
+    <string name="wrong_pass">Contraseña Incorrecta</string>
 
     <string name="notification_sent">Verificacion de correo enviada</string>
     <string name="not_register">No se pudo registrar</string>

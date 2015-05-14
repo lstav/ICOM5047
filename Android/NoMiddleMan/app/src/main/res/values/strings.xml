@@ -134,6 +134,7 @@
     <string name="loading">Loading. Please  Wait...</string>
     <string name="not_change_password">Could not change password</string>
     <string name="registering">Registering. Please wait...</string>
+    <string name="wrong_pass">Wrong password</string>
 
     <string name="notification_sent">Email Verification Sent</string>
     <string name="not_register">Could not register</string>

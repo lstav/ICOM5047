@@ -242,7 +242,7 @@ public class ChangePasswordActivity extends ActionBarActivity {
                     if(success == 1) {
                         finish();
                     } else {
-                        Toast.makeText(getApplicationContext(), R.string.not_change_password, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), R.string.wrong_pass, Toast.LENGTH_SHORT).show();
                         //Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                     }
                 }
