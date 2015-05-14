@@ -246,7 +246,7 @@ public class ChangePasswordActivity extends ActionBarActivity {
                         //Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                     }
                 }
-            });
+            }); 
         }
 
     }

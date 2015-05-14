@@ -1,10 +1,18 @@
 <?php 
 include_once("dbConnect.php");
+$cityList = '';
+$categoryList = '';
 $query = pg_query($dbconn, "SELECT * FROM \"Tour Category\" Order By \"Category_Name\" ASC");
 while($row = pg_fetch_array($query))
 {
 	$category = $row['Category_Name'];
 	$categoryList .= ' <li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$category.'">'.$category.'</a></li>';
+}
+$query = pg_query($dbconn, "SELECT DISTINCT \"City\" FROM \"Location\" NATURAL JOIN \"Tour\" Order By \"City\" Asc");
+while($row = pg_fetch_array($query))
+{
+	$city = $row['City'];
+	$cityList .= '<li role="presentation"><a role="menuitem" tabindex="-1" href="search_results.php?search='.$city.'">'.$city.'</a></li>';
 }
 
 ?>
@@ -26,7 +34,7 @@ while($row = pg_fetch_array($query))
       
     </div><!-- /input-group -->
     <div class="dropdown" style="
-    margin-top: 10px;
+    margin-top: 10px; display:inline-block
 ">
                 <button class="btn btn-default dropdown-toggle" type="button" id="year" data-toggle="dropdown" aria-expanded="false" style="
     margin-left: 0px;
@@ -34,6 +42,17 @@ while($row = pg_fetch_array($query))
 ">Or Choose Category<span class="caret"></span> </button>
                 <ul class="dropdown-menu" id="yearList" role="menu" aria-labelledby="dropdownMenu1">
                  <?php echo $categoryList; ?>
+                </ul>
+              </div>
+     <div class="dropdown" style="
+    margin-top: 10px;  margin-left: 20px; display:inline-block
+">
+                <button class="btn btn-default dropdown-toggle" type="button" id="year" data-toggle="dropdown" aria-expanded="false" style="
+    margin-left: 0px;
+    margin-top: 0px;
+">Or Choose City<span class="caret"></span> </button>
+                <ul class="dropdown-menu" id="yearList" role="menu" aria-labelledby="dropdownMenu1">
+                 <?php echo $cityList; ?>
                 </ul>
               </div>
     </form>

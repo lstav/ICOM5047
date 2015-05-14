@@ -4,9 +4,9 @@
 	
 	include_once("dbconnection.php");
 	
-	$result = pg_query($conn, "Select \"L_key\" as l_key, \"City\" as city, 
+	$result = pg_query($conn, "Select Distinct \"L_key\" as l_key, \"City\" as city, 
 	\"State-Province\" as state, \"Country\" as country
-	From \"Location\" Order By \"Country\",\"State-Province\",\"City\" ASC");
+	From \"Location\" NATURAL JOIN \"Tour\" Order By \"Country\",\"State-Province\",\"City\" ASC");
 	
 	if(pg_num_rows($result) > 0) {
 		
